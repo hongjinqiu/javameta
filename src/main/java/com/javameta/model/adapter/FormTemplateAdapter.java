@@ -8,17 +8,24 @@ import org.apache.commons.lang3.StringUtils;
 import com.javameta.JavametaException;
 import com.javameta.model.DatasourceFactory;
 import com.javameta.model.datasource.Datasource;
+import com.javameta.model.datasource.DetailData;
 import com.javameta.model.datasource.Field;
 import com.javameta.model.iterate.DatasourceIterator;
+import com.javameta.model.iterate.FormTemplateIterator;
 import com.javameta.model.iterate.IDatasourceFieldIterate;
+import com.javameta.model.iterate.IFormTemplateColumnModelIterate;
+import com.javameta.model.iterate.IFormTemplateDataProviderIterate;
+import com.javameta.model.iterate.IFormTemplateQueryParameterIterate;
 import com.javameta.model.template.AutoColumn;
 import com.javameta.model.template.Column;
 import com.javameta.model.template.ColumnModel;
+import com.javameta.model.template.DataProvider;
 import com.javameta.model.template.DateColumn;
 import com.javameta.model.template.DictionaryColumn;
 import com.javameta.model.template.FormTemplate;
 import com.javameta.model.template.NumberColumn;
 import com.javameta.model.template.RelationDS;
+import com.javameta.model.template.QueryParameters.QueryParameter;
 import com.javameta.model.template.RelationDS.RelationItem;
 import com.javameta.model.template.StringColumn;
 import com.javameta.model.template.TriggerColumn;
@@ -26,10 +33,89 @@ import com.javameta.util.New;
 
 public class FormTemplateAdapter implements IFormTemplateAdapter {
 
+	/**
+	 * 根据formTemplate.dataSourceModelId,取出datasource,生成formTemplate配置,
+	 */
 	@Override
 	public void applyAdapter(FormTemplate formTemplate) {
-		// TODO Auto-generated method stub
-
+		if (StringUtils.isNotEmpty(formTemplate.getDataSourceModelId())) {
+			DatasourceFactory datasourceFactory = new DatasourceFactory();
+			Datasource datasource = datasourceFactory.getDatasource(formTemplate.getDataSourceModelId());
+			applyDetailDataSet(datasource, formTemplate);
+			applyQueryParameter(datasource, formTemplate);
+		}
+	}
+	
+	/**
+	 * 生成queryParameter相关配置,query-parameter.editor,restriction
+	 * @param datasource
+	 * @param formTemplate
+	 */
+//	func (o ModelListTemplateAdapter) applyQueryParameter(dataSource DataSource, listTemplate *ListTemplate) {
+	private void applyQueryParameter(final Datasource datasource, FormTemplate formTemplate) {
+		FormTemplateIterator.iterateFormTemplateDataProvider(formTemplate, new IFormTemplateDataProviderIterate() {
+			@Override
+			public void iterate(DataProvider dataProvider) {
+				FormTemplateIterator.iterateFormTemplateQueryParameter(dataProvider, new IFormTemplateQueryParameterIterate() {
+					@Override
+					public void iterate(DataProvider dataProvider, final QueryParameter queryParameter) {
+//						if (dataProvider.getQueryParameters().getDataSetId())
+						String tmpQueryParameterDataSetId = dataProvider.getQueryParameters().getDataSetId();
+						if (StringUtils.isEmpty(tmpQueryParameterDataSetId)) {
+							tmpQueryParameterDataSetId = "A";
+						}
+						final String queryParameterDataSetId = tmpQueryParameterDataSetId;
+						if (queryParameter.getAuto() != null && queryParameter.getAuto()) {
+							DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+								@Override
+								public void iterate(Field field) {
+									// TODO Auto-generated method stub
+									String name = queryParameter.getName();
+									if (StringUtils.isNotEmpty(queryParameter.getColumnName())) {
+										name = queryParameter.getColumnName();
+									}
+									if (field.getDataSetId().equals(queryParameterDataSetId) && name.equals(field.getId())) {
+										if (StringUtils.isEmpty(queryParameter.getText())) {
+											queryParameter.setText(field.getDisplayName());
+										}
+										// TODO
+										if (field.getFixHide() != null && field.getFixHide()) {
+											if (StringUtils.isEmpty(queryParameter.getEditor())) {
+												queryParameter.setEditor("hiddenfield");
+											}
+										}
+										Column column = getColumn(field);
+//										o.applyQueryParameterAttr(xmlName, queryParameter)
+										
+//										o.applyQueryParameterSubAttr(xmlName, *fieldGroup, queryParameter)
+									}
+								}
+							});
+						} else {// 实现dsFieldMap
+							
+						}
+					}
+				});
+			}
+		});
+	}
+	
+	private void applyQueryParameterAttr(Column column, QueryParameter queryParameter) {
+		
+	}
+	
+	private void applyDetailDataSet(final Datasource datasource, FormTemplate formTemplate) {
+		FormTemplateIterator.iterateFormTemplateColumnModel(formTemplate, new IFormTemplateColumnModelIterate() {
+			@Override
+			public void iterate(ColumnModel columnModel) {
+				for (DetailData detailData: datasource.getDetailData()) {
+					if (columnModel.getDataSetId().equals(detailData.getId())) {
+						columnModel.setText(detailData.getDisplayName());
+					}
+				}
+				recursionApplyColumnModel(datasource, columnModel);
+			}
+		});
 	}
 
 	/**
@@ -37,7 +123,7 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 	 * @param datasource
 	 * @param columnModel
 	 */
-	public void recursionApplyColumnModel(Datasource datasource, final ColumnModel columnModel) {
+	private void recursionApplyColumnModel(Datasource datasource, final ColumnModel columnModel) {
 		List<Column> columnLi = columnModel.getColumnList();
 		for (final Column column: columnLi) {
 			if ((column instanceof AutoColumn) || (column.getAuto() == null || column.getAuto())) {
