@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/datasource https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/datasource.xsd">
+ -->
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>SysUser</id>
+	<displayName>系统用户</displayName>
+	<inUsedDenyEdit>false</inUsedDenyEdit>
+	<tableName></tableName>
+	<masterData>
+		<id>A</id>
+		<displayName>主数据集</displayName>
+		<allowCopy>true</allowCopy>
+		<fixField>
+			<primaryKey id="id" extends="PRIMARY_KEY" />
+			<createBy id="createBy" extends="CREATE_BY" />
+			<createTime id="createTime" extends="CREATE_TIME" />
+			<createUnit id="createUnit" extends="CREATE_UNIT" />
+			<modifyBy id="modifyBy" extends="MODIFY_BY" />
+			<modifyUnit id="modifyUnit" extends="MODIFY_UNIT" />
+			<modifyTime id="modifyTime" extends="MODIFY_TIME" />
+			<remark id="remark" extends="REMARK" />
+		</fixField>
+		<bizField>
+			<field id="" extends="code"><!-- subId -->
+				<fixReadOnly>true</fixReadOnly>
+			</field>
+			<field id="" extends="name"><!-- fullName -->
+				<fixReadOnly>true</fixReadOnly>
+			</field>
+			<!-- type,类型,1:系统管理员,2:普通用户 status,子账号当前状态 1正常 -1删除 2冻结,为避免出错,给其添加相应的0-9,忽忽忽忽, fullName:全称,例如:张小姐,映射到name, subId:映射到code, sellerId:卖家ID, sellerNick:卖家昵称,例如:五行色东辉专卖店 nick:昵称,例如:五行色东辉专卖店:小张 -->
+			<field id="type" extends="taobaoType">
+			</field>
+			<field id="status" extends="taobaoStatus"><!-- 没用了 -->
+			</field>
+			<!-- <field id="" extends="sellerId"> </field> <field id="" extends="sellerNick"> </field> -->
+			<field id="" extends="nick">
+			</field>
+		</bizField>
+	</masterData>
+</datasource>

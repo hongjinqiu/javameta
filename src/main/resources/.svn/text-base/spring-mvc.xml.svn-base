@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+         http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-3.0.xsd 
+		http://cxf.apache.org/jaxws 
+   		http://cxf.apache.org/schemas/jaxws.xsd">
+   		<mvc:annotation-driven/>
+   		
+   		<context:component-scan base-package="com.javameta"></context:component-scan>
+   		<context:annotation-config></context:annotation-config>
+   		
+   		<!-- ApplicationContext -->
+		<bean class="com.javameta.util.ApplicationContextUtil"></bean>
+   		
+   		<!-- 避免IE执行AJAX时,返回JSON出现下载文件 -->
+	<bean id="mappingJacksonHttpMessageConverter"
+		class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>text/html;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	<!-- 默认的视图解析器 在上边的解析错误时使用 (默认使用html)- -->
+	<bean id="defaultViewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:order="3">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="contentType" value="text/html" />
+		<property name="prefix" value="/webpage/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<bean id="dataSource" 
+	      class="com.mchange.v2.c3p0.ComboPooledDataSource">
+	      <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+	      <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/javameta"/>
+	      <property name="user" value="root"/>
+	      <property name="password" value="123456"/>
+	      <property name="autoCommitOnClose" value="true" />
+	      <property name="initialPoolSize" value="1" />
+	      <property name="maxPoolSize" value="30" />
+	      <property name="maxStatements" value="200" />
+	      <property name="minPoolSize" value="1" />
+	      <property name="maxIdleTime" value="60" />
+	      <property name="maxIdleTimeExcessConnections" value="60" />
+	      
+	      <!-- <property name="AcquireIncrement" value="3" />                         -->
+	      <!-- <property name="AcquireRetryAttempts" value="30" />                    -->
+	      <!-- <property name="AcquireRetryDelay" value="1000" />                     -->
+	      <!-- <property name="AutoCommitOnClose" value="false" />                    -->
+	      <!-- <property name="AutomaticTestTable" value="" />                        -->
+	      <!-- <property name="BreakAfterAcquireFailure" value="false" />             -->
+	      <!-- <property name="CheckoutTimeout" value="0" />                          -->
+	      <!-- <property name="ConnectionCustomizerClassName" value="" />             -->
+	      <!-- <property name="ConnectionTesterClassName" value="" />                 -->
+	      <!-- <property name="Description" value="A pooled c3p0 DataSource" />       -->
+	      <!-- <property name="DebugUnreturnedConnectionStackTraces" value="false" /> -->
+	      <!-- <property name="FactoryClassLocation" value="" />                      -->
+	      <!-- <property name="ForceIgnoreUnresolvedTransactions" value="false" />    -->
+	      <!-- <property name="IdleConnectionTestPeriod" value="0" />                 -->
+	      <!-- <property name="InitialPoolSize" value="3" />                          -->
+	      <!-- <property name="MaxAdministrativeTaskTime" value="0" />                -->
+	      <!-- <property name="MaxConnectionAge" value="0" />                         -->
+	      <!-- <property name="MaxIdleTime" value="0" />                              -->
+	      <!-- <property name="MaxIdleTimeExcessConnections" value="0" />             -->
+	      <!-- <property name="MaxPoolSize" value="15" />                             -->
+	      <!-- <property name="MaxStatements" value="0" />                            -->
+	      <!-- <property name="MaxStatementsPerConnection" value="0" />               -->
+	      <!-- <property name="MinPoolSize" value="0" />                              -->
+	      <!-- <property name="NumHelperThreads" value="3" />                         -->
+	      <!-- <property name="PreferredTestQuery" value="" />                        -->
+	      <!-- <property name="TestConnectionOnCheckin" value="false" />              -->
+	      <!-- <property name="TestConnectionOnCheckout" value="false" />             -->
+	      <!-- <property name="UnreturnedConnectionTimeout" value="0" />              -->
+	      <!-- <property name="UsesTraditionalReflectiveProxies" value="false" />     -->
+	   </bean>
+	
+	<!-- JDBC配置 -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+	</bean>
+
+	<!-- JDBC配置 -->
+	<bean id="namedParameterJdbcTemplate"
+		class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+		<constructor-arg ref="dataSource" />
+	</bean>
+	
+	<!-- 配置事物管理器，在*ServiceImpl里写@Transactional就可以启用事物管理 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	    <property name="dataSource" ref="dataSource"/>
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+</beans>

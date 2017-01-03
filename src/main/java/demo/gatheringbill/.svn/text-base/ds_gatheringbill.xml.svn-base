@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/datasource https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/datasource.xsd">
+ -->
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>GatheringBill</id>
+	<displayName>收款单</displayName>
+	<inUsedDenyEdit>false</inUsedDenyEdit>
+	<tableName></tableName>
+	<masterData>
+		<id>A</id>
+		<displayName>主数据集</displayName>
+		<allowCopy>true</allowCopy>
+		<fixField>
+			<primaryKey id="id" extends="PRIMARY_KEY" />
+			<createBy id="createBy" extends="CREATE_BY" />
+			<createTime id="createTime" extends="CREATE_TIME" />
+			<createUnit id="createUnit" extends="CREATE_UNIT" />
+			<modifyBy id="modifyBy" extends="MODIFY_BY" />
+			<modifyUnit id="modifyUnit" extends="MODIFY_UNIT" />
+			<modifyTime id="modifyTime" extends="MODIFY_TIME" />
+			<remark id="remark" extends="REMARK" />
+		</fixField>
+		<bizField>
+			<field id="" extends="billDate">
+				<defaultValueExpr mode="js">new Date().getFullYear() + "" + (new Date().getMonth() + 1 &lt; 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + (new Date().getDate() &lt; 10 ? "0" + new Date().getDate() : new Date().getDate())</defaultValueExpr>
+			</field>
+			<field id="" extends="billNo">
+				<defaultValueExpr></defaultValueExpr>
+			</field>
+			<field id="" extends="property">
+			</field>
+			<field id="" extends="billTypeId">
+			</field>
+			<field id="accountId" extends="gatheringAccountId">
+			</field>
+			<field id="" extends="balanceDate">
+				<defaultValueExpr></defaultValueExpr>
+			</field>
+			<field id="" extends="balanceTypeId">
+				<defaultValueExpr></defaultValueExpr>
+			</field>
+			<field id="" extends="balanceNo">
+			</field>
+			<field id="" extends="chamberlainType">
+			</field>
+			<field id="" extends="chamberlainId">
+				<defaultValueExpr></defaultValueExpr>
+			</field>
+			<field id="" extends="chamberlainDesc">
+			</field>
+			<field id="" extends="sysUserId">
+				<displayName>采购/业务员</displayName>
+				<defaultValueExpr></defaultValueExpr>
+			</field>
+			<field id="" extends="articleId">
+				<defaultValueExpr></defaultValueExpr>
+			</field>
+			<field id="" extends="currencyTypeId">
+				<!-- <defaultValueExpr>1</defaultValueExpr> -->
+				<fixReadOnly>true</fixReadOnly>
+			</field>
+			<field id="" extends="exchangeRateShow">
+				<fixReadOnly>true</fixReadOnly>
+			</field>
+			<field id="" extends="exchangeRate">
+				<defaultValueExpr>1</defaultValueExpr>
+			</field>
+			<field id="" extends="amtGathering">
+			</field>
+			<field id="" extends="amtAgainst">
+			</field>
+			<field id="" extends="amtNotAgainst">
+			</field>
+			<field id="" extends="chamberlainName">
+			</field>
+			<field id="" extends="bankId">
+				<displayName>银行代码</displayName>
+			</field>
+			<field id="" extends="bankAccount">
+				<allowEmpty>true</allowEmpty>
+			</field>
+			<field id="" extends="linkman">
+			</field>
+			<field id="" extends="linkPhone">
+			</field>
+			<!-- <field id="" extends="isEffective"> </field> -->
+		</bizField>
+	</masterData>
+	<detailData>
+		<id>B</id>
+		<displayName>收款费用信息</displayName>
+		<!-- <allowEmptyRow>false</allowEmptyRow> -->
+		<allowCopy>true</allowCopy>
+		<!-- <readonly>false</readonly> -->
+		<fixField>
+			<primaryKey id="id" extends="PRIMARY_KEY" />
+			<createBy id="createBy" extends="CREATE_BY" />
+			<createTime id="createTime" extends="CREATE_TIME" />
+			<createUnit id="createUnit" extends="CREATE_UNIT" />
+			<modifyBy id="modifyBy" extends="MODIFY_BY" />
+			<modifyUnit id="modifyUnit" extends="MODIFY_UNIT" />
+			<modifyTime id="modifyTime" extends="MODIFY_TIME" />
+			<remark id="remark" extends="REMARK" />
+		</fixField>
+		<bizField>
+			<field id="" extends="accountType">
+				<displayName>费用账户类型</displayName>
+			</field>
+			<field id="" extends="accountId">
+				<displayName>费用账户</displayName>
+			</field>
+			<field id="" extends="incomeItemId">
+			</field>
+			<field id="" extends="amtFee">
+			</field>
+		</bizField>
+	</detailData>
+	<detailData>
+		<id>C</id>
+		<displayName>test</displayName>
+		<!-- <allowEmptyRow>false</allowEmptyRow> -->
+		<allowCopy>true</allowCopy>
+		<!-- <readonly>false</readonly> -->
+		<fixField>
+			<primaryKey id="id" extends="PRIMARY_KEY" />
+			<createBy id="createBy" extends="CREATE_BY" />
+			<createTime id="createTime" extends="CREATE_TIME" />
+			<createUnit id="createUnit" extends="CREATE_UNIT" />
+			<modifyBy id="modifyBy" extends="MODIFY_BY" />
+			<modifyUnit id="modifyUnit" extends="MODIFY_UNIT" />
+			<modifyTime id="modifyTime" extends="MODIFY_TIME" />
+			<remark id="remark" extends="REMARK" />
+		</fixField>
+		<bizField>
+			<field id="" extends="NAME_FIELD">
+				<displayName>姓名测试</displayName>
+			</field>
+		</bizField>
+	</detailData>
+</datasource>
