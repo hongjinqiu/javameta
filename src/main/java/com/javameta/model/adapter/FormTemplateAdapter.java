@@ -51,7 +51,6 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 	 * @param datasource
 	 * @param formTemplate
 	 */
-//	func (o ModelListTemplateAdapter) applyQueryParameter(dataSource DataSource, listTemplate *ListTemplate) {
 	private void applyQueryParameter(final Datasource datasource, FormTemplate formTemplate) {
 		FormTemplateIterator.iterateFormTemplateDataProvider(formTemplate, new IFormTemplateDataProviderIterate() {
 			@Override
@@ -59,7 +58,6 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 				FormTemplateIterator.iterateFormTemplateQueryParameter(dataProvider, new IFormTemplateQueryParameterIterate() {
 					@Override
 					public void iterate(DataProvider dataProvider, final QueryParameter queryParameter) {
-//						if (dataProvider.getQueryParameters().getDataSetId())
 						String tmpQueryParameterDataSetId = dataProvider.getQueryParameters().getDataSetId();
 						if (StringUtils.isEmpty(tmpQueryParameterDataSetId)) {
 							tmpQueryParameterDataSetId = "A";
@@ -69,30 +67,36 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 							DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
 								@Override
 								public void iterate(Field field) {
-									// TODO Auto-generated method stub
 									String name = queryParameter.getName();
 									if (StringUtils.isNotEmpty(queryParameter.getColumnName())) {
 										name = queryParameter.getColumnName();
 									}
 									if (field.getDataSetId().equals(queryParameterDataSetId) && name.equals(field.getId())) {
-										if (StringUtils.isEmpty(queryParameter.getText())) {
-											queryParameter.setText(field.getDisplayName());
-										}
-										// TODO
-										if (field.getFixHide() != null && field.getFixHide()) {
-											if (StringUtils.isEmpty(queryParameter.getEditor())) {
-												queryParameter.setEditor("hiddenfield");
-											}
-										}
-										Column column = getColumn(field);
-//										o.applyQueryParameterAttr(xmlName, queryParameter)
-										
-//										o.applyQueryParameterSubAttr(xmlName, *fieldGroup, queryParameter)
+										applyQueryParameterCommon(queryParameter, field);
 									}
 								}
 							});
 						} else {// 实现dsFieldMap
-							
+							if (StringUtils.isNotEmpty(queryParameter.getDsFieldMap())) {
+								String[] textLi = queryParameter.getDsFieldMap().split(".");
+								if (textLi.length != 3) {
+									throw new JavametaException("dataProvider:" + dataProvider.getName() + ", dataSet:" + tmpQueryParameterDataSetId + ", queryParameter.Name:" + queryParameter.getName() + ", dsFieldMap:" + queryParameter.getDsFieldMap() + " apply failed, dsFieldMap.len != 3");
+								} else {
+									String dataSourceId = textLi[0];
+									final String dataSetId = textLi[1];
+									final String fieldId = textLi[2];
+									DatasourceFactory datasourceFactory = new DatasourceFactory();
+									Datasource outSideDatasource = datasourceFactory.getDatasource(dataSourceId);
+									DatasourceIterator.iterateField(outSideDatasource, new IDatasourceFieldIterate() {
+										@Override
+										public void iterate(Field field) {
+											if (field.getDataSetId().equals(dataSetId) && field.getId().equals(fieldId)) {
+												applyQueryParameterCommon(queryParameter, field);
+											}
+										}
+									});
+								}
+							}
 						}
 					}
 				});
@@ -100,8 +104,145 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 		});
 	}
 	
+	/**
+	 * 根据field来赋值,
+	 * <query-parameter name="id" auto="true" dsFieldMap="" text="">
+			<parameter-attribute name="displayPattern" value=""/>
+			<parameter-attribute name="dbPattern" value=""/>
+		</query-parameter>
+	 * @param queryParameter
+	 * @param field
+	 */
+	private void applyQueryParameterCommon(QueryParameter queryParameter, Field field) {
+		if (StringUtils.isEmpty(queryParameter.getText())) {
+			queryParameter.setText(field.getDisplayName());
+		}
+		if (field.getFixHide() != null && field.getFixHide()) {
+			if (StringUtils.isEmpty(queryParameter.getEditor())) {
+				queryParameter.setEditor("hiddenfield");
+			}
+		}
+		Column column = getColumn(field);
+		applyQueryParameterAttr(column, queryParameter);
+		applyQueryParameterSubAttr(column, field, queryParameter);
+	}
+	
+	/**
+	 * query-parameter.Editor,Restriction,赋值
+	 * @param column
+	 * @param queryParameter
+	 */
 	private void applyQueryParameterAttr(Column column, QueryParameter queryParameter) {
-		
+		if (column instanceof TriggerColumn) {
+			if (StringUtils.isEmpty(queryParameter.getEditor())) {
+				queryParameter.setEditor("triggerfield");
+			}
+			if (StringUtils.isEmpty(queryParameter.getRestriction())) {
+				queryParameter.setRestriction("in");
+			}
+		} else if (column instanceof StringColumn) {
+			if (StringUtils.isEmpty(queryParameter.getEditor())) {
+				queryParameter.setEditor("textfield");
+			}
+			if (StringUtils.isEmpty(queryParameter.getRestriction())) {
+				queryParameter.setRestriction("like");
+			}
+		} else if (column instanceof NumberColumn) {
+			if (StringUtils.isEmpty(queryParameter.getEditor())) {
+				queryParameter.setEditor("numberfield");
+			}
+			if (StringUtils.isEmpty(queryParameter.getRestriction())) {
+				queryParameter.setRestriction("eq");
+			}
+		} else if (column instanceof DateColumn) {
+			if (StringUtils.isEmpty(queryParameter.getEditor())) {
+				queryParameter.setEditor("datefield");
+			}
+			if (StringUtils.isEmpty(queryParameter.getRestriction())) {
+				queryParameter.setRestriction("eq");
+			}
+		} else if (column instanceof DictionaryColumn) {
+			if (StringUtils.isEmpty(queryParameter.getEditor())) {
+				queryParameter.setEditor("combofield");
+			}
+			if (StringUtils.isEmpty(queryParameter.getRestriction())) {
+				queryParameter.setRestriction("eq");
+			}
+		}
+	}
+
+	/**
+	 * 生成<query-parameter>子元素
+	 * <parameter-attribute name="xxxx" value="xxxx"/>
+	 * @param column
+	 * @param field
+	 * @param queryParameter
+	 */
+	private void applyQueryParameterSubAttr(Column column, Field field, QueryParameter queryParameter) {
+		if (column instanceof TriggerColumn) {
+			queryParameter.setRelationDS(getRelationDS(queryParameter.getRelationDS(), field.getRelationDS()));
+		} else if (column instanceof StringColumn) {
+			// do nothing
+		} else if (column instanceof NumberColumn) {
+			// do nothing
+		} else if (column instanceof DateColumn) {
+			boolean hasInFormat = false;
+			boolean hasQueryFormat = false;
+			if (queryParameter.getParameterAttribute().size() > 0) {
+				for (QueryParameter.ParameterAttribute attrItem: queryParameter.getParameterAttribute()) {
+					if (attrItem.getName().equals("displayPattern")) {
+						hasInFormat = true;
+						break;
+					}
+				}
+				for (QueryParameter.ParameterAttribute attrItem: queryParameter.getParameterAttribute()) {
+					if (attrItem.getName().equals("dbPattern")) {
+						hasQueryFormat = true;
+						break;
+					}
+				}
+			}
+			if (!hasInFormat || !hasQueryFormat) {
+				if (!hasInFormat) {
+					QueryParameter.ParameterAttribute parameterAttribute = new QueryParameter.ParameterAttribute();
+					parameterAttribute.setName("displayPattern");
+					if (field.getFieldType().equals("date")) {
+						parameterAttribute.setValue("yyyy-MM-dd");
+					} else if (field.getFieldType().equals("time")) {
+						parameterAttribute.setValue("HH:mm:ss");
+					} else if (field.getFieldType().equals("timestamp")) {
+						parameterAttribute.setValue("yyyy-MM-dd HH:mm:ss");
+					}
+					queryParameter.getParameterAttribute().add(parameterAttribute);
+				}
+				if (!hasQueryFormat) {
+					QueryParameter.ParameterAttribute parameterAttribute = new QueryParameter.ParameterAttribute();
+					parameterAttribute.setName("dbPattern");
+					if (field.getFieldType().equals("date")) {
+						parameterAttribute.setValue("yyyyMMdd");
+					} else if (field.getFieldType().equals("time")) {
+						parameterAttribute.setValue("HHmmss");
+					} else if (field.getFieldType().equals("timestamp")) {
+						parameterAttribute.setValue("yyyyMMddHHmmss");
+					}
+					queryParameter.getParameterAttribute().add(parameterAttribute);
+				}
+			}
+		} else if (column instanceof DictionaryColumn) {
+			boolean hasDictionary = false;
+			for (QueryParameter.ParameterAttribute attrItem: queryParameter.getParameterAttribute()) {
+				if (attrItem.getName().equals("dictionary")) {
+					hasDictionary = true;
+					break;
+				}
+			}
+			if (!hasDictionary) {
+				QueryParameter.ParameterAttribute parameterAttribute = new QueryParameter.ParameterAttribute();
+				parameterAttribute.setName("dictionary");
+				parameterAttribute.setValue(field.getDictionary());
+				queryParameter.getParameterAttribute().add(parameterAttribute);
+			}
+		}
 	}
 	
 	private void applyDetailDataSet(final Datasource datasource, FormTemplate formTemplate) {
