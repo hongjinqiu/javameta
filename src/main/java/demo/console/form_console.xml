@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+ -->
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>Console</id>
+	<data-source-model-id></data-source-model-id>
+	<adapter name="" />
+	<description>控制台</description>
+	<scripts>model/summary.js</scripts>
+	<view-template view="model/formSchema.jsp"/>
+	<!-- <security byUnit="true"/> -->
+	
+	<toolbar name="ComponentToolbar">
+		<button text="重构模型" mode="fn" handler="doRefretorComponent" iconCls="but_box">
+		</button>
+	</toolbar>
+
+	<column-model name="Component">
+		<checkbox-column name="checkboxSelect" hideable="false">
+		</checkbox-column>
+		<id-column name="id" text="编号" hideable="true" />
+		<virtual-column name="FUN_C" text="操作" width="120">
+			<buttons>
+				<button text="访问" iconCls="img_look" mode="url^" handler="/console/listschema?@name={id}">
+					<expression></expression>
+				</button>
+				<button text="raw xml" iconCls="img_look" mode="url^" handler="/console/rawxml?@name={id}&amp;type=Component">
+				</button>
+				<button text="xml" iconCls="img_look" mode="url^" handler="/console/xml?@name={id}&amp;type=Component">
+				</button>
+			</buttons>
+		</virtual-column>
+		<string-column name="name" text="名称"></string-column>
+		<string-column name="module" text="模块"></string-column>
+		<string-column name="path" text="路径"></string-column>
+	</column-model>
+
+	<toolbar name="SelectorToolbar">
+		<button text="重构模型" mode="fn" handler="doRefretorSelector" iconCls="but_box">
+		</button>
+	</toolbar>
+
+	<column-model name="Selector">
+		<checkbox-column name="checkboxSelect" hideable="false">
+		</checkbox-column>
+		<id-column name="id" text="编号" hideable="true" />
+		<virtual-column name="FUN_C" text="操作" width="120">
+			<buttons>
+				<button text="访问" iconCls="img_look" mode="url^" handler="/console/selectorschema?@name={id}">
+				</button>
+				<button text="raw xml" iconCls="img_look" mode="url^" handler="/console/rawxml?@name={id}&amp;type=Selector">
+				</button>
+				<button text="xml" iconCls="img_look" mode="url^" handler="/console/xml?@name={id}&amp;type=Selector">
+				</button>
+			</buttons>
+		</virtual-column>
+		<string-column name="name" text="名称"></string-column>
+		<string-column name="module" text="模块"></string-column>
+		<string-column name="path" text="路径"></string-column>
+	</column-model>
+
+	<toolbar name="FormToolbar">
+		<button text="重构模型" mode="fn" handler="doRefretorForm" iconCls="but_box">
+		</button>
+	</toolbar>
+
+	<column-model name="Form">
+		<checkbox-column name="checkboxSelect" hideable="false">
+		</checkbox-column>
+		<id-column name="id" text="编号" hideable="true" />
+
+		<virtual-column name="FUN_C" text="操作" width="120">
+			<buttons>
+				<button text="访问" iconCls="img_look" mode="url^" handler="/console/formschema?@name={id}">
+				</button>
+				<button text="raw xml" iconCls="img_look" mode="url^" handler="/console/rawxml?@name={id}&amp;type=Form">
+				</button>
+				<button text="xml" iconCls="img_look" mode="url^" handler="/console/xml?@name={id}&amp;type=Form">
+				</button>
+			</buttons>
+		</virtual-column>
+		<string-column name="name" text="名称"></string-column>
+		<string-column name="module" text="模块"></string-column>
+		<string-column name="path" text="路径"></string-column>
+	</column-model>
+
+	<toolbar name="DatasourceToolbar">
+		<button text="重构模型" mode="fn" handler="doRefretorDatasource" iconCls="but_box">
+		</button>
+	</toolbar>
+
+	<column-model name="Datasource">
+		<checkbox-column name="checkboxSelect" hideable="false">
+		</checkbox-column>
+		<id-column name="id" text="编号" hideable="true" />
+
+		<virtual-column name="FUN_C" text="操作" width="120">
+			<buttons>
+				<button text="raw xml" iconCls="img_look" mode="url^" handler="/console/rawxml?@name={id}&amp;type=Datasource">
+				</button>
+				<button text="xml" iconCls="img_look" mode="url^" handler="/console/xml?@name={id}&amp;type=Datasource">
+				</button>
+			</buttons>
+		</virtual-column>
+		<string-column name="name" text="名称"></string-column>
+		<string-column name="module" text="模块"></string-column>
+		<string-column name="path" text="路径"></string-column>
+	</column-model>
+
+</form-template>

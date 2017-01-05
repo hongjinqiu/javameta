@@ -12,7 +12,7 @@
 	<scripts>js/ds_listtoolbar.js&amp;gatheringbill/gatheringBillListTemplate.js</scripts>
 	<view-template view="Console/ListSchema.html" />
 
-	<security byUnit="true" />
+	<!-- <security byUnit="true" /> -->
 
 	<toolbar export="true">
 		<button text="新增" mode="url" handler="/console/formschema?@name=GatheringBill" iconCls="but_box" />

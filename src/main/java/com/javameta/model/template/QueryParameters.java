@@ -190,7 +190,7 @@ public class QueryParameters implements Serializable {
      *     {@link Integer }
      *     
      */
-    public int getFormColumns() {
+    public Integer getFormColumns() {
         return formColumns;
     }
 
@@ -503,7 +503,7 @@ public class QueryParameters implements Serializable {
          *     {@link Integer }
          *     
          */
-        public int getColSpan() {
+        public Integer getColSpan() {
             return colSpan;
         }
 
@@ -527,7 +527,7 @@ public class QueryParameters implements Serializable {
          *     {@link Integer }
          *     
          */
-        public int getRowSpan() {
+        public Integer getRowSpan() {
             return rowSpan;
         }
 
@@ -1114,7 +1114,7 @@ public class QueryParameters implements Serializable {
          *     {@link Integer }
          *     
          */
-        public int getColSpan() {
+        public Integer getColSpan() {
             return colSpan;
         }
 
@@ -1138,7 +1138,7 @@ public class QueryParameters implements Serializable {
          *     {@link Integer }
          *     
          */
-        public int getRowSpan() {
+        public Integer getRowSpan() {
             return rowSpan;
         }
 

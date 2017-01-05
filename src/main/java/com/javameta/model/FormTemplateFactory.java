@@ -277,7 +277,11 @@ public class FormTemplateFactory {
 		}
 
 		int offset = (pageNo - 1) * pageSize;
-		String selectSql = "select " + StringUtils.join(columnNameLi.toArray(), ",") + " from " + bodySql + " limit " + offset + "," + pageSize;
+		String orderBy = "";
+		if (StringUtils.isNotEmpty(columnModel.getSqlOrderBy())) {
+				orderBy = " " + columnModel.getSqlOrderBy() + " ";
+		}
+		String selectSql = "select " + StringUtils.join(columnNameLi.toArray(), ",") + " from " + bodySql + orderBy + " limit " + offset + "," + pageSize;
 		List<Map<String, Object>> items = formTemplateDao.getNamedParameterJdbcTemplate().queryForList(selectSql, nameParameterMap);
 
 		result.put("totalCount", totalCount);

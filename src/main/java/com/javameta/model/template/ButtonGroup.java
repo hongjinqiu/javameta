@@ -144,7 +144,7 @@ public class ButtonGroup implements Serializable {
      * Gets the value of the columns property.
      * 
      */
-    public int getColumns() {
+    public Integer getColumns() {
         return columns;
     }
 

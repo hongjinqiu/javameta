@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+ -->
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>Bank</id>
+	<data-source-model-id>Bank</data-source-model-id>
+	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
+	<description>银行资料表单</description>
+	<scripts>bank/bankModel.js</scripts>
+	<view-template view="Console/FormSchema.html" />
+
+	<security byUnit="true" />
+
+	<toolbar>
+		<button name="listBtn" text="列表页" mode="url" handler="/console/listschema?@name=Bank" iconCls="but_box"></button>
+		<button name="newBtn" text="新增" mode="fn" handler="newData" iconCls="but_box"></button>
+		<button name="copyBtn" text="复制" mode="fn" handler="copyData" iconCls="but_box"></button>
+		<button name="editBtn" text="修改" mode="fn" handler="editData" iconCls="but_box"></button>
+		<button name="saveBtn" text="保存" mode="fn" handler="saveData" iconCls="but_box"></button>
+		<button name="giveUpBtn" text="放弃" mode="fn" handler="giveUpData" iconCls="but_box"></button>
+		<button name="delBtn" text="删除" mode="fn" handler="deleteData" iconCls="but_box"></button>
+		<button name="refreshBtn" text="刷新" mode="fn" handler="refreshData" iconCls="but_box"></button>
+		<button name="usedQueryBtn" text="被用查询" mode="fn" handler="logList" iconCls="but_box"></button>
+		<button text="查看配置" mode="url^" handler="/console/rawxmlcontent?@name=Bank&amp;type=Form" iconCls="but_box"></button>
+		<button text="查看配置" mode="url^" handler="/console/rawxmlcontent?@name=Bank&amp;type=Form" iconCls="but_box"></button>
+	</toolbar>
+	
+	<data-provider name="queryDataSetA" size="10" sqlIntercept="com.geeboo.cm.pub.query.CmMbQuerySqlIntercept">
+		<sql>   
+			SELECT *
+				 	FROM CM_MB_BUYPACKAGE T1
+				 	LEFT JOIN CM_MB_MEMBER T2 ON T2.MB_MEMBER_ID = T1.MEMBER_ID
+				 	LEFT JOIN CM_MB_MEMCARD T3 ON T3.MB_MEMCARD_ID=T2.MB_MEMCARD_ID
+				 	LEFT JOIN cm_customers T5 ON T5.CUSTOMERS_ID=T2.CUSTOMERS_ID
+				 	LEFT JOIN CM_CAR T6 ON T6.CAR_ID=T2.CAR_ID
+				 	LEFT JOIN CM_MB_ACTIVITY_PACKAGE T11 ON T11.MB_ACTIVITY_PACKAGE_ID=T1.ACTIVITY_PACKAGE_ID
+				 	LEFT JOIN HR_EMPLOYEE T12 ON T12.EMPLOYEE_ID=T1.HANDLE_BY
+				 	LEFT JOIN PUB_UNIT T13 ON T13.UNIT_ID=T1.HANDLE_UNIT
+				 	LEFT JOIN CM_MB_MEMCARD_GRADE G ON G.MB_MEMCARD_GRADE_ID = T3.MEMCARD_LEVEL
+ 		</sql>
+ 		<query-parameters dataSetId="A">
+ 			<query-parameter name="id" auto="true" dsFieldMap="" text=""></query-parameter>
+ 		</query-parameters>
+	</data-provider>
+
+	<column-model name="A_1" dataSetId="A" colSpan="4" dataProvider="queryDataSetA">
+		<id-column name="id" text="编号" hideable="true" />
+
+		<auto-column name="code" colSpan="2" labelWidth="15%" columnWidth="35%" />
+		<auto-column name="name" colSpan="2" labelWidth="15%" columnWidth="35%" />
+	</column-model>
+
+	<column-model name="A_2" dataSetId="A" colSpan="4">
+		<auto-column name="bankShort" colSpan="2" labelWidth="15%" columnWidth="35%" />
+		<auto-column name="linkman" colSpan="2" labelWidth="15%" columnWidth="35%" />
+		<auto-column name="bankUrl" colSpan="2" />
+		<auto-column name="linkPhone" colSpan="2" />
+		<auto-column name="cusPhone" colSpan="2" />
+		<auto-column name="complainPhone" colSpan="2" />
+		<auto-column name="bankAddress" colSpan="2" />
+	</column-model>
+
+	<column-model name="A_3" dataSetId="A" colSpan="4" dataProvider="queryDataSetA">
+		<auto-column name="createBy" colSpan="2" labelWidth="15%" columnWidth="35%" />
+		<auto-column name="createTime" colSpan="2" labelWidth="15%" />
+		<auto-column name="modifyBy" colSpan="2" />
+		<auto-column name="modifyTime" colSpan="2" />
+	</column-model>
+
+	<column-model name="A_4" dataSetId="A" colSpan="2" dataProvider="queryDataSetA">
+		<auto-column name="remark" colSpan="2" labelWidth="15%">
+			<column-attribute name="editor" value="textareafield" />
+		</auto-column>
+	</column-model>
+
+</form-template>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+ -->
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>BankAccount</id>
+	<data-source-model-id>BankAccount</data-source-model-id>
+	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
+	<description>银行账户表单</description>
+	<scripts>bankaccount/bankAccountModel.js</scripts>
+	<view-template view="Console/FormSchema.html" />
+	<security byUnit="true" />
+
+	<toolbar>
+		<button name="listBtn" text="列表页" mode="url" handler="/console/listschema?@name=BankAccount" iconCls="but_box"></button>
+		<button name="newBtn" text="新增" mode="fn" handler="newData" iconCls="but_box"></button>
+		<button name="copyBtn" text="复制" mode="fn" handler="copyData" iconCls="but_box"></button>
+		<button name="editBtn" text="修改" mode="fn" handler="editData" iconCls="but_box"></button>
+		<button name="saveBtn" text="保存" mode="fn" handler="saveData" iconCls="but_box"></button>
+		<button name="giveUpBtn" text="放弃" mode="fn" handler="giveUpData" iconCls="but_box"></button>
+		<button name="delBtn" text="删除" mode="fn" handler="deleteData" iconCls="but_box"></button>
+		<button name="refreshBtn" text="刷新" mode="fn" handler="refreshData" iconCls="but_box"></button>
+		<button name="usedQueryBtn" text="被用查询" mode="fn" handler="logList" iconCls="but_box"></button>
+		<button text="查看配置" mode="url^" handler="/console/rawxmlcontent?@name=BankAccount&amp;type=Form" iconCls="but_box"></button>
+	</toolbar>
+
+	<column-model name="A_1" dataSetId="A" colSpan="6">
+		<id-column name="id" text="编号" hideable="true" />
+
+		<auto-column name="code" colSpan="2" labelWidth="13%" columnWidth="20%" />
+		<auto-column name="name" colSpan="2" labelWidth="13%" columnWidth="20%" />
+		<auto-column name="mnemonicNo" colSpan="2" labelWidth="13%" />
+	</column-model>
+
+	<column-model name="A_2" dataSetId="A" colSpan="6">
+		<auto-column name="bankId" colSpan="2" labelWidth="13%" columnWidth="20%" />
+		<!-- <auto-column name="bankAccount" colSpan="2" labelWidth="13%" columnWidth="20%" /> -->
+		<auto-column name="linkBy" colSpan="2" labelWidth="13%" columnWidth="20%" />
+		<auto-column name="bankPhone" colSpan="2" labelWidth="13%" />
+		<auto-column name="bankAddress" colSpan="4" fieldWidth="75%" />
+		<auto-column name="cyberBankUrl" colSpan="2" />
+		<auto-column name="dutyBy" colSpan="2" />
+		<auto-column name="accountProperty" colSpan="2" />
+	</column-model>
+
+	<column-model name="B_1" dataSetId="B">
+		<toolbar>
+			<button name="selectRowBtn" text="选择" mode="fn" handler="g_selectRow" iconCls="but_box">
+				<relationDS>
+					<relationItem name="CurrencyType">
+						<relationExpr>true</relationExpr>
+						<relationConfig selectorName="CurrencyTypeSelector" displayField="code,name" valueField="id" selectionMode="multi" />
+						<copyConfig copyDescField="currencyTypeId" copySrcField="id" />
+					</relationItem>
+				</relationDS>
+			</button>
+			<button text="新增" mode="fn" handler="g_addRow" iconCls="but_box"></button>
+			<button text="编辑" mode="fn" handler="g_editRow" iconCls="but_box"></button>
+			<button text="删除" mode="fn" handler="g_removeRow" iconCls="but_box"></button>
+		</toolbar>
+		<editor-toolbar>
+			<button text="新增" mode="fn" handler="g_pluginAddRow" iconCls="but_box"></button>
+			<button text="删除" mode="fn" handler="g_pluginRemoveRow" iconCls="but_box"></button>
+		</editor-toolbar>
+		<checkbox-column name="checkboxSelect" hideable="false" />
+		<id-column name="id" text="编号" hideable="true" />
+		<virtual-column name="FUN_C" text="操作" width="60">
+			<buttons>
+				<button text="编辑" mode="fn" handler="g_editSingleRow" iconCls="img_edit"></button>
+				<!-- <button text="复制" mode="fn" handler="g_copyRow" iconCls="img_add"></button> -->
+				<button name="btn_delete" text="删除" mode="fn" handler="g_removeSingleRow" iconCls="img_delete"></button>
+			</buttons>
+		</virtual-column>
+		<!-- <virtual-column name="FUN_EDITOR" text="操作" use-in="editor" width="60"> <buttons> <button text="复制" mode="fn" handler="g_pluginCopyRow" iconCls="img_add"></button> <button text="删除" 
+			mode="fn" handler="g_pluginRemoveSingleRow" iconCls="img_delete"></button> </buttons> </virtual-column> -->
+		<auto-column name="currencyTypeId" />
+		<auto-column name="amtSecureBalance" />
+		<auto-column name="amtOriginalCurrencyBalance" />
+		<auto-column name="amtLimits" />
+		<auto-column name="limitsControl" />
+	</column-model>
+
+	<column-model name="A_3" dataSetId="A" colSpan="4">
+		<auto-column name="createBy" colSpan="2" labelWidth="15%" columnWidth="35%" />
+		<auto-column name="createTime" colSpan="2" labelWidth="15%" />
+		<auto-column name="modifyBy" colSpan="2" />
+		<auto-column name="modifyTime" colSpan="2" />
+	</column-model>
+
+	<column-model name="A_4" dataSetId="A" colSpan="2">
+		<auto-column name="remark" colSpan="2" labelWidth="15%">
+			<column-attribute name="editor" value="textareafield" />
+		</auto-column>
+	</column-model>
+
+</form-template>

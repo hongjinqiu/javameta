@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+ -->
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>BankSelector</id>
+	<cookie name="Bank" />
+	<data-source-model-id>Bank</data-source-model-id>
+
+	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
+	<description>银行资料列表</description>
+	<scripts>js/ds_listtoolbar.js</scripts>
+	<view-template view="Console/ListSchema.html" />
+
+	<!-- <security byUnit="true" /> -->
+
+	<toolbar export="true">
+		<button text="新增" mode="url" handler="/console/formschema?@name=Bank" iconCls="but_box" />
+
+		<button text="删除" mode="fn" handler="g_deleteRecords" iconCls="but_box">
+		</button>
+		<button text="查看配置" mode="url^" handler="/console/rawxmlcontent?@name=Bank&amp;type=Component" iconCls="but_box">
+		</button>
+	</toolbar>
+
+
+	<data-provider name="queryDataSetA" size="10">
+		<sql>   
+			SELECT *
+				 	FROM CM_MB_BUYPACKAGE T1
+				 	LEFT JOIN CM_MB_MEMBER T2 ON T2.MB_MEMBER_ID = T1.MEMBER_ID
+				 	LEFT JOIN CM_MB_MEMCARD T3 ON T3.MB_MEMCARD_ID=T2.MB_MEMCARD_ID
+				 	LEFT JOIN cm_customers T5 ON T5.CUSTOMERS_ID=T2.CUSTOMERS_ID
+				 	LEFT JOIN CM_CAR T6 ON T6.CAR_ID=T2.CAR_ID
+				 	LEFT JOIN CM_MB_ACTIVITY_PACKAGE T11 ON T11.MB_ACTIVITY_PACKAGE_ID=T1.ACTIVITY_PACKAGE_ID
+				 	LEFT JOIN HR_EMPLOYEE T12 ON T12.EMPLOYEE_ID=T1.HANDLE_BY
+				 	LEFT JOIN PUB_UNIT T13 ON T13.UNIT_ID=T1.HANDLE_UNIT
+				 	LEFT JOIN CM_MB_MEMCARD_GRADE G ON G.MB_MEMCARD_GRADE_ID = T3.MEMCARD_LEVEL
+ 		</sql>
+ 		<query-parameters dataSetId="A">
+			<query-parameter name="code" auto="true" text=""></query-parameter>
+			<query-parameter name="name" auto="true" text=""></query-parameter>
+			<query-parameter name="bankShort" auto="true" text=""></query-parameter>
+			<query-parameter name="linkman" auto="true" text=""></query-parameter>
+			<query-parameter name="linkPhone" auto="true" text=""></query-parameter>
+		</query-parameters>
+	</data-provider>
+
+	<column-model name="A_1" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行资料" selectionTemplate="{code},{name}" sqlOrderBy="code">
+		<checkbox-column name="checkboxSelect" hideable="false">
+			<expression></expression>
+		</checkbox-column>
+		<id-column name="id" text="编号" hideable="true" />
+
+		<virtual-column name="FUN_C" text="操作" width="120">
+			<buttons>
+				<button text="编辑" iconCls="img_edit" mode="url" handler="/console/formschema/?@name=Bank&amp;id={id}">
+				</button>
+				<button text="复制" iconCls="img_add" mode="url" handler="/console/formschema/?@name=Bank&amp;id={id}&amp;copyFlag=true">
+				</button>
+				<button name="btn_delete" text="删除" iconCls="img_delete" mode="fn" handler="g_deleteRecord">
+				</button>
+				<button name="btn_view" text="查看" iconCls="img_look" mode="url" handler="/console/formschema/?@name=Bank&amp;id={id}&amp;formStatus=view">
+				</button>
+			</buttons>
+		</virtual-column>
+
+		<auto-column name="code" />
+		<auto-column name="name" />
+		<auto-column name="bankShort" />
+		<auto-column name="linkman" />
+		<auto-column name="linkPhone" />
+	</column-model>
+
+</form-template>

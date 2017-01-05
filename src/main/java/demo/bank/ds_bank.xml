@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/datasource https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/datasource.xsd">
+ -->
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>Bank</id>
+	<displayName>银行资料</displayName>
+	<inUsedDenyEdit>false</inUsedDenyEdit>
+	<tableName></tableName>
+	<masterData>
+		<id>A</id>
+		<displayName>主数据集</displayName>
+		<allowCopy>true</allowCopy>
+		<fixField>
+			<primaryKey id="id" extends="PRIMARY_KEY" />
+			<createBy id="createBy" extends="CREATE_BY" />
+			<createTime id="createTime" extends="CREATE_TIME" />
+			<createUnit id="createUnit" extends="CREATE_UNIT" />
+			<modifyBy id="modifyBy" extends="MODIFY_BY" />
+			<modifyUnit id="modifyUnit" extends="MODIFY_UNIT" />
+			<modifyTime id="modifyTime" extends="MODIFY_TIME" />
+			<remark id="remark" extends="REMARK" />
+		</fixField>
+		<bizField>
+			<field id="" extends="code">
+			</field>
+			<field id="" extends="name">
+			</field>
+			<field id="" extends="bankShort">
+				<displayName>银行简称</displayName>
+			</field>
+			<field id="" extends="linkman">
+				<displayName>主要联系人</displayName>
+			</field>
+			<field id="" extends="bankUrl">
+			</field>
+			<field id="" extends="linkPhone">
+			</field>
+			<field id="" extends="cusPhone">
+			</field>
+			<field id="" extends="complainPhone">
+			</field>
+			<field id="" extends="bankAddress">
+				<displayName>银行地址</displayName>
+			</field>
+		</bizField>
+	</masterData>
+</datasource>

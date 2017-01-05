@@ -486,7 +486,7 @@ public class VirtualColumn extends Column implements Serializable {
      *     {@link Integer }
      *     
      */
-    public int getColSpan() {
+    public Integer getColSpan() {
         return colSpan;
     }
 

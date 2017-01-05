@@ -432,7 +432,7 @@ public class Button implements Serializable {
      *     {@link Integer }
      *     
      */
-    public int getRowspan() {
+    public Integer getRowspan() {
         return rowspan;
     }
 

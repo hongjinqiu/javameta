@@ -78,7 +78,7 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 							});
 						} else {// 实现dsFieldMap
 							if (StringUtils.isNotEmpty(queryParameter.getDsFieldMap())) {
-								String[] textLi = queryParameter.getDsFieldMap().split(".");
+								String[] textLi = queryParameter.getDsFieldMap().split("\\.");
 								if (textLi.length != 3) {
 									throw new JavametaException("dataProvider:" + dataProvider.getName() + ", dataSet:" + tmpQueryParameterDataSetId + ", queryParameter.Name:" + queryParameter.getName() + ", dsFieldMap:" + queryParameter.getDsFieldMap() + " apply failed, dsFieldMap.len != 3");
 								} else {
@@ -265,6 +265,9 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 	 * @param columnModel
 	 */
 	private void recursionApplyColumnModel(Datasource datasource, final ColumnModel columnModel) {
+		if (columnModel == null) {
+			System.out.println("null");
+		}
 		List<Column> columnLi = columnModel.getColumnList();
 		for (final Column column: columnLi) {
 			if ((column instanceof AutoColumn) || (column.getAuto() == null || column.getAuto())) {
@@ -284,7 +287,7 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 						}
 					});
 				} else {
-					String[] textLi = column.getDsFieldMap().split(".");
+					String[] textLi = column.getDsFieldMap().split("\\.");
 					if (textLi.length != 3) {
 						throw new JavametaException("dataSet:" + columnModel.getDataSetId() + ", column.Name:" + column.getName() + ", dsFieldMap:" + column.getDsFieldMap() + " apply failed, dsFieldMap.len != 3");
 					} else {
@@ -306,12 +309,12 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 			}
 			if (column instanceof AutoColumn) {
 				AutoColumn autoColumn = (AutoColumn) column;
-				if (!(autoColumn.getColumnModel() != null && autoColumn.getColumnModel().getColumnList().size() > 0)) {
+				if (autoColumn.getColumnModel() != null && autoColumn.getColumnModel().getColumnList().size() > 0) {
 					recursionApplyColumnModel(datasource, autoColumn.getColumnModel());
 				}
 			} else if (column instanceof StringColumn) {
 				StringColumn stringColumn = (StringColumn) column;
-				if (!(stringColumn.getColumnModel() != null && stringColumn.getColumnModel().getColumnList().size() > 0)) {
+				if (stringColumn.getColumnModel() != null && stringColumn.getColumnModel().getColumnList().size() > 0) {
 					recursionApplyColumnModel(datasource, stringColumn.getColumnModel());
 				}
 			}

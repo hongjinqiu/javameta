@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/datasource https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/datasource.xsd">
+ -->
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>BankAccount</id>
+	<displayName>银行账户</displayName>
+	<inUsedDenyEdit>false</inUsedDenyEdit>
+	<tableName></tableName>
+	<masterData>
+		<id>A</id>
+		<displayName>主数据集</displayName>
+		<allowCopy>true</allowCopy>
+		<fixField>
+			<primaryKey id="id" extends="PRIMARY_KEY" />
+			<createBy id="createBy" extends="CREATE_BY" />
+			<createTime id="createTime" extends="CREATE_TIME" />
+			<createUnit id="createUnit" extends="CREATE_UNIT" />
+			<modifyBy id="modifyBy" extends="MODIFY_BY" />
+			<modifyUnit id="modifyUnit" extends="MODIFY_UNIT" />
+			<modifyTime id="modifyTime" extends="MODIFY_TIME" />
+			<remark id="remark" extends="REMARK" />
+		</fixField>
+		<bizField>
+			<field id="" extends="code">
+			</field>
+			<field id="" extends="name">
+			</field>
+			<field id="" extends="mnemonicNo">
+			</field>
+			<field id="" extends="bankId">
+			</field>
+			<!-- <field id="" extends="bankAccount"> </field> -->
+			<field id="" extends="linkBy">
+			</field>
+			<field id="" extends="bankAddress">
+			</field>
+			<field id="" extends="bankPhone">
+			</field>
+			<field id="" extends="cyberBankUrl">
+			</field>
+			<field id="" extends="dutyBy">
+				<displayName>账户责任人</displayName>
+			</field>
+			<field id="accountProperty" extends="bankAccountProperty">
+			</field>
+		</bizField>
+	</masterData>
+	<detailData>
+		<id>B</id>
+		<displayName>账户币别</displayName>
+		<allowEmpty>true</allowEmpty>
+		<allowCopy>true</allowCopy>
+		<fixField>
+			<primaryKey id="id" extends="PRIMARY_KEY" />
+			<createBy id="createBy" extends="CREATE_BY" />
+			<createTime id="createTime" extends="CREATE_TIME" />
+			<createUnit id="createUnit" extends="CREATE_UNIT" />
+			<modifyBy id="modifyBy" extends="MODIFY_BY" />
+			<modifyUnit id="modifyUnit" extends="MODIFY_UNIT" />
+			<modifyTime id="modifyTime" extends="MODIFY_TIME" />
+			<remark id="remark" extends="REMARK" />
+		</fixField>
+		<bizField>
+			<field id="" extends="currencyTypeId">
+				<displayName>币别代码</displayName>
+				<allowCopy>true</allowCopy>
+				<allowDuplicate>false</allowDuplicate>
+				<zeroShowEmpty>true</zeroShowEmpty>
+			</field>
+			<field id="" extends="amtSecureBalance">
+			</field>
+			<field id="" extends="amtOriginalCurrencyBalance">
+			</field>
+			<field id="" extends="amtLimits">
+			</field>
+			<field id="" extends="limitsControl">
+			</field>
+		</bizField>
+	</detailData>
+</datasource>

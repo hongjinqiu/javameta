@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<list-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+ -->
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>BankAccount</id>
+	<cookie name="BankAccount" />
+	<data-source-model-id>BankAccount</data-source-model-id>
+
+	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
+	<description>银行账户列表</description>
+	<scripts>js/ds_listtoolbar.js</scripts>
+	<view-template view="Console/ListSchema.html" />
+
+	<!-- <security byUnit="true" /> -->
+
+	<toolbar export="true">
+		<button text="新增" mode="url" handler="/console/formschema?@name=BankAccount" iconCls="but_box" />
+
+		<button text="删除" mode="fn" handler="g_deleteRecords" iconCls="but_box">
+		</button>
+		<button text="查看配置" mode="url^" handler="/console/rawxmlcontent?@name=BankAccount&amp;type=Component" iconCls="but_box">
+		</button>	</toolbar>
+
+	<data-provider name="queryDataSetA" size="10">
+		<sql>
+			select * from bank_account
+			where 1=1
+		</sql>
+		<query-parameters dataSetId="A">
+			<query-parameter name="code" auto="true" text=""></query-parameter>
+			<query-parameter name="name" auto="true" text=""></query-parameter>
+			<query-parameter name="mnemonicNo" auto="true" text=""></query-parameter>
+			<query-parameter name="bankId" auto="true" text="">
+				<relationDS>
+					<relationItem name="Bank">
+						<relationConfig selectionMode="multi" />
+					</relationItem>
+				</relationDS>
+			</query-parameter>
+			<!-- <query-parameter name="bankAccount" auto="true" text=""></query-parameter> -->
+			<query-parameter name="linkBy" auto="true" text=""></query-parameter>
+			<query-parameter name="bankPhone" auto="true" text=""></query-parameter>
+			<query-parameter name="dutyBy" auto="true" text="">
+				<relationDS>
+					<relationItem name="SysUser">
+						<relationConfig selectionMode="multi" />
+					</relationItem>
+				</relationDS>
+			</query-parameter>
+			<query-parameter name="accountProperty" auto="true" text=""></query-parameter>
+		</query-parameters>
+	</data-provider>
+
+	<column-model name="A_1" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行账户" selectionTemplate="{code},{name}" sqlOrderBy="code">
+		<checkbox-column name="checkboxSelect" hideable="false">
+			<expression></expression>
+		</checkbox-column>
+		<id-column name="id" text="编号" hideable="true" />
+
+		<virtual-column name="FUN_C" text="操作" width="120">
+			<buttons>
+				<button text="编辑" iconCls="img_edit" mode="url" handler="/console/formschema/?@name=BankAccount&amp;id={id}">
+				</button>
+				<button text="复制" iconCls="img_add" mode="url" handler="/console/formschema/?@name=BankAccount&amp;id={id}&amp;copyFlag=true">
+				</button>
+				<button name="btn_delete" text="删除" iconCls="img_delete" mode="fn" handler="g_deleteRecord">
+				</button>
+				<button name="btn_view" text="查看" iconCls="img_look" mode="url" handler="/console/formschema/?@name=BankAccount&amp;id={id}&amp;formStatus=view">
+				</button>
+			</buttons>
+		</virtual-column>
+
+		<auto-column name="code" />
+		<auto-column name="name" />
+		<auto-column name="mnemonicNo" />
+		<auto-column name="bankId" />
+		<!-- <auto-column name="bankAccount" /> -->
+		<auto-column name="linkBy" />
+		<auto-column name="bankPhone" />
+		<auto-column name="dutyBy" />
+		<auto-column name="accountProperty" />
+	</column-model>
+
+</form-template>
