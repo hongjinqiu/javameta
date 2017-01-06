@@ -10,19 +10,22 @@
 <link rel="stylesheet" type="text/css" href="${webRoot}/webpage/css/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="${webRoot}/webpage/css/themes/icon.css">
 <script type="text/javascript" src="${webRoot}/webpage/js/jquery.min.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/js/stringifyjson.js"></script>
 <script type="text/javascript" src="${webRoot}/webpage/js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/js/locale/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript">
 	var sysParam = {};
 </script>
 <script type="text/javascript" src="${webRoot}/webpage/${formTemplate.scripts}"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/common.js"></script>
 <!-- 
 <script type="text/javascript" src="
 
 /app/comboview?
-js/moduleConfig.js
-js/common.js
-js/dataTableExtend.js
-js/dataTableDataSourceExtend.js
+js/moduleConfig.js							finish,不需要,都是YUI的配置,
+js/common.js								finish,
+js/dataTableExtend.js						
+js/dataTableDataSourceExtend.js				
 js/columnManager.js
 js/columnDataSourceManager.js
 js/ds_formtoolbar.js
@@ -37,6 +40,7 @@ js/templateService.js
 js/columnSequenceService.js
 js/formManager.js
 
+
 "></script>
  -->
 <script type="text/javascript">
@@ -48,7 +52,7 @@ js/formManager.js
 	<c:if test="${empty datasourceJson}">
 		var g_datasourceJson = null;
 	</c:if>
-	
+	var gatheringFormTemplateJsonData = ${gatheringFormTemplateJsonData};
 </script>
 </head>
 

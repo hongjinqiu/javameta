@@ -92,6 +92,12 @@ public class SchemaController extends ControllerSupport {
 		request.setAttribute("formTemplateJsonData", formTemplateJsonData.toString());
 		request.setAttribute("dataBoJson", dataBoJson.toString());
 		
+		{
+			FormTemplate gatheringFormTemplate = formTemplateFactory.getFormTemplate("GatheringBillForm", FormTemplateEnum.FORM);
+			JSONObject gatheringFormTemplateJsonData = JSONObject.fromObject(gatheringFormTemplate);
+			request.setAttribute("gatheringFormTemplateJsonData", gatheringFormTemplateJsonData.toString());
+		}
+		
 		String view = formTemplate.getViewTemplate().getView();
 		if (view.endsWith(".jsp")) {
 			view = view.replace(".jsp", "");
