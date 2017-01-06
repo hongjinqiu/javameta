@@ -3,14 +3,14 @@ function _recurionApplyCopyField(data, columnLi, columnName, columnValue) {
 	data[columnName] = columnValue;
 	var commonUtil = new CommonUtil();
 	for (var i = 0; i < columnLi.length; i++) {
-		if (columnLi[i].Name == columnName) {
+		if (columnLi[i].name == columnName) {
 			if (columnLi[i].XMLName.Local == "select-column") {
-				if (columnLi[i].CRelationDS) {
-					var relationItem = commonUtil.getCRelationItem(columnLi[i].CRelationDS, bo, data);
+				if (columnLi[i].relationDS) {
+					var relationItem = commonUtil.getCRelationItem(columnLi[i].relationDS, bo, data);
 					if (relationItem.CCopyConfigLi) {
 						for (var j = 0; j < relationItem.CCopyConfigLi.length; j++) {
 							var copyValueField = relationItem.CCopyConfigLi[j].CopyValueField;
-							var selectorDict = g_relationManager.getRelationBo(relationItem.CRelationConfig.SelectorName, columnValue);
+							var selectorDict = g_relationManager.getRelationBo(relationItem.relationConfig.selectorName, columnValue);
 							if (selectorDict) {
 								var copyColumnValue = selectorDict[copyValueField];
 								_recurionApplyCopyField(data, columnLi, relationItem.CCopyConfigLi[j].CopyColumnName, copyColumnValue);
@@ -25,9 +25,9 @@ function _recurionApplyCopyField(data, columnLi, columnName, columnValue) {
 
 function selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, inputValueLi) {
 	var selectValueLi = [];
-	if (button.CRelationDS && button.CRelationDS.CRelationItemLi) {
-		var relationItem = button.CRelationDS.CRelationItemLi[0];
-		var selectorName = relationItem.CRelationConfig.SelectorName;
+	if (button.relationDS && button.relationDS.relationItem) {
+		var relationItem = button.relationDS.relationItem[0];
+		var selectorName = relationItem.relationConfig.selectorName;
 		for (var i = 0; i < inputValueLi.length; i++) {
 			var selectorDict = g_relationManager.getRelationBo(selectorName, inputValueLi[i]);
 			selectValueLi.push(selectorDict);
@@ -47,8 +47,8 @@ function selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, inpu
 	});
 	for (var i = 0; i < selectValueLi.length; i++) {
 		var data = formManager.getDataSetNewData(dataSetId);
-		if (button.CRelationDS && button.CRelationDS.CRelationItemLi) {
-			var relationItem = button.CRelationDS.CRelationItemLi[0];
+		if (button.relationDS && button.relationDS.relationItem) {
+			var relationItem = button.relationDS.relationItem[0];
 			if (relationItem.CCopyConfigLi) {
 				for (var j = 0; j < relationItem.CCopyConfigLi.length; j++) {
 					var columnName = relationItem.CCopyConfigLi[j].CopyColumnName;

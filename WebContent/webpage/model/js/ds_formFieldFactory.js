@@ -8,9 +8,9 @@ FormFieldFactory.prototype.getFormField = function(Y, name, dataSetId) {
 	for (var i = 0; i < g_formTemplateJsonData.FormElemLi.length; i++) {
 		var formElem = g_formTemplateJsonData.FormElemLi[i];
 		if (formElem.XMLName.Local == "column-model") {
-			if (formElem.ColumnModel.DataSetId == dataSetId) {
+			if (formElem.ColumnModel.dataSetId == dataSetId) {
 				var flag = false;
-				if (formElem.ColumnModel.IdColumn.Name == name) {
+				if (formElem.ColumnModel.idColumn.name == name) {
 					field = new Y.PHiddenField({
 						name : name,
 						dataSetId: dataSetId,
@@ -19,7 +19,7 @@ FormFieldFactory.prototype.getFormField = function(Y, name, dataSetId) {
 				} else if (formElem.ColumnModel.ColumnLi) {
 					for (var j = 0; j < formElem.ColumnModel.ColumnLi.length; j++) {
 						var column = formElem.ColumnModel.ColumnLi[j];
-						if (column.Name == name) {
+						if (column.name == name) {
 							if (column.Hideable == "true") {
 								field = new Y.PHiddenField({
 									name : name,
@@ -30,7 +30,7 @@ FormFieldFactory.prototype.getFormField = function(Y, name, dataSetId) {
 								if (column.ColumnAttributeLi) {
 									for (var k = 0; k < column.ColumnAttributeLi.length; k++) {
 										var attribute = column.ColumnAttributeLi[k];
-										if (attribute.Name == "editor") {
+										if (attribute.name == "editor") {
 											field = self._getFieldByAttributeValue(Y, attribute.Value, name, dataSetId);
 											break;
 										}

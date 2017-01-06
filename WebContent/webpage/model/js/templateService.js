@@ -5,7 +5,7 @@ TemplateIterator.prototype._iterateTemplateColumn = function(dataSetId, result, 
 	for (var j = 0; j < g_formTemplateJsonData.FormElemLi.length; j++) {
 		var formElem = g_formTemplateJsonData.FormElemLi[j];
 		if (formElem.XMLName.Local == "column-model") {
-			if (formElem.ColumnModel.DataSetId == dataSetId) {
+			if (formElem.ColumnModel.dataSetId == dataSetId) {
 				if (formElem.ColumnModel.ColumnLi) {
 					var columnLi = [];
 					listTemplateIterator.recursionGetColumnItem(formElem.ColumnModel, columnLi);

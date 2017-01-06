@@ -18,15 +18,16 @@
 </script>
 <script type="text/javascript" src="${webRoot}/webpage/${formTemplate.scripts}"></script>
 <script type="text/javascript" src="${webRoot}/webpage/model/js/common.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/dataTableExtend.js"></script>
 <!-- 
 <script type="text/javascript" src="
 
 /app/comboview?
-js/moduleConfig.js							finish,不需要,都是YUI的配置,
+js/moduleConfig.js							finish,
 js/common.js								finish,
-js/dataTableExtend.js						
-js/dataTableDataSourceExtend.js				
-js/columnManager.js
+js/dataTableExtend.js						finish,但是还是需要大量修改,
+js/dataTableDataSourceExtend.js				finish,但是还是需要结合easyui做大量修改,				
+js/columnManager.js							running,---------,
 js/columnDataSourceManager.js
 js/ds_formtoolbar.js
 js/modelService.js

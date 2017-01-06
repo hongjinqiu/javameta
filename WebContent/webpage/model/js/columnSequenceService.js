@@ -10,26 +10,26 @@ ColumnSequenceService.prototype._buildSequenceStructDict = function(columnLi) {
 	var sequenceStructDict = {};
 	var columnDict = {};
 	for (var i = 0; i < columnLi.length; i++) {
-		if (columnLi[i].Name != "") {
-			columnDict[columnLi[i].Name] = columnLi[i];
+		if (columnLi[i].name != "") {
+			columnDict[columnLi[i].name] = columnLi[i];
 		}
 	}
 	for (var i = 0; i < columnLi.length; i++) {
-		if (columnLi[i].Name != "") {
+		if (columnLi[i].name != "") {
 			// 后继
 			var sequenceStruct = new SequenceStruct();
 			sequenceStruct.column = columnLi[i];
-			sequenceStructDict[columnLi[i].Name] = sequenceStruct;
+			sequenceStructDict[columnLi[i].name] = sequenceStruct;
 			
-			if (columnLi[i].CRelationDS && columnLi[i].CRelationDS.CRelationItemLi) {
-				for (var j = 0; j < columnLi[i].CRelationDS.CRelationItemLi.length; j++) {
-					var relationItem = columnLi[i].CRelationDS.CRelationItemLi[j];
+			if (columnLi[i].relationDS && columnLi[i].relationDS.relationItem) {
+				for (var j = 0; j < columnLi[i].relationDS.relationItem.length; j++) {
+					var relationItem = columnLi[i].relationDS.relationItem[j];
 					if (relationItem.CCopyConfigLi) {
 						for (var k = 0; k < relationItem.CCopyConfigLi.length; k++) {
 							var copyColumnName = relationItem.CCopyConfigLi[k].CopyColumnName;
 							var isIn = false;
 							for (var l = 0; l < sequenceStruct.postColumnLi.length; l++) {
-								if (sequenceStruct.postColumnLi[l].Name == copyColumnName) {
+								if (sequenceStruct.postColumnLi[l].name == copyColumnName) {
 									isIn = true;
 									break;
 								}
@@ -47,22 +47,22 @@ ColumnSequenceService.prototype._buildSequenceStructDict = function(columnLi) {
 			// 前驱
 			for (var j = 0; j < columnLi.length; j++) {
 				if (j != i) {
-					if (columnLi[j].CRelationDS && columnLi[j].CRelationDS.CRelationItemLi) {
-						for (var k = 0; k < columnLi[j].CRelationDS.CRelationItemLi.length; k++) {
-							var relationItem = columnLi[j].CRelationDS.CRelationItemLi[k];
+					if (columnLi[j].relationDS && columnLi[j].relationDS.relationItem) {
+						for (var k = 0; k < columnLi[j].relationDS.relationItem.length; k++) {
+							var relationItem = columnLi[j].relationDS.relationItem[k];
 							if (relationItem.CCopyConfigLi) {
 								for (var l = 0; l < relationItem.CCopyConfigLi.length; l++) {
 									var copyColumnName = relationItem.CCopyConfigLi[l].CopyColumnName;
 									var isIn = false;
 									for (var m = 0; m < sequenceStruct.preColumnLi.length; m++) {
-										if (sequenceStruct.preColumnLi[m].Name == copyColumnName) {
+										if (sequenceStruct.preColumnLi[m].name == copyColumnName) {
 											isIn = true;
 											break;
 										}
 									}
 									if (!isIn) {
-										if (copyColumnName == columnLi[i].Name && columnDict[columnLi[j].Name]) {
-											sequenceStruct.preColumnLi.push(columnDict[columnLi[j].Name]);
+										if (copyColumnName == columnLi[i].name && columnDict[columnLi[j].name]) {
+											sequenceStruct.preColumnLi.push(columnDict[columnLi[j].name]);
 										}
 									}
 								}
@@ -92,14 +92,14 @@ ColumnSequenceService.prototype.buildSequenceColumnLi = function(columnLi) {
 			}
 		}
 		for (var i = 0; i < result.length; i++) {
-			delete sequenceStructDictClone[result[i].Name];
+			delete sequenceStructDictClone[result[i].name];
 		}
 		for (var name in sequenceStructDictClone) {
 			var preColumnLi = [];
 			for (var i = 0; i < sequenceStructDictClone[name].preColumnLi.length; i++) {
 				var isIn = false;
 				for (var j = 0; j < result.length; j++) {
-					if (sequenceStructDictClone[name].preColumnLi[i].Name == result[j].Name) {
+					if (sequenceStructDictClone[name].preColumnLi[i].name == result[j].name) {
 						isIn = true;
 						break;
 					}

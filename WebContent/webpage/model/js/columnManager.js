@@ -3,159 +3,25 @@ var g_errorLog = {};
 function ColumnManager() {
 }
 
-ColumnManager.prototype._getCurrencyFormat = function(o, currencyField) {// 本行记录中是否存在对应币别
-	var prefix = null;
-	var decimalPlaces = null;
-	var currencyFieldColumnConfig = null;
-	var listTemplateIterator = new ListTemplateIterator();
-	var columnLi = [];
-	listTemplateIterator.recursionGetColumnItem(o.column.columnModel, columnLi);
-	for (var i = 0; i < columnLi.length; i++) {
-		if (columnLi[i].Name == currencyField) {
-			currencyFieldColumnConfig = columnLi[i];
-			break;
-		}
-	}
-	if (currencyFieldColumnConfig) {
-		var commonUtil = new CommonUtil();
-		var bo = {"A": o.data};
-		var relationItem = commonUtil.getCRelationItem(currencyFieldColumnConfig.CRelationDS, bo, o.data);
-		var selectorName = relationItem.CRelationConfig.SelectorName;
-		
-		var relationBo = g_relationManager.getRelationBo(selectorName, o.data[currencyField]);
-		if (relationBo) {
-			prefix = relationBo["currencyTypeSign"];
-			decimalPlaces = parseInt(relationBo["amtDecimals"]) - 1;
-		}
-	}
-	return {
-		prefix: prefix,
-		decimalPlaces: decimalPlaces
-	}
-}
-
 ColumnManager.prototype.isZeroShowEmpty = function(o) {
 	return o.column.zeroShowEmpty == "true" && (o.value == "0" || o.value == "00000000000000000000.0000000000");
 }
 
-ColumnManager.prototype.currencyFormatFunc = function(o) {
-	if (new ColumnManager().isZeroShowEmpty(o)) {
-		return "";
-	}
-	var self = this;
-	var yInst = self.yInst;
-	var formatConfig = null;
-	var currencyField = o.column.currencyField;
-	if (currencyField) {
-		var prefix = null;
-		var decimalPlaces = null;
-		if (o.column.isMoney == "true") {// 是否金额
-			if (sysParam[currencyField]) {// 本位币
-				prefix = sysParam[currencyField]["prefix"];
-				decimalPlaces = sysParam[currencyField]["decimalPlaces"];
-			}
-			if (o.data[currencyField]) {// 本行记录中是否存在对应币别
-				var currencyFormat = self._getCurrencyFormat(o, currencyField);
-				prefix = currencyFormat["prefix"];
-				decimalPlaces = currencyFormat["decimalPlaces"];
-			}
-		} else if (o.column.isUnitPrice == "true") {// 单价
-			if (sysParam[currencyField]) {// 本位币
-				prefix = sysParam[currencyField]["prefix"];
-				decimalPlaces = sysParam[currencyField]["unitPriceDecimalPlaces"];
-			}
-			if (o.data[currencyField]) {// 本行记录中是否存在对应币别
-				var currencyFormat = self._getCurrencyFormat(o, currencyField);
-				prefix = currencyFormat["prefix"];
-				decimalPlaces = currencyFormat["decimalPlaces"];
-			}
-		} else if (o.column.isCost == "true") {// 成本
-			if (sysParam[currencyField]) {// 本位币
-				prefix = sysParam[currencyField]["prefix"];
-				decimalPlaces = sysParam["unitCostDecimalPlaces"];
-			}
-			if (o.data[currencyField]) {// 本行记录中是否存在对应币别
-				var currencyFormat = self._getCurrencyFormat(o, currencyField);
-				prefix = currencyFormat["prefix"];
-				decimalPlaces = currencyFormat["decimalPlaces"];
-			}
-		} else {// 是否金额
-			if (sysParam[currencyField]) {// 本位币
-				prefix = sysParam[currencyField]["prefix"];
-				decimalPlaces = sysParam[currencyField]["decimalPlaces"];
-			}
-			if (o.data[currencyField]) {// 本行记录中是否存在对应币别
-				var currencyFormat = self._getCurrencyFormat(o, currencyField);
-				prefix = currencyFormat["prefix"];
-				decimalPlaces = currencyFormat["decimalPlaces"];
-			}
-		}
-
-		if (prefix !== null) {
-			var value = o.value;
-			if (typeof(o.value) == "string") {
-				value = parseFloat(value);
-			}
-			return yInst.DataType.Number.format(value, {
-				prefix : prefix,
-				decimalPlaces : decimalPlaces,
-				decimalSeparator : ".",
-				thousandsSeparator : sysParam.thousandsSeparator,
-				suffix : ""
-			});
-		} else {
-			if (!g_errorLog[o.column.key]) {
-				g_errorLog[o.column.key] = o.column.label;
-				console.log(o);
-				console.log("在系统参数和本行记录中,没有找到currencyField:" + currencyField);
-			}
-		}
-	} else if (o.column.isPercent == "true") {// 本位币
-		var value = o.value;
-		if (typeof(o.value) == "string") {
-			value = parseFloat(value);
-		}
-		return yInst.DataType.Number.format(value, {
-			prefix : "",
-			decimalPlaces : sysParam["percentDecimalPlaces"],
-			decimalSeparator : ".",
-			thousandsSeparator : sysParam.thousandsSeparator,
-			suffix : "%"
-		});
-	}
-	var value = o.value;
-	if (typeof(o.value) == "string") {
-		value = parseFloat(value);
-	}
-	return yInst.DataType.Number.format(value, {
-		//    	prefix            : o.column.prefix     || '￥',
-		//		decimalPlaces     : o.column.decimalPlaces      || 2,
-		//		decimalSeparator  : o.column.decimalSeparator   || '.',
-		//		thousandsSeparator: o.column.thousandsSeparator || ',',
-		//		suffix            : o.column.suffix || ''
-		prefix : o.column.prefix,
-		decimalPlaces : o.column.decimalPlaces,
-		decimalSeparator : o.column.decimalSeparator,
-		thousandsSeparator : o.column.thousandsSeparator,
-		suffix : o.column.suffix
-	});
-}
-
 ColumnManager.prototype.createIdColumn = function(columnModel) {
-	if (columnModel.IdColumn.Hideable != "true") {
+	if (columnModel.idColumn.Hideable != "true") {
 		return {
-			width: columnModel.IdColumn.Width || "",
-			key: columnModel.IdColumn.Name,
-			label: columnModel.IdColumn.Text
+			width: columnModel.idColumn.Width || "",
+			key: columnModel.idColumn.name,
+			label: columnModel.idColumn.Text
 		};
 	}
 	return null;
 }
 
 ColumnManager.prototype.createCheckboxColumn = function(columnModel) {
-	if (columnModel.CheckboxColumn.Hideable != "true") {
-		var key = columnModel.CheckboxColumn.Name;
-		if (columnModel.SelectionMode == "radio") {
+	if (columnModel.checkboxColumn.Hideable != "true") {
+		var key = columnModel.checkboxColumn.name;
+		if (columnModel.selectionMode == "radio") {
 			return {
 				width: "40",
 				key:        key,
@@ -198,13 +64,13 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 		var virtualColumn = columnModel.ColumnLi[i];
 		return {
 			width: columnModel.ColumnLi[i].Width || "",
-			key: columnModel.ColumnLi[i].Name,
+			key: columnModel.ColumnLi[i].name,
 			label: columnModel.ColumnLi[i].Text,
 			allowHTML:  true, // to avoid HTML escaping
 			formatter:      function(virtualColumn){
 				return function(o){
 					var htmlLi = [];
-//					htmlLi.push("<div class='btnWrapper_" + virtualColumn.Name + "'>");
+//					htmlLi.push("<div class='btnWrapper_" + virtualColumn.name + "'>");
 					var buttonBoLi = null;
 					if (o.value) {
 						buttonBoLi = o.value[virtualColumn.Buttons.XMLName.Local];
@@ -221,9 +87,9 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 							btnTemplate = "<a title='{value}' onclick='window.open(\"{href}\")' class='{class}' href='javascript:void(0);' style='display:block;' />";
 						}
 						if (!buttonBoLi || buttonBoLi[j]["isShow"]) {
-							var id = columnModel.IdColumn.Name;
-							var isUsed = g_usedCheck && g_usedCheck[columnModel.DataSetId] && g_usedCheck[columnModel.DataSetId][o.data[id]];
-							if (!(isUsed && virtualColumn.Buttons.ButtonLi[j].Name == "btn_delete")) {
+							var id = columnModel.idColumn.name;
+							var isUsed = g_usedCheck && g_usedCheck[columnModel.dataSetId] && g_usedCheck[columnModel.dataSetId][o.data[id]];
+							if (!(isUsed && virtualColumn.Buttons.ButtonLi[j].name == "btn_delete")) {
 								// handler进行值的预替换,
 								var Y = yInst;
 								var handler = virtualColumn.Buttons.ButtonLi[j].Handler;
@@ -281,7 +147,7 @@ ColumnManager.prototype.createNumberColumn = function(columnConfig, columnModel)
 	var zeroShowEmpty = columnConfig.ZeroShowEmpty == "true";
 	
 	/*
-	if (columnConfig.Name == "sequenceNo") {
+	if (columnConfig.name == "sequenceNo") {
 		console.log("sequence no");
 		console.log(isFormatter);
 		console.log(columnConfig.Prefix);
@@ -291,7 +157,7 @@ ColumnManager.prototype.createNumberColumn = function(columnConfig, columnModel)
 	if (isFormatter) {
 		return {
 			width: columnConfig.Width || "",
-			key: columnConfig.Name,
+			key: columnConfig.name,
 			label: columnConfig.Text,
 			formatter: yInst.bind(self.currencyFormatFunc, self),
 			
@@ -313,7 +179,7 @@ ColumnManager.prototype.createNumberColumn = function(columnConfig, columnModel)
 	if (zeroShowEmpty) {
 		return {
 			width: columnConfig.Width || "",
-			key: columnConfig.Name,
+			key: columnConfig.name,
 			label: columnConfig.Text,
 			formatter: function(o) {
 				if (o.value == "0") {
@@ -325,7 +191,7 @@ ColumnManager.prototype.createNumberColumn = function(columnConfig, columnModel)
 	}
 	return {
 		width: columnConfig.Width || "",
-		key: columnConfig.Name,
+		key: columnConfig.name,
 		label: columnConfig.Text
 	};
 }
@@ -352,7 +218,7 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 	if (dbPattern && displayPattern) {
 		return {
 			width: columnConfig.Width || "",
-			key: columnConfig.Name,
+			key: columnConfig.name,
 			label: columnConfig.Text,
 			dbPattern: dbPattern,
 			displayPattern: displayPattern,
@@ -411,8 +277,8 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 			}
 		};
 	} else {
-		if (!g_errorLog[columnConfig.Name]) {
-			g_errorLog[columnConfig.Name] = columnConfig.Text;
+		if (!g_errorLog[columnConfig.name]) {
+			g_errorLog[columnConfig.name] = columnConfig.Text;
 			console.log(columnConfig);
 			console.log("日期字段未同时配置dbPattern和displayPattern");
 		}
@@ -421,7 +287,7 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 	if (zeroShowEmpty) {
 		return {
 			width: columnConfig.Width || "",
-			key: columnConfig.Name,
+			key: columnConfig.name,
 			label: columnConfig.Text,
 			formatter: function(o) {
 				if (o.value == "0") {
@@ -433,7 +299,7 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 	}
 	return {
 		width: columnConfig.Width || "",
-		key: columnConfig.Name,
+		key: columnConfig.name,
 		label: columnConfig.Text
 	};
 }
@@ -441,7 +307,7 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 ColumnManager.prototype.createBooleanColumn = function(columnConfig) {
 	return {
 		width: columnConfig.Width || "",
-		key: columnConfig.Name,
+		key: columnConfig.name,
 		label: columnConfig.Text,
 		formatter: function(o) {
 			if (o.value + "" == "true") {
@@ -457,19 +323,19 @@ ColumnManager.prototype.createBooleanColumn = function(columnConfig) {
 ColumnManager.prototype.createDictionaryColumn = function(columnConfig) {
 	return {
 		width: columnConfig.Width || "",
-		key: columnConfig.Name,
+		key: columnConfig.name,
 		label: columnConfig.Text,
 		formatter: function(o) {
 			if (g_layerBo[columnConfig.Dictionary] && g_layerBo[columnConfig.Dictionary][o.value]) {
 				return g_layerBo[columnConfig.Dictionary][o.value].name;
 			}
-			if (!g_errorLog[columnConfig.Name + "_DICTIONARY_NAME"]) {
-				g_errorLog[columnConfig.Name + "_DICTIONARY_NAME"] = columnConfig.Name;
+			if (!g_errorLog[columnConfig.name + "_DICTIONARY_NAME"]) {
+				g_errorLog[columnConfig.name + "_DICTIONARY_NAME"] = columnConfig.name;
 				console.log(o);
 				console.log(o.data);
 				console.log(columnConfig);
-				console.log(columnConfig.Name);
-				console.log("字典字段没找到,columnName:" + columnConfig.Name + ", dictionaryName:" + columnConfig.Dictionary + ",code:" + o.value);
+				console.log(columnConfig.name);
+				console.log("字典字段没找到,columnName:" + columnConfig.name + ", dictionaryName:" + columnConfig.Dictionary + ",code:" + o.value);
 			}
 			return o.value;
 		}
@@ -480,7 +346,7 @@ ColumnManager.prototype.createSelectColumn = function(columnConfig) {
 	var self = this;
 	return {
 		width: columnConfig.Width || "",
-		key: columnConfig.Name,
+		key: columnConfig.name,
 		label: columnConfig.Text,
 		allowHTML:  true,
 		zeroShowEmpty: columnConfig.ZeroShowEmpty,
@@ -490,19 +356,19 @@ ColumnManager.prototype.createSelectColumn = function(columnConfig) {
 			}
 			var commonUtil = new CommonUtil();
 			var bo = {"A": o.data};
-			var relationItem = commonUtil.getCRelationItem(columnConfig.CRelationDS, bo, o.data);
+			var relationItem = commonUtil.getCRelationItem(columnConfig.relationDS, bo, o.data);
 			if (!relationItem) {
-				if (!g_errorLog[columnConfig.Name]) {
-					g_errorLog[columnConfig.Name] = columnConfig.Name;
+				if (!g_errorLog[columnConfig.name]) {
+					g_errorLog[columnConfig.name] = columnConfig.name;
 					console.log(o);
 					console.log(o.data);
 					console.log(columnConfig);
-					console.log(columnConfig.Name);
+					console.log(columnConfig.name);
 					console.log("未找到匹配的relationItem，有可能配置错误，目标referenceDataSourceModelId为:" + o.data.referenceDataSourceModelId);
 				}
 			}
-			var selectorName = relationItem.CRelationConfig.SelectorName;
-			var displayField = relationItem.CRelationConfig.DisplayField;
+			var selectorName = relationItem.relationConfig.selectorName;
+			var displayField = relationItem.relationConfig.displayField;
 			var selectorData = g_relationManager.getRelationBo(selectorName, o.value);
 			if (selectorData) {
 				var valueLi = [];
@@ -521,13 +387,13 @@ ColumnManager.prototype.createSelectColumn = function(columnConfig) {
         		html.push('<a class="etrigger_view selectIndent" href="javascript:void(0);" title="查看" onclick="' + jsAction + '"></a>');
         		return html.join("");
 			} else {
-				if (!g_errorLog[columnConfig.Name]) {
-					g_errorLog[columnConfig.Name] = columnConfig.Name;
+				if (!g_errorLog[columnConfig.name]) {
+					g_errorLog[columnConfig.name] = columnConfig.name;
 					console.log(o);
 					console.log(o.data);
 					console.log(columnConfig);
-					console.log(columnConfig.Name);
-					console.log("关联object未找到,columnName:" + columnConfig.Name + ", selectorName:" + selectorName + ",id:" + o.value);
+					console.log(columnConfig.name);
+					console.log("关联object未找到,columnName:" + columnConfig.name + ", selectorName:" + selectorName + ",id:" + o.value);
 				}
 			}
 			return o.value;
@@ -579,7 +445,7 @@ ColumnManager.prototype.createColumn = function(columnConfig, columnModel) {
 		}
 		return {
 			width: columnConfig.Width || "",
-			key: columnConfig.Name,
+			key: columnConfig.name,
 			label: columnConfig.Text
 		};
 	}

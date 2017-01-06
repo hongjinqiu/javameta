@@ -102,7 +102,7 @@ ModelTemplateFactory.prototype._applyRelationFieldValue = function(dataSource) {
 			}
 			var relationItem = fieldGroup.RelationDS.RelationItemLi[0];
 			var triggerConfig = {
-				displayField: commonUtil.getFuncOrString(relationItem.DisplayField),
+				displayField: commonUtil.getFuncOrString(relationItem.displayField),
 				valueField: commonUtil.getFuncOrString(relationItem.ValueField),
 				selectorName: commonUtil.getFuncOrString(relationItem.Id),
 				selectionMode: "single"

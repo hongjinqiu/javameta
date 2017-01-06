@@ -127,9 +127,20 @@
 		<auto-column name="linkman" colSpan="2" />
 		<auto-column name="linkPhone" colSpan="2" />
 	</column-model>
-
+	
 	<column-model name="B_1" dataSetId="B" rownumber="false" dataProvider="queryDataSetB">
 		<toolbar>
+			<button name="selectRowBtn" text="选择" mode="fn" handler="g_selectRow" iconCls="but_box">
+				<relationDS>
+					<relationItem name="BankAccountCurrencyType"><!-- 需要修改从 BankAccountCurrencyType 中查找 -->
+						<relationExpr>true</relationExpr>
+						<relationConfig selectorName="BankAccountCurrencyTypeSelector" displayField="code,name" valueField="id" selectionMode="multi" />
+						<copyConfig copyDescField="bankAccountBId" copySrcField="bankAccountBId" />
+						<copyConfig copyDescField="accountId" copySrcField="bankAccountId" />
+						<copyConfig copyDescField="currencyTypeId" copySrcField="currencyTypeId" />
+					</relationItem>
+				</relationDS>
+			</button>
 			<button text="新增" mode="fn" handler="g_addRow" iconCls="but_box"></button>
 			<button text="编辑" mode="fn" handler="g_editRow" iconCls="but_box"></button>
 			<button text="删除" mode="fn" handler="g_removeRow" iconCls="but_box"></button>

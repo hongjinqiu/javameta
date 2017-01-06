@@ -45,7 +45,7 @@ FormManager.prototype.validateReadonly = function(formObj, val, Y) {
 	var validateResult = true;
 	
 	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
-		if (column.Name == self.get("name")) {
+		if (column.name == self.get("name")) {
 			if (column.FixReadOnly == "true" && !val) {
 				validateResult = false;
 			}
@@ -91,7 +91,7 @@ FormManager.prototype.initializeAttr = function(formObj, Y) {
     	var result = "";
     	var dataSetId = self.get("dataSetId");
     	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
-    		if (column.Name == self.get("name")) {
+    		if (column.name == self.get("name")) {
     			if (column.FixReadOnly == "true") {
     				self.set("readonly", true);
     			} else if (column.ReadOnly == "true") {
@@ -137,7 +137,7 @@ FormManager.prototype._getCurrencyFormat = function(dataSetId, currencyField, fi
 	var result = "";
 	
 	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
-		if (column.Name == currencyField) {
+		if (column.name == currencyField) {
 			currencyFieldColumnConfig = column;
 			return true;
 		}
@@ -151,8 +151,8 @@ FormManager.prototype._getCurrencyFormat = function(dataSetId, currencyField, fi
 		for (var item in fieldDict) {
 			data[item] = fieldDict[item].get("value");
 		}
-		var relationItem = commonUtil.getCRelationItem(currencyFieldColumnConfig.CRelationDS, bo, data);
-		var selectorName = relationItem.CRelationConfig.SelectorName;
+		var relationItem = commonUtil.getCRelationItem(currencyFieldColumnConfig.relationDS, bo, data);
+		var selectorName = relationItem.relationConfig.selectorName;
 		
 		var relationBo = g_relationManager.getRelationBo(selectorName, data[currencyField]);
 		if (relationBo) {
@@ -176,7 +176,7 @@ FormManager.prototype.applyNumberDisplayPattern = function(formObj, Y) {
 	var dataSetId = self.get("dataSetId");
 	
 	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
-		if (column.Name == self.get("name")) {
+		if (column.name == self.get("name")) {
 			var currencyField = column.CurrencyField;
 			if (currencyField) {
 				self.set("displayPattern", function(formObj, column, Y){
@@ -351,10 +351,10 @@ FormManager.prototype.applyEventBehavior = function(formObj, Y) {
 	var templateIterator = new TemplateIterator();
 	var result = "";
 	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
-		if (column.Name == name) {
+		if (column.name == name) {
 			if (column.ColumnAttributeLi) {
 				for (var i = 0; i < column.ColumnAttributeLi.length; i++) {
-					if (column.ColumnAttributeLi[i].Name == "observe") {
+					if (column.ColumnAttributeLi[i].name == "observe") {
 						var observeFields = column.ColumnAttributeLi[i].Value.split(",");
 						if (dataSetId == "A") {
 							self.after("valueChange", function() {
@@ -395,7 +395,7 @@ FormManager.prototype.setChoices = function(formObj) {
     	var result = "";
     	var dataSetId = self.get("dataSetId");
     	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
-    		if (column.Name == self.get("name")) {
+    		if (column.name == self.get("name")) {
     			if (g_layerBoLi[column.Dictionary]) {
 					for (var k = 0; k < g_layerBoLi[column.Dictionary].length; k++) {
 						var dictionaryItem = g_layerBoLi[column.Dictionary][k];
@@ -647,7 +647,7 @@ FormManager.prototype._getDateSeperator = function(dataSetId, name) {
 	var templateIterator = new TemplateIterator();
 	var result = "";
 	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
-		if (column.Name == name) {
+		if (column.name == name) {
 			if (column.XMLName.Local == "date-column") {
 				if (column.DisplayPattern.indexOf("-") > -1) {
 					dateSeperator = "-";
@@ -858,13 +858,13 @@ FormManager.prototype._setDetailGridStatus = function(status) {
 				templateIterator.iterateAnyTemplateColumn(dataSet.Id, result, function(column, result){
 					if (column.XMLName.Local == "virtual-column") {
 						if (status == "view") {
-							var virtualColumn = g_gridPanelDict[dataSet.Id].dt.getColumn(column.Name);
+							var virtualColumn = g_gridPanelDict[dataSet.Id].dt.getColumn(column.name);
 							if (virtualColumn) {
 								g_gridPanelDict[dataSet.Id].virtualColumn = virtualColumn;
-								g_gridPanelDict[dataSet.Id].dt.removeColumn(column.Name);
+								g_gridPanelDict[dataSet.Id].dt.removeColumn(column.name);
 							}
 						} else {
-							var virtualColumn = g_gridPanelDict[dataSet.Id].dt.getColumn(column.Name);
+							var virtualColumn = g_gridPanelDict[dataSet.Id].dt.getColumn(column.name);
 							if (!virtualColumn) {
 								virtualColumn = g_gridPanelDict[dataSet.Id].virtualColumn;
 								if (virtualColumn) {
