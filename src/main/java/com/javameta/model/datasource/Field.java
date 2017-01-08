@@ -1605,4 +1605,14 @@ public class Field implements Serializable {
 		this.datasourceId = datasourceId;
 	}
 
+	@XmlTransient
+    private String xmlName = "field";
+
+    public String getXmlName() {
+		return xmlName;
+	}
+
+	public void setXmlName(String xmlName) {
+		this.xmlName = xmlName;
+	}
 }

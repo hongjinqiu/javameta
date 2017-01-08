@@ -46,7 +46,7 @@ FormManager.prototype.validateReadonly = function(formObj, val, Y) {
 	
 	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
 		if (column.name == self.get("name")) {
-			if (column.FixReadOnly == "true" && !val) {
+			if (column.FixReadOnly && !val) {
 				validateResult = false;
 			}
 			return true;
@@ -56,14 +56,14 @@ FormManager.prototype.validateReadonly = function(formObj, val, Y) {
 
 	// 验证被用
 	if (validateResult) {
-		var modelIterator = new ModelIterator();
+		var datasourceIterator = new DatasourceIterator();
 		var result = "";
-		modelIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
-			if (fieldGroup.getDataSetId() == dataSetId && fieldGroup.Id == self.get("name")) {
+		datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+			if (fieldGroup.getDataSetId() == dataSetId && fieldGroup.id == self.get("name")) {
 				var usedFormManager = new FormManager();
 				var isUsed = usedFormManager.getDataIsUsedForFormObj(formObj);
 				if (isUsed && !val) {
-					if (fieldGroup.DenyEditInUsed == "true") {
+					if (fieldGroup.DenyEditInUsed) {
 						validateResult = false;
 					}
 				}
@@ -77,11 +77,11 @@ FormManager.prototype.validateReadonly = function(formObj, val, Y) {
 FormManager.prototype.initializeAttr = function(formObj, Y) {
 	var self = formObj;
 	if (g_dataSourceJson) {
-    	var modelIterator = new ModelIterator();
+    	var datasourceIterator = new DatasourceIterator();
     	var result = "";
-    	modelIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
-    		if (fieldGroup.Id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
-    			if (fieldGroup.AllowEmpty != "true") {
+    	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+    		if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
+    			if (fieldGroup.allowEmpty != true) {
     				self.set("required", true);
     			}
     		}
@@ -92,12 +92,12 @@ FormManager.prototype.initializeAttr = function(formObj, Y) {
     	var dataSetId = self.get("dataSetId");
     	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
     		if (column.name == self.get("name")) {
-    			if (column.FixReadOnly == "true") {
+    			if (column.FixReadOnly) {
     				self.set("readonly", true);
-    			} else if (column.ReadOnly == "true") {
+    			} else if (column.ReadOnly) {
     				self.set("readonly", true);
     			}
-    			if (column.ZeroShowEmpty == "true") {
+    			if (column.zeroShowEmpty) {
     				self.set("zeroShowEmpty", true);
     			}
     			if (column.FieldWidth != "") {
@@ -151,7 +151,7 @@ FormManager.prototype._getCurrencyFormat = function(dataSetId, currencyField, fi
 		for (var item in fieldDict) {
 			data[item] = fieldDict[item].get("value");
 		}
-		var relationItem = commonUtil.getCRelationItem(currencyFieldColumnConfig.relationDS, bo, data);
+		var relationItem = commonUtil.getRelationItem(currencyFieldColumnConfig.relationDS, bo, data);
 		var selectorName = relationItem.relationConfig.selectorName;
 		
 		var relationBo = g_relationManager.getRelationBo(selectorName, data[currencyField]);
@@ -191,7 +191,7 @@ FormManager.prototype.applyNumberDisplayPattern = function(formObj, Y) {
 						var currencyField = column.CurrencyField;
 						var prefix = null;
 						var decimalPlaces = null;
-						if (column.IsMoney == "true") {// 是否金额
+						if (column.IsMoney) {// 是否金额
 							if (sysParam[currencyField]) {// 本位币
 								prefix = sysParam[currencyField]["prefix"];
 								decimalPlaces = sysParam[currencyField]["decimalPlaces"];
@@ -201,7 +201,7 @@ FormManager.prototype.applyNumberDisplayPattern = function(formObj, Y) {
 								prefix = currencyFormat["prefix"];
 								decimalPlaces = currencyFormat["decimalPlaces"];
 							}
-						} else if (column.IsUnitPrice == "true") {// 单价
+						} else if (column.IsUnitPrice) {// 单价
 							if (sysParam[currencyField]) {// 本位币
 								prefix = sysParam[currencyField]["prefix"];
 								decimalPlaces = sysParam[currencyField]["unitPriceDecimalPlaces"];
@@ -211,7 +211,7 @@ FormManager.prototype.applyNumberDisplayPattern = function(formObj, Y) {
 								prefix = currencyFormat["prefix"];
 								decimalPlaces = currencyFormat["decimalPlaces"];
 							}
-						} else if (column.IsCost == "true") {// 成本
+						} else if (column.IsCost) {// 成本
 							if (sysParam[currencyField]) {// 本位币
 								prefix = sysParam[currencyField]["prefix"];
 								decimalPlaces = sysParam["unitCostDecimalPlaces"];
@@ -246,7 +246,7 @@ FormManager.prototype.applyNumberDisplayPattern = function(formObj, Y) {
 						}
 					};
 				}(formObj, column, Y));
-			} else if (column.IsPercent == "true") {
+			} else if (column.IsPercent) {
 				self.set("displayPattern", function(formObj, column, Y){
 					return function(value) {
 						var self = formObj;
@@ -303,13 +303,13 @@ FormManager.prototype.updateSingleFieldAttr4GlobalParam = function(formObj, Y) {
 	if (g_dataSourceJson) {
 		// 被用,赋值readonly=true
 		if (self.get("readonly") !== true) {
-			var modelIterator = new ModelIterator();
+			var datasourceIterator = new DatasourceIterator();
 			var result = "";
-			modelIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
-				if (fieldGroup.Id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
+			datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+				if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
 					var usedFormManager = new FormManager();
 					var isUsed = usedFormManager.getDataIsUsedForFormObj(formObj);
-					if (isUsed && fieldGroup.DenyEditInUsed == "true") {
+					if (isUsed && fieldGroup.DenyEditInUsed) {
 						self.set("readonly", true);
 					}
 				}
@@ -324,10 +324,10 @@ FormManager.prototype.applyEventBehavior = function(formObj, Y) {
 	var dataSetId = self.get("dataSetId");
 	var name = self.get("name");
 	// 应用上js相关的操作,
-    var modelIterator = new ModelIterator();
+    var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	modelIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
-		if (fieldGroup.Id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
+	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+		if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
 			if (fieldGroup.jsConfig && fieldGroup.jsConfig.listeners) {
 				for (var key in fieldGroup.jsConfig.listeners) {
 					if (key == "valueChange") {
@@ -396,9 +396,9 @@ FormManager.prototype.setChoices = function(formObj) {
     	var dataSetId = self.get("dataSetId");
     	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
     		if (column.name == self.get("name")) {
-    			if (g_layerBoLi[column.Dictionary]) {
-					for (var k = 0; k < g_layerBoLi[column.Dictionary].length; k++) {
-						var dictionaryItem = g_layerBoLi[column.Dictionary][k];
+    			if (g_layerBoLi[column.dictionary]) {
+					for (var k = 0; k < g_layerBoLi[column.dictionary].length; k++) {
+						var dictionaryItem = g_layerBoLi[column.dictionary][k];
 						choices.push({
 							value: dictionaryItem["code"],
 							label: dictionaryItem["name"]
@@ -414,7 +414,7 @@ FormManager.prototype.setChoices = function(formObj) {
 }
 
 FormManager.prototype.getBo = function() {
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var dataSource = g_dataSourceJson;
 	var bo = {"A": {}};
 	var result = "";
@@ -424,8 +424,8 @@ FormManager.prototype.getBo = function() {
 			bo["A"][key] = formFieldObj.get("value");
 		}
 	}
-	modelIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
-		var dataSetId = dataSet.Id;
+	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+		var dataSetId = dataSet.id;
 		if (dataSetId != "A") {
 			var gridObj = g_gridPanelDict[dataSetId];
 			if (gridObj) {
@@ -453,9 +453,9 @@ FormManager.prototype.getDataSetNewData = function(dataSetId) {
 	modelTemplateFactory.applyDataSetCalcValue(dataSource, dataSetId, bo, data);
 	
 	var result = "";
-	var modelIterator = new ModelIterator();
-	modelIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
-		if (dataSet.Id == dataSetId) {
+	var datasourceIterator = new DatasourceIterator();
+	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+		if (dataSet.id == dataSetId) {
 			if (dataSet.jsConfig && dataSet.jsConfig.afterNewData) {
 				dataSet.jsConfig.afterNewData(bo, data);
 			}
@@ -476,9 +476,9 @@ FormManager.prototype.getDataSetCopyData = function(dataSetId, srcData) {
 	modelTemplateFactory.applyDataSetCalcValue(dataSource, dataSetId, bo, destData);
 	
 	var result = "";
-	var modelIterator = new ModelIterator();
-	modelIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
-		if (dataSet.Id == dataSetId) {
+	var datasourceIterator = new DatasourceIterator();
+	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+		if (dataSet.id == dataSetId) {
 			if (dataSet.jsConfig && dataSet.jsConfig.afterNewData) {
 				dataSet.jsConfig.afterNewData(bo, destData);
 			}
@@ -496,7 +496,7 @@ FormManager.prototype.getDataSetCopyData = function(dataSetId, srcData) {
  */
 FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fieldGroup) {
 	var messageLi = [];
-	if (fieldGroup.AllowEmpty != "true") {
+	if (fieldGroup.allowEmpty != true) {
 		if (value === "" || value === null || value === undefined) {
 			messageLi.push("不允许为空");
 			return messageLi;
@@ -511,7 +511,7 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 	isDataTypeNumber = isDataTypeNumber || fieldGroup.FieldDataType == "MONEY";
 	isDataTypeNumber = isDataTypeNumber || fieldGroup.FieldDataType == "SMALLINT";
 	
-	if (fieldGroup.AllowEmpty != "true") {
+	if (fieldGroup.allowEmpty != true) {
 		if (isDataTypeNumber && (value == "0")) {
 			messageLi.push("不允许为空");
 			return messageLi;
@@ -528,7 +528,7 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 		}
 	}
 	if (isDataTypeNumber && isDate) {
-		var isAllowEmptyAndZero = fieldGroup.AllowEmpty == "true" && (value == "0" || value == "");
+		var isAllowEmptyAndZero = fieldGroup.allowEmpty && (value == "0" || value == "");
 		if (fieldGroup.FieldNumberType == "YEAR") {
 			if (!/^\d{4}$/.test(value) && !isAllowEmptyAndZero) {
 				messageLi.push("格式错误，正确格式类似于：1970");
@@ -579,7 +579,7 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 		if (fieldGroup.RelationDS && fieldGroup.RelationDS.RelationItemLi && fieldGroup.RelationDS.RelationItemLi.length > 0) {
 			regexp = /^-?[\d,]*(\.\d*)?$/;
 		}
-		if (fieldGroup.Id != "id" && !regexp.test(value)) {
+		if (fieldGroup.id != "id" && !regexp.test(value)) {
 			messageLi.push("必须由数字小数点组成");
 			return messageLi;
 		}
@@ -623,13 +623,13 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
  */
 FormManager.prototype.dsFormFieldValidator = function(value, formFieldObj) {
 	var self = this;
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var messageLi = [];
 	var result = "";
 	var formManager = new FormManager();
-	modelIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
-		if (fieldGroup.Id == formFieldObj.get("name") && fieldGroup.getDataSetId() == formFieldObj.get("dataSetId")) {
-			var dateSeperator = formManager._getDateSeperator(fieldGroup.getDataSetId(), fieldGroup.Id);
+	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+		if (fieldGroup.id == formFieldObj.get("name") && fieldGroup.getDataSetId() == formFieldObj.get("dataSetId")) {
+			var dateSeperator = formManager._getDateSeperator(fieldGroup.getDataSetId(), fieldGroup.id);
 			messageLi = formManager.dsFieldGroupValidator(value, dateSeperator, fieldGroup);
 		}
 	});
@@ -648,10 +648,10 @@ FormManager.prototype._getDateSeperator = function(dataSetId, name) {
 	var result = "";
 	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
 		if (column.name == name) {
-			if (column.XMLName.Local == "date-column") {
-				if (column.DisplayPattern.indexOf("-") > -1) {
+			if (column.xmlName == "date-column") {
+				if (column.displayPattern.indexOf("-") > -1) {
 					dateSeperator = "-";
-				} else if (column.DisplayPattern.indexOf("/") > -1) {
+				} else if (column.displayPattern.indexOf("/") > -1) {
 					dateSeperator = "/";
 				}
 			}
@@ -663,16 +663,16 @@ FormManager.prototype._getDateSeperator = function(dataSetId, name) {
 }
 
 FormManager.prototype.dsFormValidator = function(dataSource, bo) {
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var messageLi = [];
 	var masterMessageLi = [];
 	var detailMessageDict = {};
 	var result = "";
 	var formManager = new FormManager();
-	modelIterator.iterateAllFieldBo(dataSource, bo, result, function(fieldGroup, data, rowIndex, result){
+	datasourceIterator.iterateAllFieldBo(dataSource, bo, result, function(fieldGroup, data, rowIndex, result){
 		if (fieldGroup.isMasterField()) {
-			var formFieldObj = g_masterFormFieldDict[fieldGroup.Id];
-			var value = data[fieldGroup.Id];
+			var formFieldObj = g_masterFormFieldDict[fieldGroup.id];
+			var value = data[fieldGroup.id];
 			if (value !== undefined && formFieldObj) {
 				if(!formManager.dsFormFieldValidator(value, formFieldObj)) {
 //					messageLi.push(fieldGroup.DisplayName + formFieldObj.get("error"));
@@ -680,9 +680,9 @@ FormManager.prototype.dsFormValidator = function(dataSource, bo) {
 				}
 			}
 		} else {
-			var value = data[fieldGroup.Id];
+			var value = data[fieldGroup.id];
 			if (value !== undefined) {
-				var dateSeperator = formManager._getDateSeperator(fieldGroup.getDataSetId(), fieldGroup.Id);
+				var dateSeperator = formManager._getDateSeperator(fieldGroup.getDataSetId(), fieldGroup.id);
 				var lineMessageLi = formManager.dsFieldGroupValidator(value, dateSeperator, fieldGroup);
 				if (lineMessageLi.length > 0) {
 //					messageLi.push("序号为" + (rowIndex + 1) + "的分录，" + fieldGroup.DisplayName + lineMessageLi.join("，"));
@@ -695,43 +695,43 @@ FormManager.prototype.dsFormValidator = function(dataSource, bo) {
 		}
 	});
 	
-	modelIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
 		if (dataSet.jsConfig && dataSet.jsConfig.validateEdit) {
-			var dataSetBo = bo[dataSet.Id];
+			var dataSetBo = bo[dataSet.id];
 			var validateEditMessageLi = dataSet.jsConfig.validateEdit(dataSetBo);
 //			if (validateEditMessageLi.length > 0){
 //				messageLi.push(dataSet.DisplayName + "错误信息：");
 //			}
 			for (var i = 0; i < validateEditMessageLi.length; i++) {
 //				messageLi.push(validateEditMessageLi[i]);
-				if (dataSet.Id == "A") {
+				if (dataSet.id == "A") {
 					masterMessageLi.push(validateEditMessageLi[i]);
 				} else {
-					if (!detailMessageDict[dataSet.Id]) {
-						detailMessageDict[dataSet.Id] = [];
+					if (!detailMessageDict[dataSet.id]) {
+						detailMessageDict[dataSet.id] = [];
 					}
-					detailMessageDict[dataSet.Id].push(validateEditMessageLi[i]);
+					detailMessageDict[dataSet.id].push(validateEditMessageLi[i]);
 				}
 			}
 		}
 	});
 	
-	modelIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
-		if (dataSet.Id != "A" && dataSet.AllowEmpty == "false") {
+	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+		if (dataSet.id != "A" && dataSet.allowEmpty == "false") {
 			var isEmpty = false;
-			if (!bo[dataSet.Id]) {
+			if (!bo[dataSet.id]) {
 				isEmpty = true;
 			} else {
-				if (bo[dataSet.Id].length == 0) {
+				if (bo[dataSet.id].length == 0) {
 					isEmpty = true;
 				}
 			}
 			if (isEmpty) {
 //				messageLi.push("分录:"+dataSet.DisplayName+"不允许为空");
-				if (!detailMessageDict[dataSet.Id]) {
-					detailMessageDict[dataSet.Id] = [];
+				if (!detailMessageDict[dataSet.id]) {
+					detailMessageDict[dataSet.id] = [];
 				}
-				detailMessageDict[dataSet.Id].push("分录"+dataSet.DisplayName+"不允许为空");
+				detailMessageDict[dataSet.id].push("分录"+dataSet.DisplayName+"不允许为空");
 			}
 		}
 	});
@@ -741,8 +741,8 @@ FormManager.prototype.dsFormValidator = function(dataSource, bo) {
 	}
 	
 	// 合计数据集错误信息到messageLi中
-	modelIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
-		if (dataSet.Id == "A") {
+	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+		if (dataSet.id == "A") {
 			if (masterMessageLi.length > 0) {
 				messageLi.push(dataSet.DisplayName + "错误信息：");
 				for (var i = 0; i < masterMessageLi.length; i++) {
@@ -750,10 +750,10 @@ FormManager.prototype.dsFormValidator = function(dataSource, bo) {
 				}
 			}
 		} else {
-			if (detailMessageDict[dataSet.Id] && detailMessageDict[dataSet.Id].length > 0) {
+			if (detailMessageDict[dataSet.id] && detailMessageDict[dataSet.id].length > 0) {
 				messageLi.push(dataSet.DisplayName + "错误信息：");
-				for (var i = 0; i < detailMessageDict[dataSet.Id].length; i++) {
-					messageLi.push(detailMessageDict[dataSet.Id][i]);
+				for (var i = 0; i < detailMessageDict[dataSet.id].length; i++) {
+					messageLi.push(detailMessageDict[dataSet.id][i]);
 				}
 			}
 		}
@@ -773,9 +773,9 @@ FormManager.prototype.dsFormValidator = function(dataSource, bo) {
 FormManager.prototype.dsDetailValidator = function(dataSource, dataSetId, detailDataLi) {
 	var bo = {};
 	bo[dataSetId] = detailDataLi;
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	modelIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
 		if (dataSet == "A") {
 			bo["A"] = {};
 		} else if (!bo[dataSet]) {
@@ -785,11 +785,11 @@ FormManager.prototype.dsDetailValidator = function(dataSource, dataSetId, detail
 	
 	var messageLi = [];
 	var formManager = new FormManager();
-	modelIterator.iterateAllFieldBo(dataSource, bo, result, function(fieldGroup, data, rowIndex, result){
+	datasourceIterator.iterateAllFieldBo(dataSource, bo, result, function(fieldGroup, data, rowIndex, result){
 		if (!fieldGroup.isMasterField() && fieldGroup.getDataSetId() == dataSetId) {
 			var formFieldDict = g_gridPanelDict[dataSetId + "_addrow"].dt.getRecord(rowIndex).formFieldDict;
-			var formFieldObj = formFieldDict[fieldGroup.Id];
-			var value = data[fieldGroup.Id];
+			var formFieldObj = formFieldDict[fieldGroup.id];
+			var value = data[fieldGroup.id];
 			if (value !== undefined && formFieldObj) {
 				if(!formManager.dsFormFieldValidator(value, formFieldObj)) {
 					messageLi.push("序号为" + (rowIndex + 1) + "的分录，" + fieldGroup.DisplayName + formFieldObj.get("error"));
@@ -800,8 +800,8 @@ FormManager.prototype.dsDetailValidator = function(dataSource, dataSetId, detail
 	
 	// apply model.js validateEdit 函数
 	var result = "";
-	modelIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
-		if (dataSet.Id == dataSetId) {
+	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+		if (dataSet.id == dataSetId) {
 			if (dataSet.jsConfig && dataSet.jsConfig.validateEdit) {
 				var validateEditMessageLi = dataSet.jsConfig.validateEdit(detailDataLi);
 				for (var i = 0; i < validateEditMessageLi.length; i++) {
@@ -839,12 +839,12 @@ FormManager.prototype._setMasterFormFieldStatus = function(status) {
 }
 
 FormManager.prototype._setDetailGridStatus = function(status) {
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = "";
 	var dataSource = g_dataSourceJson;
-	modelIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
-		if (dataSet.Id != "A") {
-			var tbar = document.getElementById(dataSet.Id + "_tbar");
+	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+		if (dataSet.id != "A") {
+			var tbar = document.getElementById(dataSet.id + "_tbar");
 			if (tbar) {
 				if (status == "view") {
 					tbar.style.display = "none";
@@ -852,23 +852,23 @@ FormManager.prototype._setDetailGridStatus = function(status) {
 					tbar.style.display = "";
 				}
 			}
-			var detailGrid = g_gridPanelDict[dataSet.Id];
+			var detailGrid = g_gridPanelDict[dataSet.id];
 			if (detailGrid) {
 				var templateIterator = new TemplateIterator();
-				templateIterator.iterateAnyTemplateColumn(dataSet.Id, result, function(column, result){
-					if (column.XMLName.Local == "virtual-column") {
+				templateIterator.iterateAnyTemplateColumn(dataSet.id, result, function(column, result){
+					if (column.xmlName == "virtual-column") {
 						if (status == "view") {
-							var virtualColumn = g_gridPanelDict[dataSet.Id].dt.getColumn(column.name);
+							var virtualColumn = g_gridPanelDict[dataSet.id].dt.getColumn(column.name);
 							if (virtualColumn) {
-								g_gridPanelDict[dataSet.Id].virtualColumn = virtualColumn;
-								g_gridPanelDict[dataSet.Id].dt.removeColumn(column.name);
+								g_gridPanelDict[dataSet.id].virtualColumn = virtualColumn;
+								g_gridPanelDict[dataSet.id].dt.removeColumn(column.name);
 							}
 						} else {
-							var virtualColumn = g_gridPanelDict[dataSet.Id].dt.getColumn(column.name);
+							var virtualColumn = g_gridPanelDict[dataSet.id].dt.getColumn(column.name);
 							if (!virtualColumn) {
-								virtualColumn = g_gridPanelDict[dataSet.Id].virtualColumn;
+								virtualColumn = g_gridPanelDict[dataSet.id].virtualColumn;
 								if (virtualColumn) {
-									g_gridPanelDict[dataSet.Id].dt.addColumn(virtualColumn, 1);
+									g_gridPanelDict[dataSet.id].dt.addColumn(virtualColumn, 1);
 								}
 							}
 						}
@@ -891,17 +891,17 @@ FormManager.prototype.applyGlobalParamFromAjaxData = function(o) {
  * 需要按dataSource的顺序来加载字段值,否则计算表格式时会出错
  */
 FormManager.prototype.loadData2Form = function(dataSource, bo) {
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = "";
 	if (bo["A"]) {
 		var keyInMaster = [];
 		// 遍历主数据集字段,按顺序加载值
-		modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+		datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
 			if (fieldGroup.getDataSetId() == "A") {
-				if (g_masterFormFieldDict[fieldGroup.Id]) {
-					g_masterFormFieldDict[fieldGroup.Id].set("value", bo["A"][fieldGroup.Id] || "");
+				if (g_masterFormFieldDict[fieldGroup.id]) {
+					g_masterFormFieldDict[fieldGroup.id].set("value", bo["A"][fieldGroup.id] || "");
 				}
-				keyInMaster.push(fieldGroup.Id);
+				keyInMaster.push(fieldGroup.id);
 			}
 		});
 		for (var key in bo["A"]) {
@@ -919,13 +919,13 @@ FormManager.prototype.loadData2Form = function(dataSource, bo) {
 			}
 		}
 	}
-	modelIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
-		if (dataSet.Id != "A") {
-			if (g_gridPanelDict[dataSet.Id]) {
-				if (bo[dataSet.Id] !== undefined) {
-					g_gridPanelDict[dataSet.Id].dt.set("data", bo[dataSet.Id]);
+	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+		if (dataSet.id != "A") {
+			if (g_gridPanelDict[dataSet.id]) {
+				if (bo[dataSet.id] !== undefined) {
+					g_gridPanelDict[dataSet.id].dt.set("data", bo[dataSet.id]);
 				} else {
-					g_gridPanelDict[dataSet.Id].dt.set("data", []);
+					g_gridPanelDict[dataSet.id].dt.set("data", []);
 				}
 			}
 		}
@@ -949,9 +949,9 @@ FormManager.prototype.getFieldDict = function(formObj) {
 
 FormManager.prototype.setDetailIncId = function(dataSource, bo) {
 	var modelTemplateFactory = new ModelTemplateFactory();
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	modelIterator.iterateDataBo(dataSource, bo, result, function(fieldGroupLi, data, rowIndex, result) {
+	datasourceIterator.iterateDataBo(dataSource, bo, result, function(fieldGroupLi, data, rowIndex, result) {
 		if (!fieldGroupLi[0].isMasterField()) {
 			if (data["id"] == "0" || data["id"] == "") {
 				data["id"] = modelTemplateFactory.getSequenceNo();

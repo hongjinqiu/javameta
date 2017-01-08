@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -60,6 +61,9 @@ public class CheckboxColumn implements Serializable {
     @XmlAttribute(required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String name;
+    
+    @XmlTransient
+    private String xmlName = "checkbox-column";
 
     /**
      * Gets the value of the expression property.
@@ -157,5 +161,13 @@ public class CheckboxColumn implements Serializable {
     public void setName(String value) {
         this.name = value;
     }
+
+	public String getXmlName() {
+		return xmlName;
+	}
+
+	public void setXmlName(String xmlName) {
+		this.xmlName = xmlName;
+	}
 
 }

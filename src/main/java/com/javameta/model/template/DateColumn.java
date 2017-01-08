@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -104,6 +105,8 @@ public class DateColumn extends Column implements Serializable {
     @XmlAttribute
     protected Integer colSpan;
     @XmlAttribute
+    protected Integer rowSpan;
+    @XmlAttribute
     @XmlSchemaType(name = "anySimpleType")
     protected String width;
     @XmlAttribute
@@ -147,6 +150,9 @@ public class DateColumn extends Column implements Serializable {
     protected Boolean fixReadOnly;
     @XmlAttribute
     protected Boolean zeroShowEmpty;
+    
+    @XmlTransient
+    private String xmlName = "date-column";
 
     /**
      * Gets the value of the editor property.
@@ -963,5 +969,21 @@ public class DateColumn extends Column implements Serializable {
     public void setZeroShowEmpty(Boolean value) {
         this.zeroShowEmpty = value;
     }
+
+	public String getXmlName() {
+		return xmlName;
+	}
+
+	public void setXmlName(String xmlName) {
+		this.xmlName = xmlName;
+	}
+
+	public Integer getRowSpan() {
+		return rowSpan;
+	}
+
+	public void setRowSpan(Integer rowSpan) {
+		this.rowSpan = rowSpan;
+	}
 
 }

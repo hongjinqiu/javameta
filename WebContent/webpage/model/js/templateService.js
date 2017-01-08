@@ -4,11 +4,11 @@ TemplateIterator.prototype._iterateTemplateColumn = function(dataSetId, result, 
 	var listTemplateIterator = new ListTemplateIterator();
 	for (var j = 0; j < g_formTemplateJsonData.FormElemLi.length; j++) {
 		var formElem = g_formTemplateJsonData.FormElemLi[j];
-		if (formElem.XMLName.Local == "column-model") {
-			if (formElem.ColumnModel.dataSetId == dataSetId) {
-				if (formElem.ColumnModel.ColumnLi) {
+		if (formElem.xmlName == "column-model") {
+			if (formElem.columnModel.dataSetId == dataSetId) {
+				if (formElem.columnModel.columnList) {
 					var columnLi = [];
-					listTemplateIterator.recursionGetColumnItem(formElem.ColumnModel, columnLi);
+					listTemplateIterator.recursionGetColumnItem(formElem.columnModel, columnLi);
 					for (var k = 0; k < columnLi.length; k++) {
 						var column = columnLi[k];
 						var iterateResult = iterateFunc(column, result);
@@ -43,8 +43,8 @@ TemplateIterator.prototype.iterateAnyTemplateColumn = function(dataSetId, result
 TemplateIterator.prototype._iterateTemplateColumnModel = function(result, isContinue, iterateFunc) {
 	for (var j = 0; j < g_formTemplateJsonData.FormElemLi.length; j++) {
 		var formElem = g_formTemplateJsonData.FormElemLi[j];
-		if (formElem.XMLName.Local == "column-model") {
-			var iterateResult = iterateFunc(formElem.ColumnModel, result);
+		if (formElem.xmlName == "column-model") {
+			var iterateResult = iterateFunc(formElem.columnModel, result);
 			if (!isContinue && iterateResult) {
 				return;
 			}
@@ -76,43 +76,43 @@ TemplateIterator.prototype.iterateAnyTemplateColumnModel = function(result, iter
 TemplateIterator.prototype._iterateTemplateButton = function(result, isContinue, iterateFunc) {
 	for (var j = 0; j < g_formTemplateJsonData.FormElemLi.length; j++) {
 		var formElem = g_formTemplateJsonData.FormElemLi[j];
-		if (formElem.XMLName.Local == "toolbar") {
-			if (formElem.Toolbar && formElem.Toolbar.ButtonLi) {
-				for (var k = 0; k < formElem.Toolbar.ButtonLi.length; k++) {
-					var button = formElem.Toolbar.ButtonLi[k];
-					var iterateResult = iterateFunc(formElem.Toolbar, button, result);
+		if (formElem.xmlName == "toolbar") {
+			if (formElem.toolbar && formElem.toolbar.buttonGroupOrButtonOrSplitButton) {
+				for (var k = 0; k < formElem.toolbar.buttonGroupOrButtonOrSplitButton.length; k++) {
+					var button = formElem.toolbar.buttonGroupOrButtonOrSplitButton[k];
+					var iterateResult = iterateFunc(formElem.toolbar, button, result);
 					if (!isContinue && iterateResult) {
 						return;
 					}
 				}
 			}
-		} else if (formElem.XMLName.Local == "column-model") {
-			if (formElem.ColumnModel.Toolbar && formElem.ColumnModel.Toolbar.ButtonLi) {
-				for (var k = 0; k < formElem.ColumnModel.Toolbar.ButtonLi.length; k++) {
-					var button = formElem.ColumnModel.Toolbar.ButtonLi[k];
-					var iterateResult = iterateFunc(formElem.ColumnModel, button, result);
+		} else if (formElem.xmlName == "column-model") {
+			if (formElem.columnModel.toolbar && formElem.columnModel.toolbar.buttonGroupOrButtonOrSplitButton) {
+				for (var k = 0; k < formElem.columnModel.toolbar.buttonGroupOrButtonOrSplitButton.length; k++) {
+					var button = formElem.columnModel.toolbar.buttonGroupOrButtonOrSplitButton[k];
+					var iterateResult = iterateFunc(formElem.columnModel, button, result);
 					if (!isContinue && iterateResult) {
 						return;
 					}
 				}
 			}
-			if (formElem.ColumnModel.EditorToolbar && formElem.ColumnModel.EditorToolbar.ButtonLi) {
-				for (var k = 0; k < formElem.ColumnModel.EditorToolbar.ButtonLi.length; k++) {
-					var button = formElem.ColumnModel.EditorToolbar.ButtonLi[k];
-					var iterateResult = iterateFunc(formElem.ColumnModel, button, result);
+			if (formElem.columnModel.editorToolbar && formElem.columnModel.editorToolbar.buttonGroupOrButtonOrSplitButton) {
+				for (var k = 0; k < formElem.columnModel.editorToolbar.buttonGroupOrButtonOrSplitButton.length; k++) {
+					var button = formElem.columnModel.editorToolbar.buttonGroupOrButtonOrSplitButton[k];
+					var iterateResult = iterateFunc(formElem.columnModel, button, result);
 					if (!isContinue && iterateResult) {
 						return;
 					}
 				}
 			}
-			if (formElem.ColumnModel.ColumnLi) {
-				for (var k = 0; k < formElem.ColumnModel.ColumnLi.length; k++) {
-					var column = formElem.ColumnModel.ColumnLi[k];
-					if (column.XMLName.Local == "virtual-column") {
-						if (column.Buttons && column.Buttons.ButtonLi) {
-							for (var l = 0; l < column.Buttons.ButtonLi.length; l++) {
-								var button = column.Buttons.ButtonLi[l];
-								var iterateResult = iterateFunc(formElem.ColumnModel, button, result);
+			if (formElem.columnModel.columnList) {
+				for (var k = 0; k < formElem.columnModel.columnList.length; k++) {
+					var column = formElem.columnModel.columnList[k];
+					if (column.xmlName == "virtual-column") {
+						if (column.buttons && column.buttons.button) {
+							for (var l = 0; l < column.buttons.button.length; l++) {
+								var button = column.buttons.button[l];
+								var iterateResult = iterateFunc(formElem.columnModel, button, result);
 								if (!isContinue && iterateResult) {
 									return;
 								}

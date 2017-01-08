@@ -28,32 +28,32 @@ var doPopupConfirm = function() {
 };
 
 // 渲染工具栏按钮
-if (self.param.columnModel.EditorToolbar && self.param.columnModel.EditorToolbar.ButtonLi) {
-	for (var i = 0; i < self.param.columnModel.EditorToolbar.ButtonLi.length; i++) {
+if (self.param.columnModel.editorToolbar && self.param.columnModel.editorToolbar.buttonGroupOrButtonOrSplitButton) {
+	for (var i = 0; i < self.param.columnModel.editorToolbar.buttonGroupOrButtonOrSplitButton.length; i++) {
 		var btnTemplate = null;
 		var replObj = {};
-		var button = self.param.columnModel.EditorToolbar.ButtonLi[i];
+		var button = self.param.columnModel.editorToolbar.buttonGroupOrButtonOrSplitButton[i];
 		if (button.Mode == "fn") {
 			btnTemplate = "<input type='button' value='{value}' class='{class}' onclick='{fnName}(\"{columnModelName}\")'/>";
 			replObj = {
-				value: button.Text,
-				"class": button.IconCls,
-				fnName: button.Handler,
+				value: button.text,
+				"class": button.iconCls,
+				fnName: button.handler,
 				columnModelName: self.param.columnModelName
 			};
 		} else if (button.Mode == "url") {
 			btnTemplate = "<input type='button' value='{value}' onclick='location.href=\"{href}\"' class='{class}' />";
 			replObj = {
-				value: button.Text,
-				href: button.Handler,
-				"class": button.IconCls
+				value: button.text,
+				href: button.handler,
+				"class": button.iconCls
 			};
 		} else {
 			btnTemplate = "<input type='button' value='{value}' onclick='window.open(\"{href}\")' class='{class}' />";
 			replObj = {
-				value: button.Text,
-				href: button.Handler,
-				"class": button.IconCls
+				value: button.text,
+				href: button.handler,
+				"class": button.iconCls
 			};
 		}
 		if (btnTemplate) {

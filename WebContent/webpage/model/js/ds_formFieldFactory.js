@@ -7,20 +7,20 @@ FormFieldFactory.prototype.getFormField = function(Y, name, dataSetId) {
 	// 从column-attribute里面读取
 	for (var i = 0; i < g_formTemplateJsonData.FormElemLi.length; i++) {
 		var formElem = g_formTemplateJsonData.FormElemLi[i];
-		if (formElem.XMLName.Local == "column-model") {
-			if (formElem.ColumnModel.dataSetId == dataSetId) {
+		if (formElem.xmlName == "column-model") {
+			if (formElem.columnModel.dataSetId == dataSetId) {
 				var flag = false;
-				if (formElem.ColumnModel.idColumn.name == name) {
+				if (formElem.columnModel.idColumn.name == name) {
 					field = new Y.PHiddenField({
 						name : name,
 						dataSetId: dataSetId,
 						validateInline: true
 					});
-				} else if (formElem.ColumnModel.ColumnLi) {
-					for (var j = 0; j < formElem.ColumnModel.ColumnLi.length; j++) {
-						var column = formElem.ColumnModel.ColumnLi[j];
+				} else if (formElem.columnModel.columnList) {
+					for (var j = 0; j < formElem.columnModel.columnList.length; j++) {
+						var column = formElem.columnModel.columnList[j];
 						if (column.name == name) {
-							if (column.Hideable == "true") {
+							if (column.hideable) {
 								field = new Y.PHiddenField({
 									name : name,
 									dataSetId: dataSetId,
@@ -38,7 +38,7 @@ FormFieldFactory.prototype.getFormField = function(Y, name, dataSetId) {
 								}
 								
 								if (field == null) {
-									field = self._getFieldByColumnName(Y, column.XMLName.Local, name, dataSetId);
+									field = self._getFieldByColumnName(Y, column.xmlName, name, dataSetId);
 								}
 							}
 							

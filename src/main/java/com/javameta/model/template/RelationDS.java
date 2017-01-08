@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
@@ -674,4 +675,14 @@ public class RelationDS implements Serializable {
 		this.relationItem = relationItem;
 	}
 
+	@XmlTransient
+    private String xmlName = "relationDS";
+
+    public String getXmlName() {
+		return xmlName;
+	}
+
+	public void setXmlName(String xmlName) {
+		this.xmlName = xmlName;
+	}
 }

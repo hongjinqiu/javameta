@@ -485,12 +485,14 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 		if (column instanceof AutoColumn) {
 			Column oldColumn = column;
 			column = getColumn(field);
+			String origXmlName = column.getXmlName();
 			try {
 				BeanUtils.copyProperties(column, oldColumn);
 			} catch (Exception e) {
 				throw new JavametaException(e);
 			}
 			column.setAuto(true);
+			column.setXmlName(origXmlName);
 			columnModel.replaceColumn(oldColumn, column);
 		}
 		if (StringUtils.isEmpty(column.getText())) {

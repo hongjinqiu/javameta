@@ -637,6 +637,7 @@
 			</annotation>
 		</attribute>
 		<attribute name="colSpan" type="int" default="1"></attribute>
+		<attribute name="rowSpan" type="int" default="1"></attribute>
 		<attribute name="width" />
 		<attribute name="fieldWidth" />
 		<attribute name="fieldHeight" />
@@ -943,6 +944,7 @@
 		<attribute name="rendererTemplate"></attribute>
 		<attribute name="editorRendererTemplate"></attribute>
 		<attribute name="colSpan" type="int" default="4"></attribute>
+		<attribute name="rowSpan" type="int" default="1"></attribute>
 	</attributeGroup>
 
 	<element name="query-parameters">

@@ -10,19 +10,19 @@ ListTemplateIterator.prototype.recursionGetColumnItem = function(columnModel, co
 
 ListTemplateIterator.prototype._recursionGetColumnItem = function(columnModel, columnLi) {
 	var self = this;
-	for (var i = 0; i < columnModel.ColumnLi.length; i++) {
-		var columnItem = columnModel.ColumnLi[i];
-		if (columnItem.ColumnModel && columnItem.ColumnModel.ColumnLi && columnItem.ColumnModel.ColumnLi.length > 0) {
-			self._recursionGetColumnItem(columnItem.ColumnModel, columnLi);
+	for (var i = 0; i < columnModel.columnList.length; i++) {
+		var columnItem = columnModel.columnList[i];
+		if (columnItem.columnModel && columnItem.columnModel.columnList && columnItem.columnModel.columnList.length > 0) {
+			self._recursionGetColumnItem(columnItem.columnModel, columnLi);
 		}
-		columnLi.push(columnModel.ColumnLi[i]);
+		columnLi.push(columnModel.columnList[i]);
 	}
 }
 
 ListTemplateIterator.prototype._iterateTemplateColumn = function(result, isContinue, iterateFunc) {
 	var self = this;
 	var columnLi = [];
-	self._recursionGetColumnItem(listTemplate.ColumnModel, columnLi);
+	self._recursionGetColumnItem(listTemplate.columnModel, columnLi);
 	for (var i = 0; i < columnLi.length; i++) {
 		var column = columnLi[i];
 		var iterateResult = iterateFunc(column);

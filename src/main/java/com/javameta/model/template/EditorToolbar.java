@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -90,6 +91,9 @@ public class EditorToolbar extends Toolbar implements Serializable {
     protected String exportTitle;
     @XmlAttribute
     protected String exportSuffix;
+    
+    @XmlTransient
+    private String xmlName = "editor-toolbar";
 
     /**
      * Gets the value of the buttonGroupOrButtonOrSplitButton property.
@@ -401,5 +405,13 @@ public class EditorToolbar extends Toolbar implements Serializable {
     public void setExportSuffix(String value) {
         this.exportSuffix = value;
     }
+
+	public String getXmlName() {
+		return xmlName;
+	}
+
+	public void setXmlName(String xmlName) {
+		this.xmlName = xmlName;
+	}
 
 }

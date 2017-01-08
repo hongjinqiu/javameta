@@ -13,8 +13,8 @@ ModelTemplateFactory.prototype._applyReverseRelation = function(dataSource) {
 	}
 	dataSource.MasterData.FixField.Parent = dataSource.MasterData;
 	dataSource.MasterData.BizField.Parent = dataSource.MasterData;
-	var modelIterator = new ModelIterator();
-	var masterFixFieldLi = modelIterator.getFixFieldLi(dataSource.MasterData.FixField);
+	var datasourceIterator = new DatasourceIterator();
+	var masterFixFieldLi = datasourceIterator.getFixFieldLi(dataSource.MasterData.FixField);
 	for (var i = 0; i < masterFixFieldLi.length; i++) {
 		masterFixFieldLi[i].Parent = dataSource.MasterData.FixField;
 	}
@@ -26,7 +26,7 @@ ModelTemplateFactory.prototype._applyReverseRelation = function(dataSource) {
 			dataSource.DetailDataLi[i].FixField.Parent = dataSource.DetailDataLi[i];
 			dataSource.DetailDataLi[i].BizField.Parent = dataSource.DetailDataLi[i];
 			
-			var detailFixFieldLi = modelIterator.getFixFieldLi(dataSource.DetailDataLi[i].FixField);
+			var detailFixFieldLi = datasourceIterator.getFixFieldLi(dataSource.DetailDataLi[i].FixField);
 			for (var j = 0; j < detailFixFieldLi.length; j++) {
 				detailFixFieldLi[j].Parent = dataSource.DetailDataLi[i].FixField;
 			}
@@ -42,8 +42,8 @@ ModelTemplateFactory.prototype._applyReverseRelation = function(dataSource) {
  * 为字段加入是否主数据集字段的方法
  */
 ModelTemplateFactory.prototype._applyIsMasterField = function(dataSource) {
-	var modelIterator = new ModelIterator();
-	var masterFixFieldLi = modelIterator.getFixFieldLi(dataSource.MasterData.FixField);
+	var datasourceIterator = new DatasourceIterator();
+	var masterFixFieldLi = datasourceIterator.getFixFieldLi(dataSource.MasterData.FixField);
 	for (var i = 0; i < masterFixFieldLi.length; i++) {
 		masterFixFieldLi[i].isMasterField = function() {
 			return true;
@@ -56,7 +56,7 @@ ModelTemplateFactory.prototype._applyIsMasterField = function(dataSource) {
 	}
 	if (dataSource.DetailDataLi) {
 		for (var i = 0; i < dataSource.DetailDataLi.length; i++) {
-			var detailFixFieldLi = modelIterator.getFixFieldLi(dataSource.DetailDataLi[i].FixField);
+			var detailFixFieldLi = datasourceIterator.getFixFieldLi(dataSource.DetailDataLi[i].FixField);
 			for (var j = 0; j < detailFixFieldLi.length; j++) {
 				detailFixFieldLi[j].isMasterField = function() {
 					return false;
@@ -76,9 +76,9 @@ ModelTemplateFactory.prototype._applyIsMasterField = function(dataSource) {
  * 为字段加入是否关联字段的方法
  */
 ModelTemplateFactory.prototype._applyIsRelationField = function(dataSource) {
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = {};
-	modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
 		fieldGroup.isRelationField = function(){
 			if (fieldGroup.RelationDS && fieldGroup.RelationDS.RelationItemLi && fieldGroup.RelationDS.RelationItemLi.length > 0) {
 				return true;
@@ -92,10 +92,10 @@ ModelTemplateFactory.prototype._applyIsRelationField = function(dataSource) {
  * 默认用第一个关联字段生成关联配置
  */
 ModelTemplateFactory.prototype._applyRelationFieldValue = function(dataSource) {
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = {};
 	var commonUtil = new CommonUtil();
-	modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
 		if (fieldGroup.isRelationField()) {
 			if (!fieldGroup.jsConfig) {
 				fieldGroup.jsConfig = {};
@@ -104,7 +104,7 @@ ModelTemplateFactory.prototype._applyRelationFieldValue = function(dataSource) {
 			var triggerConfig = {
 				displayField: commonUtil.getFuncOrString(relationItem.displayField),
 				valueField: commonUtil.getFuncOrString(relationItem.ValueField),
-				selectorName: commonUtil.getFuncOrString(relationItem.Id),
+				selectorName: commonUtil.getFuncOrString(relationItem.id),
 				selectionMode: "single"
 			};
 			for (var key in triggerConfig) {
@@ -118,9 +118,9 @@ ModelTemplateFactory.prototype._applyRelationFieldValue = function(dataSource) {
  * 添加获取主数据集方法
  */
 ModelTemplateFactory.prototype._applyGetMasterData = function(dataSource) {
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = {};
-	modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
 		fieldGroup.getMasterData = function() {
 			if (this.isMasterField()) {
 				return this.Parent.Parent;
@@ -134,9 +134,9 @@ ModelTemplateFactory.prototype._applyGetMasterData = function(dataSource) {
  * 添加获取分录数据集方法
  */
 ModelTemplateFactory.prototype._applyGetDetailData = function(dataSource) {
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = {};
-	modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
 		fieldGroup.getDetailData = function() {
 			if (this.isMasterField()) {
 				return null;
@@ -150,9 +150,9 @@ ModelTemplateFactory.prototype._applyGetDetailData = function(dataSource) {
  * 添加获取数据源方法
  */
 ModelTemplateFactory.prototype._applyGetDataSource = function(dataSource) {
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = {};
-	modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
 		fieldGroup.getDataSource = function() {
 			if (this.isMasterField()) {
 				return this.getMasterData().Parent;
@@ -166,14 +166,14 @@ ModelTemplateFactory.prototype._applyGetDataSource = function(dataSource) {
  * 添加获取数据集Id方法
  */
 ModelTemplateFactory.prototype._applyGetDataSetId = function(dataSource) {
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = {};
-	modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
 		fieldGroup.getDataSetId = function() {
 			if (this.isMasterField()) {
-				return this.getMasterData().Id;
+				return this.getMasterData().id;
 			}
-			return this.getDetailData().Id;
+			return this.getDetailData().id;
 		}
 	});
 }
@@ -188,26 +188,26 @@ ModelTemplateFactory.prototype._applyGetDataSetId = function(dataSource) {
  * }
  */
 ModelTemplateFactory.prototype.extendDataSource = function(dataSource, modelExtraInfo) {
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = {};
-	modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
 		var dataSetConfig = modelExtraInfo[fieldGroup.getDataSetId()];
-		if (dataSetConfig && dataSetConfig[fieldGroup.Id]) {
-			for (var key in dataSetConfig[fieldGroup.Id]) {
+		if (dataSetConfig && dataSetConfig[fieldGroup.id]) {
+			for (var key in dataSetConfig[fieldGroup.id]) {
 				if (!fieldGroup.jsConfig) {
 					fieldGroup.jsConfig = {};
 				}
-				fieldGroup.jsConfig[key] = dataSetConfig[fieldGroup.Id][key];
+				fieldGroup.jsConfig[key] = dataSetConfig[fieldGroup.id][key];
 			}
 		}
 	});
-	modelIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
-		var dataSetConfig = modelExtraInfo[dataSet.Id];
+	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+		var dataSetConfig = modelExtraInfo[dataSet.id];
 		if (dataSetConfig) {
 			for (var key in dataSetConfig) {
 				var isFieldGroupConfig = false;
-				modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
-					if (!isFieldGroupConfig && fieldGroup.Id == key) {
+				datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+					if (!isFieldGroupConfig && fieldGroup.id == key) {
 						isFieldGroupConfig = true;
 					}
 				});
@@ -244,14 +244,14 @@ ModelTemplateFactory.prototype.enhanceDataSource = function(dataSource) {
 
 ModelTemplateFactory.prototype.applyDataSetDefaultValue = function(dataSource, dataSetId, bo, data) {
 	var self = this;
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
 		if (fieldGroup.getDataSetId() == dataSetId) {
 			var mode = fieldGroup.DefaultValueExpr.Mode;
 			var content = fieldGroup.DefaultValueExpr.Content;
 			if (fieldGroup.jsConfig && fieldGroup.jsConfig.defaultValueExprForJs) {
-				data[fieldGroup.Id] = fieldGroup.jsConfig.defaultValueExprForJs(bo, data);
+				data[fieldGroup.id] = fieldGroup.jsConfig.defaultValueExprForJs(bo, data);
 			} else if ((mode == "text" || !mode) && content) {
 				self.applyFieldGroupValueByString(fieldGroup, data, content);
 			}
@@ -261,14 +261,14 @@ ModelTemplateFactory.prototype.applyDataSetDefaultValue = function(dataSource, d
 
 ModelTemplateFactory.prototype.applyDataSetCalcValue = function(dataSource, dataSetId, bo, data) {
 	var self = this;
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
 		if (fieldGroup.getDataSetId() == dataSetId) {
 			var mode = fieldGroup.CalcValueExpr.Mode;
 			var content = fieldGroup.CalcValueExpr.Content;
 			if (fieldGroup.jsConfig && fieldGroup.jsConfig.calcValueExprForJs) {
-				data[fieldGroup.Id] = fieldGroup.jsConfig.calcValueExprForJs(bo, data);
+				data[fieldGroup.id] = fieldGroup.jsConfig.calcValueExprForJs(bo, data);
 			} else if ((mode == "text" || !mode) && content) {
 				self.applyFieldGroupValueByString(fieldGroup, data, content);
 			}
@@ -278,13 +278,13 @@ ModelTemplateFactory.prototype.applyDataSetCalcValue = function(dataSource, data
 
 ModelTemplateFactory.prototype.applyDataSetCopyValue = function(dataSource, dataSetId, srcData, destData) {
 	var self = this;
-	var modelIterator = new ModelIterator();
+	var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	modelIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
 		if (fieldGroup.getDataSetId() == dataSetId) {
-			if (fieldGroup.AllowCopy == undefined || fieldGroup.AllowCopy == "" || fieldGroup.AllowCopy == "true") {
-				if (srcData[fieldGroup.Id]) {
-					destData[fieldGroup.Id] = srcData[fieldGroup.Id];
+			if (fieldGroup.AllowCopy == undefined || fieldGroup.AllowCopy == "" || fieldGroup.AllowCopy) {
+				if (srcData[fieldGroup.id]) {
+					destData[fieldGroup.id] = srcData[fieldGroup.id];
 				}
 			}
 		}
@@ -295,7 +295,7 @@ ModelTemplateFactory.prototype.applyFieldGroupValueByString = function(fieldGrou
 	var stringArray = ["STRING", "REMARK"];
 	for (var i = 0; i < stringArray.length; i++) {
 		if (stringArray[i] == fieldGroup.FieldDataType) {
-			data[fieldGroup.Id] = content;
+			data[fieldGroup.id] = content;
 			return;
 		}
 	}
@@ -303,12 +303,12 @@ ModelTemplateFactory.prototype.applyFieldGroupValueByString = function(fieldGrou
 	for (var i = 0; i < intArray.length; i++) {
 		if (intArray[i] == fieldGroup.FieldDataType) {
 			if (content == undefined || content == "") {
-				data[fieldGroup.Id] = 0;
+				data[fieldGroup.id] = 0;
 			} else {
 				if (isNumber(content)) {
-					data[fieldGroup.Id] = parseInt(content, 10);
+					data[fieldGroup.id] = parseInt(content, 10);
 				} else {
-					console.log("赋值错误,fieldGroup.dataSetId=" + fieldGroup.getDataSetId() + ", fieldGroup.Id=" + fieldGroup.Id + ", expect type is:" + intArray.join(",") + ", but value=" + content);
+					console.log("赋值错误,fieldGroup.dataSetId=" + fieldGroup.getDataSetId() + ", fieldGroup.id=" + fieldGroup.id + ", expect type is:" + intArray.join(",") + ", but value=" + content);
 				}
 			}
 			return
@@ -318,13 +318,13 @@ ModelTemplateFactory.prototype.applyFieldGroupValueByString = function(fieldGrou
 	for (var i = 0; i < floatArray.length; i++) {
 		if (floatArray[i] == fieldGroup.FieldDataType) {
 			if (content == undefined || content == "") {
-				data[fieldGroup.Id] = "0";
+				data[fieldGroup.id] = "0";
 			} else {
 				if (isNumber(content)) {
-					//data[fieldGroup.Id] = parseFloat(content);
-					data[fieldGroup.Id] = content;
+					//data[fieldGroup.id] = parseFloat(content);
+					data[fieldGroup.id] = content;
 				} else {
-					console.log("赋值错误,fieldGroup.dataSetId=" + fieldGroup.getDataSetId() + ", fieldGroup.Id=" + fieldGroup.Id + ", expect type is:" + floatArray.join(",") + ", but value=" + content);
+					console.log("赋值错误,fieldGroup.dataSetId=" + fieldGroup.getDataSetId() + ", fieldGroup.id=" + fieldGroup.id + ", expect type is:" + floatArray.join(",") + ", but value=" + content);
 				}
 			}
 			return
@@ -334,12 +334,12 @@ ModelTemplateFactory.prototype.applyFieldGroupValueByString = function(fieldGrou
 	for (var i = 0; i < boolArray.length; i++) {
 		if (boolArray[i] == fieldGroup.FieldDataType) {
 			if (content == undefined || content == "") {
-				data[fieldGroup.Id] = false
+				data[fieldGroup.id] = false
 			} else {
 				if (content == "true") {
-					data[fieldGroup.Id] = true
+					data[fieldGroup.id] = true
 				} else {
-					data[fieldGroup.Id] = false
+					data[fieldGroup.id] = false
 				}
 			}
 			return

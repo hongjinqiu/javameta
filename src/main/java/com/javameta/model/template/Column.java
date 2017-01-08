@@ -13,4 +13,7 @@ public abstract class Column {
 	public abstract void setFixReadOnly(Boolean value);
 	public abstract Boolean getZeroShowEmpty();
 	public abstract void setZeroShowEmpty(Boolean value);
+	public abstract String getXmlName();
+	public abstract void setXmlName(String xmlName);
+	
 }

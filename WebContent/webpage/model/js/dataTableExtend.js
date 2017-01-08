@@ -20,7 +20,7 @@ DataTableManager.prototype.createDataGrid = function(Y, param, config) {
 	if (param.columnManager) {
 		columnManager = param.columnManager;
 	}
-	var columns = columnManager.getColumns(param.columnModelName, columnModel, Y);
+	var columns = columnManager.getColumns(param.columnModelName, columnModel);
 	var gridConfig = {
 			columns : columns,
 			data : data,

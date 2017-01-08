@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -149,6 +150,9 @@ public class DataProvider implements Serializable {
     @XmlAttribute
     @XmlSchemaType(name = "anySimpleType")
     protected String orderSqlIntercept;
+    
+    @XmlTransient
+    private String xmlName = "data-provider";
 
     /**
      * Gets the value of the table property.
@@ -812,5 +816,14 @@ public class DataProvider implements Serializable {
         }
 
     }
+
+
+	public String getXmlName() {
+		return xmlName;
+	}
+
+	public void setXmlName(String xmlName) {
+		this.xmlName = xmlName;
+	}
 
 }

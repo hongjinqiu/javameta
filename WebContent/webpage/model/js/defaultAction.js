@@ -4,9 +4,9 @@ function _recurionApplyCopyField(data, columnLi, columnName, columnValue) {
 	var commonUtil = new CommonUtil();
 	for (var i = 0; i < columnLi.length; i++) {
 		if (columnLi[i].name == columnName) {
-			if (columnLi[i].XMLName.Local == "select-column") {
+			if (columnLi[i].xmlName == "select-column") {
 				if (columnLi[i].relationDS) {
-					var relationItem = commonUtil.getCRelationItem(columnLi[i].relationDS, bo, data);
+					var relationItem = commonUtil.getRelationItem(columnLi[i].relationDS, bo, data);
 					if (relationItem.CCopyConfigLi) {
 						for (var j = 0; j < relationItem.CCopyConfigLi.length; j++) {
 							var copyValueField = relationItem.CCopyConfigLi[j].CopyValueField;
@@ -63,10 +63,10 @@ function selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, inpu
 	// 允许重复的判断,
 	var gridDataLi = g_gridPanelDict["B"].dt.get("data").toJSON();
 	var notAllowDuplicateColumn = [];
-	var modelIterator = new ModelIterator();
-	modelIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+	var datasourceIterator = new DatasourceIterator();
+	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
 		if (fieldGroup.getDataSetId() == dataSetId && fieldGroup.AllowDuplicate == "false") {
-			notAllowDuplicateColumn.push(fieldGroup.Id);
+			notAllowDuplicateColumn.push(fieldGroup.id);
 		}
 	});
 	for (var i = 0; i < dataLi.length; i++) {

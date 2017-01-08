@@ -27,9 +27,9 @@ js/moduleConfig.js							finish,
 js/common.js								finish,
 js/dataTableExtend.js						finish,但是还是需要大量修改,
 js/dataTableDataSourceExtend.js				finish,但是还是需要结合easyui做大量修改,				
-js/columnManager.js							running,---------,
-js/columnDataSourceManager.js
-js/ds_formtoolbar.js
+js/columnManager.js							finish,
+js/columnDataSourceManager.js				finish,
+js/ds_formtoolbar.js						running,------------------------,
 js/modelService.js
 js/modelTemplateFactory.js
 js/ds_formFieldFactory.js
@@ -40,6 +40,7 @@ js/listTemplateService.js
 js/templateService.js
 js/columnSequenceService.js
 js/formManager.js
+
 
 
 "></script>

@@ -38,7 +38,7 @@ CommonUtil.prototype.getFuncOrString = function(text) {
 		} ]
 	}
  */
-CommonUtil.prototype.getCRelationItem = function(cRelationDS, bo, formData) {
+CommonUtil.prototype.getRelationItem = function(cRelationDS, bo, formData) {
 	for (var i = 0; i < cRelationDS.relationItem.length; i++) {
 		var relationItem = cRelationDS.relationItem[i];
 		var mode = relationItem.relationExpr.mode;

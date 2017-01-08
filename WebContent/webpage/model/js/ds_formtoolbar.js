@@ -2,10 +2,10 @@ function editData() {//修改
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.Id + "/EditData?format=json"
+		url: "/" + g_dataSourceJson.id + "/EditData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.Id,
-			"formTemplateId": g_formTemplateJsonData.Id,
+			"dataSourceModelId": g_dataSourceJson.id,
+			"formTemplateId": g_formTemplateJsonData.id,
 			"id": bo["id"]
 		},
 		callback: function(o) {
@@ -25,10 +25,10 @@ function saveData() {//保存
 		showError(validateResult.message);
 	} else {
 		ajaxRequest({
-			url: "/" + g_dataSourceJson.Id + "/SaveData?format=json"
+			url: "/" + g_dataSourceJson.id + "/SaveData?format=json"
 			,params: {
-				"dataSourceModelId": g_dataSourceJson.Id,
-				"formTemplateId": g_formTemplateJsonData.Id,
+				"dataSourceModelId": g_dataSourceJson.id,
+				"formTemplateId": g_formTemplateJsonData.id,
 				"jsonData": bo
 			},
 			callback: function(o) {
@@ -45,10 +45,10 @@ function newData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.Id + "/NewData?format=json"
+		url: "/" + g_dataSourceJson.id + "/NewData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.Id,
-			"formTemplateId": g_formTemplateJsonData.Id
+			"dataSourceModelId": g_dataSourceJson.id,
+			"formTemplateId": g_formTemplateJsonData.id
 		},
 		callback: function(o) {
 			formManager.setDetailIncId(g_dataSourceJson, o.bo);
@@ -63,10 +63,10 @@ function copyData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.Id + "/CopyData?format=json"
+		url: "/" + g_dataSourceJson.id + "/CopyData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.Id,
-			"formTemplateId": g_formTemplateJsonData.Id,
+			"dataSourceModelId": g_dataSourceJson.id,
+			"formTemplateId": g_formTemplateJsonData.id,
 			"id": bo["id"]
 		},
 		callback: function(o) {
@@ -83,13 +83,13 @@ function giveUpData() {
 	var bo = formManager.getBo();
 	showConfirm("您确定要放弃吗？", function(){
 		if (!bo["id"] || bo["id"] == "0") {
-			location.href = "/console/listschema?@name=" + g_dataSourceJson.Id;
+			location.href = "/console/listschema?@name=" + g_dataSourceJson.id;
 		} else {
 			ajaxRequest({
-				url: "/" + g_dataSourceJson.Id + "/GiveUpData?format=json"
+				url: "/" + g_dataSourceJson.id + "/GiveUpData?format=json"
 				,params: {
-					"dataSourceModelId": g_dataSourceJson.Id,
-					"formTemplateId": g_formTemplateJsonData.Id,
+					"dataSourceModelId": g_dataSourceJson.id,
+					"formTemplateId": g_formTemplateJsonData.id,
 					"id": bo["id"]
 				},
 				callback: function(o) {
@@ -107,14 +107,14 @@ function deleteData() {
 		var formManager = new FormManager();
 		var bo = formManager.getBo();
 		ajaxRequest({
-			url: "/" + g_dataSourceJson.Id + "/DeleteData?format=json"
+			url: "/" + g_dataSourceJson.id + "/DeleteData?format=json"
 			,params: {
-				"dataSourceModelId": g_dataSourceJson.Id,
-				"formTemplateId": g_formTemplateJsonData.Id,
+				"dataSourceModelId": g_dataSourceJson.id,
+				"formTemplateId": g_formTemplateJsonData.id,
 				"id": bo["id"]
 			},
 			callback: function(o) {
-				location.href = "/console/listschema?@name=" + g_dataSourceJson.Id;
+				location.href = "/console/listschema?@name=" + g_dataSourceJson.id;
 			}
 		});
 	})
@@ -124,10 +124,10 @@ function refreshData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.Id + "/RefreshData?format=json"
+		url: "/" + g_dataSourceJson.id + "/RefreshData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.Id,
-			"formTemplateId": g_formTemplateJsonData.Id,
+			"dataSourceModelId": g_dataSourceJson.id,
+			"formTemplateId": g_formTemplateJsonData.id,
 			"id": bo["id"]
 		},
 		callback: function(o) {
@@ -143,7 +143,7 @@ function logList() {
 	var bo = formManager.getBo();
 	var dialog = showModalDialog({
 		"title": "被用查询",
-		"url": "/console/listschema?@name=PubReferenceLog&beReferenceDataSourceModelId=" + g_dataSourceJson.Id + "&beReferenceId=" + bo["id"] + "&date=" + new Date()
+		"url": "/console/listschema?@name=PubReferenceLog&beReferenceDataSourceModelId=" + g_dataSourceJson.id + "&beReferenceId=" + bo["id"] + "&date=" + new Date()
 	});
 }
 
@@ -151,10 +151,10 @@ function cancelData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.Id + "/CancelData?format=json"
+		url: "/" + g_dataSourceJson.id + "/CancelData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.Id,
-			"formTemplateId": g_formTemplateJsonData.Id,
+			"dataSourceModelId": g_dataSourceJson.id,
+			"formTemplateId": g_formTemplateJsonData.id,
 			"id": bo["id"]
 		},
 		callback: function(o) {
@@ -170,10 +170,10 @@ function unCancelData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.Id + "/UnCancelData?format=json"
+		url: "/" + g_dataSourceJson.id + "/UnCancelData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.Id,
-			"formTemplateId": g_formTemplateJsonData.Id,
+			"dataSourceModelId": g_dataSourceJson.id,
+			"formTemplateId": g_formTemplateJsonData.id,
 			"id": bo["id"]
 		},
 		callback: function(o) {

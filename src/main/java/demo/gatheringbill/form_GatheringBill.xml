@@ -68,13 +68,14 @@
 		<id-column name="id" text="编号" hideable="true" rendererTemplate=""/>
 
 		<auto-column name="billDate" colSpan="2" labelWidth="13%" columnWidth="20%" rendererTemplate=""/>
-		<auto-column name="billNo" colSpan="2" labelWidth="13%" columnWidth="20%" />
-		<auto-column name="billTypeId" colSpan="2" labelWidth="13%" />
-		<auto-column name="property" colSpan="2">
-			<column-attribute name="observe" value="accountId,receiveBankId,accountProperty" />
+		<auto-column name="billNo" colSpan="2" labelWidth="13%" columnWidth="20%">
 			<column-model name="A_1_property">
 				<auto-column name="propertyTest"></auto-column>
 			</column-model>
+		</auto-column>
+		<auto-column name="billTypeId" colSpan="2" labelWidth="13%" />
+		<auto-column name="property" colSpan="2">
+			<column-attribute name="observe" value="accountId,receiveBankId,accountProperty" />
 		</auto-column>
 		<auto-column name="billStatus" colSpan="2" />
 	</column-model>

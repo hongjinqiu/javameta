@@ -1,10 +1,10 @@
-function ModelIterator() {
+function DatasourceIterator() {
 }
 
 function IterateFunc(fieldGroup, data, rowIndex, result) {
 }
 
-ModelIterator.prototype.iterateAllFieldBo = function(dataSource, bo, result, iterateFunc) {
+DatasourceIterator.prototype.iterateAllFieldBo = function(dataSource, bo, result, iterateFunc) {
 	var self = this;
 	self.iterateDataBo(dataSource, bo, result, function(fieldGroupLi, data, rowIndex, result){
 		for (var i = 0; i < fieldGroupLi.length; i++) {
@@ -15,7 +15,7 @@ ModelIterator.prototype.iterateAllFieldBo = function(dataSource, bo, result, ite
 
 function IterateFieldFunc(fieldGroup, result){}
 
-ModelIterator.prototype.iterateAllField = function(dataSource, result, iterateFunc) {
+DatasourceIterator.prototype.iterateAllField = function(dataSource, result, iterateFunc) {
 	var self = this;
 	var fieldGroupLi = self._getDataSetFieldGroupLi(dataSource.MasterData.FixField, dataSource.MasterData.BizField)
 	for (var i = 0; i < fieldGroupLi.length; i++) {
@@ -32,7 +32,7 @@ ModelIterator.prototype.iterateAllField = function(dataSource, result, iterateFu
 }
 
 
-ModelIterator.prototype.getFixFieldLi = function(fixField) {
+DatasourceIterator.prototype.getFixFieldLi = function(fixField) {
 	var fixFieldLi = [];
 	fixFieldLi.push(fixField.PrimaryKey);
 	fixFieldLi.push(fixField.CreateBy);
@@ -47,7 +47,7 @@ ModelIterator.prototype.getFixFieldLi = function(fixField) {
 	return fixFieldLi;
 }
 
-ModelIterator.prototype._getDataSetFieldGroupLi = function(fixField, bizField) {
+DatasourceIterator.prototype._getDataSetFieldGroupLi = function(fixField, bizField) {
 	var self = this;
 	var fieldGroupLi = self.getFixFieldLi(fixField);
 	for (var i = 0; i < bizField.FieldLi.length; i++) {
@@ -58,13 +58,13 @@ ModelIterator.prototype._getDataSetFieldGroupLi = function(fixField, bizField) {
 
 function IterateDataFunc(fieldGroupLi, data, rowIndex, result) {}
 
-ModelIterator.prototype.iterateDataBo = function(dataSource, bo, result, iterateFunc) {
+DatasourceIterator.prototype.iterateDataBo = function(dataSource, bo, result, iterateFunc) {
 	var self = this;
 	self._iterateMasterDataBo(dataSource, bo, result, iterateFunc);
 	self._iterateDetailDataBo(dataSource, bo, result, iterateFunc)
 }
 
-ModelIterator.prototype._iterateMasterDataBo = function(dataSource, bo, result, iterateFunc) {
+DatasourceIterator.prototype._iterateMasterDataBo = function(dataSource, bo, result, iterateFunc) {
 	var self = this;
 	var data = bo["A"];
 	var fieldGroupLi = self._getDataSetFieldGroupLi(dataSource.MasterData.FixField, dataSource.MasterData.BizField)
@@ -72,13 +72,13 @@ ModelIterator.prototype._iterateMasterDataBo = function(dataSource, bo, result, 
 	iterateFunc(fieldGroupLi, data, rowIndex, result)
 }
 
-ModelIterator.prototype._iterateDetailDataBo = function(dataSource, bo, result, iterateFunc) {
+DatasourceIterator.prototype._iterateDetailDataBo = function(dataSource, bo, result, iterateFunc) {
 	var self = this;
 	if (dataSource.DetailDataLi) {
 		for (var i = 0; i < dataSource.DetailDataLi.length; i++) {
 			var item = dataSource.DetailDataLi[i];
 			var fieldGroupLi = self._getDataSetFieldGroupLi(item.FixField, item.BizField);
-			var dataLi = bo[item.Id];
+			var dataLi = bo[item.id];
 			for (var j = 0; j < dataLi.length; j++) {
 				var data = dataLi[j];
 				iterateFunc(fieldGroupLi, data, j, result);
@@ -89,7 +89,7 @@ ModelIterator.prototype._iterateDetailDataBo = function(dataSource, bo, result, 
 
 function IterateFunc(dataSet, result){}
 
-ModelIterator.prototype.iterateAllDataSet = function(dataSource, result, iterateFunc) {
+DatasourceIterator.prototype.iterateAllDataSet = function(dataSource, result, iterateFunc) {
 	var self = this;
 	iterateFunc(dataSource.MasterData, result);
 	if (dataSource.DetailDataLi) {
@@ -101,7 +101,7 @@ ModelIterator.prototype.iterateAllDataSet = function(dataSource, result, iterate
 
 //function IterateFunc(btnName, btnValue, result){}
 //
-//ModelIterator.prototype.iterateAllButton = function(dataSource, result, iterateFunc) {
+//DatasourceIterator.prototype.iterateAllButton = function(dataSource, result, iterateFunc) {
 //	var self = this;
 //	if (dataSource.buttonConfig) {
 //		for (var key in dataSource.buttonConfig) {

@@ -1,35 +1,63 @@
 var g_errorLog = {};
 
+// 对Date的扩展，将 Date 转化为指定格式的String   
+// 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，   
+// 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)   
+// 例子：   
+// (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423   
+// (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18   
+Date.prototype.Format = function(fmt)   
+{ //author: meizz   
+  var o = {   
+    "M+" : this.getMonth()+1,                 //月份   
+    "d+" : this.getDate(),                    //日   
+    "H+" : this.getHours(),                   //小时   
+    "m+" : this.getMinutes(),                 //分   
+    "s+" : this.getSeconds(),                 //秒   
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度   
+    "S"  : this.getMilliseconds()             //毫秒   
+  };   
+  if(/(y+)/.test(fmt))   
+    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));   
+  for(var k in o)   
+    if(new RegExp("("+ k +")").test(fmt))   
+  fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
+  return fmt;   
+}
+
 function ColumnManager() {
 }
 
-ColumnManager.prototype.isZeroShowEmpty = function(o) {
-	return o.column.zeroShowEmpty == "true" && (o.value == "0" || o.value == "00000000000000000000.0000000000");
+ColumnManager.prototype.isZeroShowEmpty = function(zeroShowEmpty, o) {
+	return zeroShowEmpty && (o == "0" || o == "00000000000000000000.0000000000");
 }
 
 ColumnManager.prototype.createIdColumn = function(columnModel) {
-	if (columnModel.idColumn.Hideable != "true") {
+	if (columnModel.idColumn.hideable != true) {
 		return {
-			width: columnModel.idColumn.Width || "",
-			key: columnModel.idColumn.name,
-			label: columnModel.idColumn.Text
+			width: columnModel.idColumn.width || "",
+			field: columnModel.idColumn.name,
+			title: columnModel.idColumn.text,
+			colspan: columnModel.idColumn.colSpan || 1,
+			rowspan: columnModel.idColumn.rowSpan || 1
 		};
 	}
 	return null;
 }
 
 ColumnManager.prototype.createCheckboxColumn = function(columnModel) {
-	if (columnModel.checkboxColumn.Hideable != "true") {
+	if (columnModel.checkboxColumn.hideable != true) {
 		var key = columnModel.checkboxColumn.name;
 		if (columnModel.selectionMode == "radio") {
 			return {
 				width: "40",
-				key:        key,
-				allowHTML:  true, // to avoid HTML escaping
-				label:      '选择',
+				field:        key,
+				title:      '选择',
+				colspan: columnModel.checkboxColumn.colSpan || 1,
+				rowspan: columnModel.checkboxColumn.rowSpan || 1,
 				//formatter:      '<input type="radio" name="' + key + '" />'
-				formatter:function(o) {
-					if (o.value === false) {
+				formatter:function(value, row, index) {// value, row, index
+					if (value === false) {
 						return "";
 					}
 					return '<input type="radio" name="' + key + '" />';
@@ -39,12 +67,13 @@ ColumnManager.prototype.createCheckboxColumn = function(columnModel) {
 		} else {
 			return {
 				width: "40",
-				key:        key,
-				allowHTML:  true, // to avoid HTML escaping
-				label:      '<input type="checkbox" class="protocol-select-all" title="全部选中"/>',
+				field:        key,
+				title:      '<input type="checkbox" class="protocol-select-all" title="全部选中"/>',
+				colspan: columnModel.checkboxColumn.colSpan || 1,
+				rowspan: columnModel.checkboxColumn.rowSpan || 1,
 				//formatter:      '<input type="checkbox" />'
-				formatter:function(o) {
-					if (o.value === false) {
+				formatter:function(value, row, index) {
+					if (value === false) {
 						return "";
 					}
 					return '<input type="checkbox" />';
@@ -57,65 +86,53 @@ ColumnManager.prototype.createCheckboxColumn = function(columnModel) {
 }
 
 ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnModel, columnIndex) {
-	var self = this;
-	var yInst = self.yInst;
 	var i = columnIndex;
-	if (columnModel.ColumnLi[i].XMLName.Local == "virtual-column" && columnModel.ColumnLi[i].Hideable != "true") {
-		var virtualColumn = columnModel.ColumnLi[i];
+	if (columnModel.columnList[i].xmlName == "virtual-column" && columnModel.columnList[i].hideable != true) {
+		var virtualColumn = columnModel.columnList[i];
 		return {
-			width: columnModel.ColumnLi[i].Width || "",
-			key: columnModel.ColumnLi[i].name,
-			label: columnModel.ColumnLi[i].Text,
-			allowHTML:  true, // to avoid HTML escaping
+			width: columnModel.columnList[i].width || "",
+			field: columnModel.columnList[i].name,
+			title: columnModel.columnList[i].text,
+			colspan: columnModel.columnList[i].colSpan || 1,
+			rowspan: columnModel.columnList[i].rowSpan || 1,
 			formatter:      function(virtualColumn){
-				return function(o){
+				return function(o, row, index){
+					
 					var htmlLi = [];
 //					htmlLi.push("<div class='btnWrapper_" + virtualColumn.name + "'>");
 					var buttonBoLi = null;
-					if (o.value) {
-						buttonBoLi = o.value[virtualColumn.Buttons.XMLName.Local];
+					if (o) {
+						buttonBoLi = o[virtualColumn.buttons.xmlName];
 					}
-					for (var j = 0; j < virtualColumn.Buttons.ButtonLi.length; j++) {
+					for (var j = 0; j < virtualColumn.buttons.button.length; j++) {
 						var btnTemplate = null;
-						if (virtualColumn.Buttons.ButtonLi[j].Mode == "fn") {
+						if (virtualColumn.buttons.button[j].Mode == "fn") {
 							btnTemplate = "<a title='{value}' onclick='doVirtualColumnBtnAction(\"{columnModelName}\", this, {handler})' class='{class}' href='javascript:void(0);' style='display:block;' />";
-						} else if (virtualColumn.Buttons.ButtonLi[j].Mode == "url") {
+						} else if (virtualColumn.buttons.button[j].Mode == "url") {
 							btnTemplate = "<a title='{value}' onclick='location.href=\"{href}\"' class='{class}' href='javascript:void(0);' style='display:block;' />";
-						} else if (virtualColumn.Buttons.ButtonLi[j].Mode == "url!") {
+						} else if (virtualColumn.buttons.button[j].Mode == "url!") {
 							btnTemplate = "<a title='{value}' onclick='openTabOrJump(\"{href}\")' class='{class}' href='javascript:void(0);' style='display:block;' />";
 						} else {
 							btnTemplate = "<a title='{value}' onclick='window.open(\"{href}\")' class='{class}' href='javascript:void(0);' style='display:block;' />";
 						}
 						if (!buttonBoLi || buttonBoLi[j]["isShow"]) {
 							var id = columnModel.idColumn.name;
-							var isUsed = g_usedCheck && g_usedCheck[columnModel.dataSetId] && g_usedCheck[columnModel.dataSetId][o.data[id]];
-							if (!(isUsed && virtualColumn.Buttons.ButtonLi[j].name == "btn_delete")) {
+							var isUsed = g_usedCheck && g_usedCheck[columnModel.dataSetId] && g_usedCheck[columnModel.dataSetId][row[id]];
+							if (!(isUsed && virtualColumn.buttons.button[j].name == "btn_delete")) {
 								// handler进行值的预替换,
-								var Y = yInst;
-								var handler = virtualColumn.Buttons.ButtonLi[j].Handler;
-								handler = Y.Lang.sub(handler, o.data);
-								htmlLi.push(Y.Lang.sub(btnTemplate, {
-									value: virtualColumn.Buttons.ButtonLi[j].Text,
-									handler: handler,
-									"class": virtualColumn.Buttons.ButtonLi[j].IconCls,
-									href: handler,
-									columnModelName: columnModelName
-								}));
+								var handler = virtualColumn.buttons.button[j].handler;
+								for (var key in row) {
+									var regExp = new RegExp("{" + key + "}");
+									regExp.global = true;
+									handler = handler.replace(regExp, row[key]);
+								}
+								btnTemplate = btnTemplate.replace("{value}", virtualColumn.buttons.button[j].text);
+								btnTemplate = btnTemplate.replace("{handler}", handler);
+								btnTemplate = btnTemplate.replace("{class}", virtualColumn.buttons.button[j].iconCls);
+								btnTemplate = btnTemplate.replace("{href}", handler);
+								btnTemplate = btnTemplate.replace("{columnModelName}", columnModelName);
+								htmlLi.push(btnTemplate);
 							}
-							
-							/*
-							// handler进行值的预替换,
-							var Y = yInst;
-							var handler = virtualColumn.Buttons.ButtonLi[j].Handler;
-							handler = Y.Lang.sub(handler, o.data);
-							htmlLi.push(Y.Lang.sub(btnTemplate, {
-								value: virtualColumn.Buttons.ButtonLi[j].Text,
-								handler: handler,
-								"class": virtualColumn.Buttons.ButtonLi[j].IconCls,
-								href: handler,
-								columnModelName: columnModelName
-							}));
-							 */
 						}
 					}
 //					htmlLi.push("</div>");
@@ -128,71 +145,28 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 }
 
 ColumnManager.prototype.createNumberColumn = function(columnConfig, columnModel) {
-	var self = this;
-	var yInst = self.yInst;
-	var decimalPlaces = 2;
-	if (columnConfig.DecimalPlaces) {
-		decimalPlaces = parseInt(columnConfig.DecimalPlaces, 10);
-	}
-	var isFormatter = (columnConfig.Prefix || "") != "";
-	isFormatter = isFormatter || (columnConfig.DecimalPlaces || "") != "";
-	isFormatter = isFormatter || (columnConfig.DecimalSeparator || "") != "";
-	isFormatter = isFormatter || (columnConfig.ThousandsSeparator || "") != "";
-	isFormatter = isFormatter || (columnConfig.Suffix || "") != "";
-	
-	// 财务相关字段的判断,以决定是否用 formatter 函数,
-	isFormatter = isFormatter || (columnConfig.CurrencyField || "") != "";
-	isFormatter = isFormatter || (columnConfig.IsPercent || "") != "";
-
-	var zeroShowEmpty = columnConfig.ZeroShowEmpty == "true";
-	
-	/*
-	if (columnConfig.name == "sequenceNo") {
-		console.log("sequence no");
-		console.log(isFormatter);
-		console.log(columnConfig.Prefix);
-		console.log(columnConfig.Prefix != "");
-	}
-	*/
-	if (isFormatter) {
-		return {
-			width: columnConfig.Width || "",
-			key: columnConfig.name,
-			label: columnConfig.Text,
-			formatter: yInst.bind(self.currencyFormatFunc, self),
-			
-			prefix: columnConfig.Prefix,
-			decimalPlaces: decimalPlaces,
-			decimalSeparator: columnConfig.DecimalSeparator,
-			thousandsSeparator: columnConfig.ThousandsSeparator,
-			suffix: columnConfig.Suffix,
-			
-			currencyField: columnConfig.CurrencyField,
-			isPercent: columnConfig.IsPercent,
-			isMoney: columnConfig.IsMoney,
-			isUnitPrice: columnConfig.IsUnitPrice,
-			isCost: columnConfig.IsCost,
-			zeroShowEmpty: columnConfig.ZeroShowEmpty,
-			columnModel: columnModel
-		};
-	}
+	var zeroShowEmpty = columnConfig.zeroShowEmpty;
 	if (zeroShowEmpty) {
 		return {
-			width: columnConfig.Width || "",
-			key: columnConfig.name,
-			label: columnConfig.Text,
-			formatter: function(o) {
-				if (o.value == "0") {
+			width: columnConfig.width || "",
+			field: columnConfig.name,
+			title: columnConfig.text,
+			colspan: columnConfig.colSpan || 1,
+			rowspan: columnConfig.rowSpan || 1,
+			formatter: function(value, row, index) {
+				if (value == "0") {
 					return "";
 				}
-				return o.value;
+				return value;
 			}
 		};
 	}
 	return {
-		width: columnConfig.Width || "",
-		key: columnConfig.name,
-		label: columnConfig.Text
+		width: columnConfig.width || "",
+		field: columnConfig.name,
+		title: columnConfig.text,
+		colspan: columnConfig.colSpan || 1,
+		rowspan: columnConfig.rowSpan || 1
 	};
 }
 
@@ -211,165 +185,172 @@ DisplayPattern string `xml:"displayPattern,attr"`
 DbPattern      string `xml:"dbPattern,attr"`
 */
 ColumnManager.prototype.createDateColumn = function(columnConfig) {
-	var self = this;
-	var yInst = self.yInst;
-	var dbPattern = columnConfig.DbPattern;
-	var displayPattern = columnConfig.DisplayPattern;
+	var dbPattern = columnConfig.dbPattern;
+	var displayPattern = columnConfig.displayPattern;
 	if (dbPattern && displayPattern) {
 		return {
-			width: columnConfig.Width || "",
-			key: columnConfig.name,
-			label: columnConfig.Text,
+			width: columnConfig.width || "",
+			field: columnConfig.name,
+			title: columnConfig.text,
 			dbPattern: dbPattern,
 			displayPattern: displayPattern,
-			zeroShowEmpty: columnConfig.ZeroShowEmpty,
-			formatter: function(o) {
-				if (new ColumnManager().isZeroShowEmpty(o)) {
+			zeroShowEmpty: columnConfig.zeroShowEmpty,
+			colspan: columnConfig.colSpan || 1,
+			rowspan: columnConfig.rowSpan || 1,
+			formatter: function(o, row, index) {
+				if (new ColumnManager().isZeroShowEmpty(columnConfig.zeroShowEmpty, o)) {
 					return "";
 				}
-				if (o.value !== undefined && o.value !== null) {
+				if (o !== undefined && o !== null) {
 					var date = new Date();
-					var value = o.value + "";
-					if (o.column.dbPattern.indexOf("yyyy") > -1) {
-						var start = o.column.dbPattern.indexOf("yyyy");
-						var end = o.column.dbPattern.indexOf("yyyy") + "yyyy".length;
+					var value = o + "";
+					if (dbPattern.indexOf("yyyy") > -1) {
+						var start = dbPattern.indexOf("yyyy");
+						var end = dbPattern.indexOf("yyyy") + "yyyy".length;
 						var yyyy = value.substring(start, end);
 						date.setYear(parseInt(yyyy, 10));
 					}
-					if (o.column.dbPattern.indexOf("MM") > -1) {
-						var start = o.column.dbPattern.indexOf("MM");
-						var end = o.column.dbPattern.indexOf("MM") + "MM".length;
+					if (dbPattern.indexOf("MM") > -1) {
+						var start = dbPattern.indexOf("MM");
+						var end = dbPattern.indexOf("MM") + "MM".length;
 						var mm = value.substring(start, end);
 						date.setMonth(parseInt(mm, 10) - 1);
 					}
-					if (o.column.dbPattern.indexOf("dd") > -1) {
-						var start = o.column.dbPattern.indexOf("dd");
-						var end = o.column.dbPattern.indexOf("dd") + "dd".length;
+					if (dbPattern.indexOf("dd") > -1) {
+						var start = dbPattern.indexOf("dd");
+						var end = dbPattern.indexOf("dd") + "dd".length;
 						var dd = value.substring(start, end);
 						date.setDate(parseInt(dd, 10));
 					}
-					if (o.column.dbPattern.indexOf("HH") > -1) {
-						var start = o.column.dbPattern.indexOf("HH");
-						var end = o.column.dbPattern.indexOf("HH") + "HH".length;
+					if (dbPattern.indexOf("HH") > -1) {
+						var start = dbPattern.indexOf("HH");
+						var end = dbPattern.indexOf("HH") + "HH".length;
 						var hh = value.substring(start, end);
 						date.setHours(parseInt(hh, 10));
 					}
-					if (o.column.dbPattern.indexOf("mm") > -1) {
-						var start = o.column.dbPattern.indexOf("mm");
-						var end = o.column.dbPattern.indexOf("mm") + "mm".length;
+					if (dbPattern.indexOf("mm") > -1) {
+						var start = dbPattern.indexOf("mm");
+						var end = dbPattern.indexOf("mm") + "mm".length;
 						var mm = value.substring(start, end);
 						date.setMinutes(mm);
 					}
-					if (o.column.dbPattern.indexOf("ss") > -1) {
-						var start = o.column.dbPattern.indexOf("ss");
-						var end = o.column.dbPattern.indexOf("ss") + "ss".length;
+					if (dbPattern.indexOf("ss") > -1) {
+						var start = dbPattern.indexOf("ss");
+						var end = dbPattern.indexOf("ss") + "ss".length;
 						var ss = value.substring(start, end);
 						date.setSeconds(ss);
 					}
 					// js格式参考 http://yuilibrary.com/yui/docs/api/classes/Date.html#method_format
 					var columnManager = new ColumnManager();
-					var displayPattern = columnManager.convertDate2DisplayPattern(o.column.displayPattern);
-					return yInst.DataType.Date.format(date, {
-						format: displayPattern
-					});
+					var displayPattern = columnManager.convertDate2DisplayPattern(columnConfig.displayPattern);
+					return date.Format(displayPattern);
 				}
-				return o.value;
+				return o;
 			}
 		};
 	} else {
 		if (!g_errorLog[columnConfig.name]) {
-			g_errorLog[columnConfig.name] = columnConfig.Text;
+			g_errorLog[columnConfig.name] = columnConfig.text;
 			console.log(columnConfig);
 			console.log("日期字段未同时配置dbPattern和displayPattern");
 		}
 	}
-	var zeroShowEmpty = columnConfig.ZeroShowEmpty == "true";
+	var zeroShowEmpty = columnConfig.zeroShowEmpty;
 	if (zeroShowEmpty) {
 		return {
-			width: columnConfig.Width || "",
-			key: columnConfig.name,
-			label: columnConfig.Text,
-			formatter: function(o) {
-				if (o.value == "0") {
+			width: columnConfig.width || "",
+			field: columnConfig.name,
+			title: columnConfig.text,
+			colspan: columnConfig.colSpan || 1,
+			rowspan: columnConfig.rowSpan || 1,
+			formatter: function(o, row, index) {
+				if (o == "0") {
 					return "";
 				}
-				return o.value;
+				return o;
 			}
 		};
 	}
 	return {
-		width: columnConfig.Width || "",
-		key: columnConfig.name,
-		label: columnConfig.Text
+		width: columnConfig.width || "",
+		field: columnConfig.name,
+		title: columnConfig.text,
+		colspan: columnConfig.colSpan || 1,
+		rowspan: columnConfig.rowSpan || 1
 	};
 }
 
 ColumnManager.prototype.createBooleanColumn = function(columnConfig) {
 	return {
-		width: columnConfig.Width || "",
-		key: columnConfig.name,
-		label: columnConfig.Text,
-		formatter: function(o) {
-			if (o.value + "" == "true") {
+		width: columnConfig.width || "",
+		field: columnConfig.name,
+		title: columnConfig.text,
+		colspan: columnConfig.colSpan || 1,
+		rowspan: columnConfig.rowSpan || 1,
+		formatter: function(o, row, index) {
+			if (o + "" == "true") {
 				return "是";
-			} else if (o.value + "" == "false") {
+			} else if (o + "" == "false") {
 				return "否";
 			}
-			return o.value;
+			return o;
 		}
 	};
 }
 
 ColumnManager.prototype.createDictionaryColumn = function(columnConfig) {
 	return {
-		width: columnConfig.Width || "",
-		key: columnConfig.name,
-		label: columnConfig.Text,
-		formatter: function(o) {
-			if (g_layerBo[columnConfig.Dictionary] && g_layerBo[columnConfig.Dictionary][o.value]) {
-				return g_layerBo[columnConfig.Dictionary][o.value].name;
+		width: columnConfig.width || "",
+		field: columnConfig.name,
+		title: columnConfig.text,
+		colspan: columnConfig.colSpan || 1,
+		rowspan: columnConfig.rowSpan || 1,
+		formatter: function(o, row, index) {
+			if (g_layerBo[columnConfig.dictionary] && g_layerBo[columnConfig.dictionary][o]) {
+				return g_layerBo[columnConfig.dictionary][o].name;
 			}
 			if (!g_errorLog[columnConfig.name + "_DICTIONARY_NAME"]) {
 				g_errorLog[columnConfig.name + "_DICTIONARY_NAME"] = columnConfig.name;
 				console.log(o);
-				console.log(o.data);
+				console.log(row);
 				console.log(columnConfig);
 				console.log(columnConfig.name);
-				console.log("字典字段没找到,columnName:" + columnConfig.name + ", dictionaryName:" + columnConfig.Dictionary + ",code:" + o.value);
+				console.log("字典字段没找到,columnName:" + columnConfig.name + ", dictionaryName:" + columnConfig.dictionary + ",code:" + o);
 			}
-			return o.value;
+			return o;
 		}
 	};
 }
 
-ColumnManager.prototype.createSelectColumn = function(columnConfig) {
+ColumnManager.prototype.createTriggerColumn = function(columnConfig) {
 	var self = this;
 	return {
-		width: columnConfig.Width || "",
-		key: columnConfig.name,
-		label: columnConfig.Text,
-		allowHTML:  true,
-		zeroShowEmpty: columnConfig.ZeroShowEmpty,
-		formatter: function(o) {
-			if (new ColumnManager().isZeroShowEmpty(o)) {
+		width: columnConfig.width || "",
+		field: columnConfig.name,
+		title: columnConfig.text,
+		colspan: columnConfig.colSpan || 1,
+		rowspan: columnConfig.rowSpan || 1,
+		zeroShowEmpty: columnConfig.zeroShowEmpty,
+		formatter: function(o, row, index) {
+			if (new ColumnManager().isZeroShowEmpty(columnConfig.zeroShowEmpty, o)) {
 				return "";
 			}
 			var commonUtil = new CommonUtil();
-			var bo = {"A": o.data};
-			var relationItem = commonUtil.getCRelationItem(columnConfig.relationDS, bo, o.data);
+			var bo = {"A": row};
+			var relationItem = commonUtil.getRelationItem(columnConfig.relationDS, bo, row);
 			if (!relationItem) {
 				if (!g_errorLog[columnConfig.name]) {
 					g_errorLog[columnConfig.name] = columnConfig.name;
 					console.log(o);
-					console.log(o.data);
+					console.log(row);
 					console.log(columnConfig);
 					console.log(columnConfig.name);
-					console.log("未找到匹配的relationItem，有可能配置错误，目标referenceDataSourceModelId为:" + o.data.referenceDataSourceModelId);
+					console.log("未找到匹配的relationItem，有可能配置错误，目标referenceDataSourceModelId为:" + row.referenceDataSourceModelId);
 				}
 			}
 			var selectorName = relationItem.relationConfig.selectorName;
 			var displayField = relationItem.relationConfig.displayField;
-			var selectorData = g_relationManager.getRelationBo(selectorName, o.value);
+			var selectorData = g_relationManager.getRelationBo(selectorName, o);
 			if (selectorData) {
 				var valueLi = [];
 				var keyLi = displayField.split(',');
@@ -390,41 +371,30 @@ ColumnManager.prototype.createSelectColumn = function(columnConfig) {
 				if (!g_errorLog[columnConfig.name]) {
 					g_errorLog[columnConfig.name] = columnConfig.name;
 					console.log(o);
-					console.log(o.data);
+					console.log(row);
 					console.log(columnConfig);
 					console.log(columnConfig.name);
-					console.log("关联object未找到,columnName:" + columnConfig.name + ", selectorName:" + selectorName + ",id:" + o.value);
+					console.log("关联object未找到,columnName:" + columnConfig.name + ", selectorName:" + selectorName + ",id:" + o);
 				}
 			}
-			return o.value;
+			return o;
 		}
 	};
 }
 
-ColumnManager.prototype.createRowIndexColumn = function(columnModel) {
-	if (columnModel.Rownumber == "true") {
-		return {
-			width: 40,
-			key: "",
-			label: "序号",
-			formatter: function(o) {
-				return o.rowIndex + 1;
-			}
-		};
-	}
-	return null;
-}
-
 ColumnManager.prototype.createColumn = function(columnConfig, columnModel) {
 	var self = this;
-	if (columnConfig.XMLName.Local != "virtual-column" && columnConfig.Hideable != "true") {
-		if (columnConfig.ColumnModel.ColumnLi) {
+	if (columnConfig.xmlName != "virtual-column" && columnConfig.hideable != true) {
+		if (columnConfig.columnModel && columnConfig.columnModel.columnList && columnConfig.columnModel.columnList.length > 0) {
 			var result = {
-				label: columnConfig.Text,
+				field: columnConfig.name,
+				title: columnConfig.text,
+				colspan: columnConfig.colSpan || 1,
+				rowspan: columnConfig.rowSpan || 1,
 				"children": []
 			};
-			for (var i = 0; i < columnConfig.ColumnModel.ColumnLi.length; i++) {
-				var childColumn = self.createColumn(columnConfig.ColumnModel.ColumnLi[i], columnModel);
+			for (var i = 0; i < columnConfig.columnModel.columnList.length; i++) {
+				var childColumn = self.createColumn(columnConfig.columnModel.columnList[i], columnModel);
 				if (childColumn) {
 					result.children.push(childColumn);
 				}
@@ -432,63 +402,84 @@ ColumnManager.prototype.createColumn = function(columnConfig, columnModel) {
 			return result;
 		}
 		
-		if (columnConfig.XMLName.Local == "number-column") {
+		if (columnConfig.xmlName == "number-column") {
 			return self.createNumberColumn(columnConfig, columnModel);
-		} else if (columnConfig.XMLName.Local == "date-column") {
+		} else if (columnConfig.xmlName == "date-column") {
 			return self.createDateColumn(columnConfig);
-		} else if (columnConfig.XMLName.Local == "boolean-column") {
+		} else if (columnConfig.xmlName == "boolean-column") {
 			return self.createBooleanColumn(columnConfig);
-		} else if (columnConfig.XMLName.Local == "dictionary-column") {
+		} else if (columnConfig.xmlName == "dictionary-column") {
 			return self.createDictionaryColumn(columnConfig);
-		} else if (columnConfig.XMLName.Local == "select-column") {
-			return self.createSelectColumn(columnConfig);
+		} else if (columnConfig.xmlName == "trigger-column") {
+			return self.createTriggerColumn(columnConfig);
 		}
 		return {
-			width: columnConfig.Width || "",
-			key: columnConfig.name,
-			label: columnConfig.Text
+			width: columnConfig.width || "",
+			field: columnConfig.name,
+			title: columnConfig.text
 		};
 	}
 	return null;
 }
 
-ColumnManager.prototype._getColumnsCommon = function(columnModelName, columnModel, Y, virtualColumnMatchFunc) {
+ColumnManager.prototype._getColumnsCommon = function(columnModelName, columnModel, virtualColumnMatchFunc) {
 	var self = this;
-	self.yInst = Y;
 	var columns = [];
+	var columns1 = [];
+	var columns2 = [];
 	var checkboxColumn = self.createCheckboxColumn(columnModel);
 	if (checkboxColumn) {
-		columns.push(checkboxColumn);
+		columns1.push(checkboxColumn);
 	}
 	var idColumn = self.createIdColumn(columnModel);
 	if (idColumn) {
-		columns.push(idColumn);
-	}
-	var rowIndexColumn = self.createRowIndexColumn(columnModel);
-	if (rowIndexColumn) {
-		columns.push(rowIndexColumn);
+		columns1.push(idColumn);
 	}
 	
-	for (var i = 0; i < columnModel.ColumnLi.length; i++) {
-		var column = self.createColumn(columnModel.ColumnLi[i], columnModel);
+	for (var i = 0; i < columnModel.columnList.length; i++) {
+		var column = self.createColumn(columnModel.columnList[i], columnModel);
 		if (column) {
-			columns.push(column);
+			if (column.children && column.children.length > 0) {
+				for (var j = 0; j < column.children.length; j++) {
+					columns2.push(column.children[j]);
+				}
+				
+				columns1.push({
+					//field: column.field,
+					title: column.title, 
+					colspan: column.colSpan || 1,
+					rowspan: column.rowSpan || 1
+				});
+				
+				columns.push(column1);
+				columns.push(column2);
+				columns1 = [];
+				columns2 = [];
+			} else {
+				columns1.push(column);
+			}
 		} else {
-			if (virtualColumnMatchFunc(columnModel.ColumnLi[i])) {
+			if (virtualColumnMatchFunc(columnModel.columnList[i])) {
 				var virtualColumn = self.createVirtualColumn(columnModelName, columnModel, i);
 				if (virtualColumn) {
-					columns.push(virtualColumn);
+					columns1.push(virtualColumn);
 				}
 			}
 		}
 	}
+	if (columns1.length > 0) {
+		columns.push(columns1);
+	}
+	if (columns2.length > 0) {
+		columns.push(columns2);
+	}
 	return columns;
 }
 
-ColumnManager.prototype.getColumns = function(columnModelName, columnModel, Y) {
+ColumnManager.prototype.getColumns = function(columnModelName, columnModel) {
 	var self = this;
-	return self._getColumnsCommon(columnModelName, columnModel, Y, function(column){
-		return column.UseIn == undefined || column.UseIn == "" || column.UseIn == "list";
+	return self._getColumnsCommon(columnModelName, columnModel, function(column){
+		return column.useIn == undefined || column.useIn == "" || column.useIn == "list";
 	});
 }
 

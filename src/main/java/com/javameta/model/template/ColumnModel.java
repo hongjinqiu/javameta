@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -166,6 +167,11 @@ public class ColumnModel implements Serializable {
     protected String editorRendererTemplate;
     @XmlAttribute
     protected Integer colSpan;
+    @XmlAttribute
+    protected Integer rowSpan;
+    
+    @XmlTransient
+    private String xmlName = "column-model";
     
     /**
      * 把columnList中的column换掉,一般是替换auto-column,用于新生成的column,替换掉auto-column,
@@ -1110,6 +1116,22 @@ public class ColumnModel implements Serializable {
 
 	public void setColumnList(List<Column> columnList) {
 		this.columnList = columnList;
+	}
+
+	public String getXmlName() {
+		return xmlName;
+	}
+
+	public void setXmlName(String xmlName) {
+		this.xmlName = xmlName;
+	}
+
+	public Integer getRowSpan() {
+		return rowSpan;
+	}
+
+	public void setRowSpan(Integer rowSpan) {
+		this.rowSpan = rowSpan;
 	}
 
 }

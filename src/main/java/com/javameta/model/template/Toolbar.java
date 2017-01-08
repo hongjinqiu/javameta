@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -92,6 +93,9 @@ public class Toolbar implements Serializable {
     protected String exportTitle;
     @XmlAttribute
     protected String exportSuffix;
+    
+    @XmlTransient
+    private String xmlName = "toolbar";
     
     public List<Button> getButton() {
     	List<Button> list = New.arrayList();
@@ -413,5 +417,13 @@ public class Toolbar implements Serializable {
     public void setExportSuffix(String value) {
         this.exportSuffix = value;
     }
+
+	public String getXmlName() {
+		return xmlName;
+	}
+
+	public void setXmlName(String xmlName) {
+		this.xmlName = xmlName;
+	}
 
 }

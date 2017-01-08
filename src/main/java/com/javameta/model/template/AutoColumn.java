@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -88,6 +89,8 @@ public class AutoColumn extends Column implements Serializable {
     @XmlAttribute
     protected Integer colSpan;
     @XmlAttribute
+    protected Integer rowSpan;
+    @XmlAttribute
     @XmlSchemaType(name = "anySimpleType")
     protected String width;
     @XmlAttribute
@@ -131,6 +134,9 @@ public class AutoColumn extends Column implements Serializable {
     protected Boolean fixReadOnly;
     @XmlAttribute
     protected Boolean zeroShowEmpty;
+    
+    @XmlTransient
+    private String xmlName = "auto-column";
 
     /**
      * Gets the value of the columnAttribute property.
@@ -977,4 +983,19 @@ public class AutoColumn extends Column implements Serializable {
         this.zeroShowEmpty = value;
     }
 
+	public String getXmlName() {
+		return xmlName;
+	}
+
+	public void setXmlName(String xmlName) {
+		this.xmlName = xmlName;
+	}
+
+	public Integer getRowSpan() {
+		return rowSpan;
+	}
+
+	public void setRowSpan(Integer rowSpan) {
+		this.rowSpan = rowSpan;
+	}
 }
