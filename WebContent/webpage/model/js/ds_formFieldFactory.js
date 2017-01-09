@@ -132,7 +132,7 @@ FormFieldFactory.prototype._getFieldByAttributeValue = function(Y, value, name, 
 }
 
 FormFieldFactory.prototype._getFieldByColumnName = function(Y, columnName, name, dataSetId) {
-	if (columnName == "select-column") {
+	if (columnName == "trigger-column") {
 		return new Y.PTriggerField({
 			name : name, 
 			dataSetId: dataSetId, 

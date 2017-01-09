@@ -1,19 +1,26 @@
+/**
+ * 可以实现复制值出来后,再继续复制值,
+ * @param data
+ * @param columnLi
+ * @param columnName
+ * @param columnValue
+ */
 function _recurionApplyCopyField(data, columnLi, columnName, columnValue) {
 	var bo = new FormManager().getBo();
 	data[columnName] = columnValue;
 	var commonUtil = new CommonUtil();
 	for (var i = 0; i < columnLi.length; i++) {
 		if (columnLi[i].name == columnName) {
-			if (columnLi[i].xmlName == "select-column") {
+			if (columnLi[i].xmlName == "trigger-column") {
 				if (columnLi[i].relationDS) {
 					var relationItem = commonUtil.getRelationItem(columnLi[i].relationDS, bo, data);
-					if (relationItem.CCopyConfigLi) {
-						for (var j = 0; j < relationItem.CCopyConfigLi.length; j++) {
-							var copyValueField = relationItem.CCopyConfigLi[j].CopyValueField;
+					if (relationItem.copyConfig) {
+						for (var j = 0; j < relationItem.copyConfig.length; j++) {
+							var copySrcField = relationItem.copyConfig[j].copySrcField;
 							var selectorDict = g_relationManager.getRelationBo(relationItem.relationConfig.selectorName, columnValue);
 							if (selectorDict) {
-								var copyColumnValue = selectorDict[copyValueField];
-								_recurionApplyCopyField(data, columnLi, relationItem.CCopyConfigLi[j].CopyColumnName, copyColumnValue);
+								var copySrcValue = selectorDict[copySrcField];
+								_recurionApplyCopyField(data, columnLi, relationItem.copyConfig[j].copyDestField, copySrcValue);
 							}
 						}
 					}
@@ -35,25 +42,25 @@ function selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, inpu
 	}
 	
 	var formManager = new FormManager();
-	var templateIterator = new TemplateIterator();
+	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
 
 	// use default action
 	var dataLi = [];
 	var columnResult = "";
 	var columnLi = [];
-	templateIterator.iterateAllTemplateColumn(dataSetId, columnResult, function IterateFunc(column, result) {
+	formTemplateIterator.iterateAllTemplateColumn(dataSetId, columnResult, function IterateFunc(column, result) {
 		columnLi.push(column);
 	});
 	for (var i = 0; i < selectValueLi.length; i++) {
 		var data = formManager.getDataSetNewData(dataSetId);
 		if (button.relationDS && button.relationDS.relationItem) {
 			var relationItem = button.relationDS.relationItem[0];
-			if (relationItem.CCopyConfigLi) {
-				for (var j = 0; j < relationItem.CCopyConfigLi.length; j++) {
-					var columnName = relationItem.CCopyConfigLi[j].CopyColumnName;
-					var copyValueField = relationItem.CCopyConfigLi[j].CopyValueField;
-					var columnValue = selectValueLi[i][copyValueField];
+			if (relationItem.copyConfig) {
+				for (var j = 0; j < relationItem.copyConfig.length; j++) {
+					var columnName = relationItem.copyConfig[j].copyDestField;
+					var copySrcField = relationItem.copyConfig[j].copySrcField;
+					var columnValue = selectValueLi[i][copySrcField];
 					_recurionApplyCopyField(data, columnLi, columnName, columnValue);
 				}
 			}
@@ -61,11 +68,11 @@ function selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, inpu
 		dataLi.push(data);
 	}
 	// 允许重复的判断,
-	var gridDataLi = g_gridPanelDict["B"].dt.get("data").toJSON();
+	var gridDataLi = g_gridPanelDict[dataSetId].dt.datagrid("getData");
 	var notAllowDuplicateColumn = [];
 	var datasourceIterator = new DatasourceIterator();
 	datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
-		if (fieldGroup.getDataSetId() == dataSetId && fieldGroup.AllowDuplicate == "false") {
+		if (fieldGroup.getDataSetId() == dataSetId && fieldGroup.allowDuplicate != true) {
 			notAllowDuplicateColumn.push(fieldGroup.id);
 		}
 	});
@@ -85,5 +92,5 @@ function selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, inpu
 			gridDataLi.push(dataLi[i]);
 		}
 	}
-	g_gridPanelDict["B"].dt.set("data", gridDataLi);
+	g_gridPanelDict[dataSetId].dt.datagrid("loadData", gridDataLi);
 }

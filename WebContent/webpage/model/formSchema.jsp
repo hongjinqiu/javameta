@@ -32,12 +32,14 @@ js/columnDataSourceManager.js				finish,
 js/ds_formtoolbar.js						finish,
 js/datasourceService.js						finish,
 js/datasourceFactory.js						finish,
-js/ds_formFieldFactory.js					running,--------------,
-js/formTemplateFactory.js
-js/defaultAction.js
-js/relationManager.js
-js/listTemplateService.js
+js/ds_formFieldFactory.js					finish,跳过,只当参考,------,实际绘制时,需要生成html和相关js,
+	返回PTextField之类的,那么,能不能返回easyui的实现呢?
+js/formTemplateFactory.js					finish,
+js/defaultAction.js							finish,
+js/relationManager.js						finish,
+js/listTemplateService.js					running,-------------------,
 js/templateService.js
+	listTemplateService.js里面的东东是要干掉的,需要把相应的方法和值给弄到,templateService.js里面去,
 js/columnSequenceService.js
 js/formManager.js
 

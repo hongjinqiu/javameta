@@ -39,12 +39,12 @@ FormManager.prototype.validateReadonly = function(formObj, val, Y) {
 	if (!Y.Lang.isBoolean(val)) {
 		return false;
 	}
-	var templateIterator = new TemplateIterator();
+	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
 	var dataSetId = self.get("dataSetId");
 	var validateResult = true;
 	
-	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
+	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
 		if (column.name == self.get("name")) {
 			if (column.FixReadOnly && !val) {
 				validateResult = false;
@@ -87,10 +87,10 @@ FormManager.prototype.initializeAttr = function(formObj, Y) {
     		}
     	});
     	
-    	var templateIterator = new TemplateIterator();
+    	var formTemplateIterator = new FormTemplateIterator();
     	var result = "";
     	var dataSetId = self.get("dataSetId");
-    	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
+    	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
     		if (column.name == self.get("name")) {
     			if (column.FixReadOnly) {
     				self.set("readonly", true);
@@ -133,10 +133,10 @@ FormManager.prototype._getCurrencyFormat = function(dataSetId, currencyField, fi
 	var prefix = null;
 	var decimalPlaces = null;
 	var currencyFieldColumnConfig = null;
-	var templateIterator = new TemplateIterator();
+	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
 	
-	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
+	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
 		if (column.name == currencyField) {
 			currencyFieldColumnConfig = column;
 			return true;
@@ -171,11 +171,11 @@ FormManager.prototype._getCurrencyFormat = function(dataSetId, currencyField, fi
  */
 FormManager.prototype.applyNumberDisplayPattern = function(formObj, Y) {
 	var self = formObj;
-	var templateIterator = new TemplateIterator();
+	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
 	var dataSetId = self.get("dataSetId");
 	
-	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
+	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
 		if (column.name == self.get("name")) {
 			var currencyField = column.CurrencyField;
 			if (currencyField) {
@@ -348,9 +348,9 @@ FormManager.prototype.applyEventBehavior = function(formObj, Y) {
 		}
 	});
 	// observe的添加,主要用于清值,如果是用tree需要联动呢?到时再添加呗
-	var templateIterator = new TemplateIterator();
+	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
-	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
+	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
 		if (column.name == name) {
 			if (column.ColumnAttributeLi) {
 				for (var i = 0; i < column.ColumnAttributeLi.length; i++) {
@@ -391,10 +391,10 @@ FormManager.prototype.setChoices = function(formObj) {
 	var self = formObj;
 	var choices = [];
 	if (g_layerBoLi) {
-		var templateIterator = new TemplateIterator();
+		var formTemplateIterator = new FormTemplateIterator();
     	var result = "";
     	var dataSetId = self.get("dataSetId");
-    	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
+    	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
     		if (column.name == self.get("name")) {
     			if (g_layerBoLi[column.dictionary]) {
 					for (var k = 0; k < g_layerBoLi[column.dictionary].length; k++) {
@@ -644,9 +644,9 @@ FormManager.prototype.dsFormFieldValidator = function(value, formFieldObj) {
 
 FormManager.prototype._getDateSeperator = function(dataSetId, name) {
 	var dateSeperator = null;
-	var templateIterator = new TemplateIterator();
+	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
-	templateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
+	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
 		if (column.name == name) {
 			if (column.xmlName == "date-column") {
 				if (column.displayPattern.indexOf("-") > -1) {
@@ -854,8 +854,8 @@ FormManager.prototype._setDetailGridStatus = function(status) {
 			}
 			var detailGrid = g_gridPanelDict[dataSet.id];
 			if (detailGrid) {
-				var templateIterator = new TemplateIterator();
-				templateIterator.iterateAnyTemplateColumn(dataSet.id, result, function(column, result){
+				var formTemplateIterator = new FormTemplateIterator();
+				formTemplateIterator.iterateAnyTemplateColumn(dataSet.id, result, function(column, result){
 					if (column.xmlName == "virtual-column") {
 						if (status == "view") {
 							var virtualColumn = g_gridPanelDict[dataSet.id].dt.getColumn(column.name);

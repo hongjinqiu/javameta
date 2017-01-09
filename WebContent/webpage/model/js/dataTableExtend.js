@@ -3,7 +3,7 @@ function DataTableManager() {
 	this.dt = null;
 }
 
-DataTableManager.prototype.createDataGrid = function(Y, param, config) {
+DataTableManager.prototype.createDataGrid = function(param, config) {
 	var self = this;
 	this.param = param;
 	

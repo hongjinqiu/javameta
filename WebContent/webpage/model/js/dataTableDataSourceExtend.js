@@ -161,9 +161,9 @@ function g_pluginCopyRow(o, dataSetId) {
  */
 function g_selectRow(dataSetId, btnName) {
 //	var formManager = new FormManager();
-	var templateIterator = new TemplateIterator();
+	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
-	templateIterator.iterateAnyTemplateButton(result, function(toolbarOrColumnModel, button, result) {
+	formTemplateIterator.iterateAnyTemplateButton(result, function(toolbarOrColumnModel, button, result) {
 		if (toolbarOrColumnModel.dataSetId == dataSetId && button.name == btnName) {
 			window.s_selectFunc = function(selectValueLi) {
 				if (button.jsConfig && button.jsConfig.selectFunc) {
@@ -184,7 +184,7 @@ function g_selectRow(dataSetId, btnName) {
         	};
         	if (button.relationDS && button.relationDS.relationItem) {
     			var relationItem = button.relationDS.relationItem[0];
-    			var url = "/console/selectorschema?@name={NAME_VALUE}&@multi={MULTI_VALUE}&@displayField={DISPLAY_FIELD_VALUE}&date=" + new Date();
+    			var url = "/schema/selectorschema?@name={NAME_VALUE}&@multi={MULTI_VALUE}&@displayField={DISPLAY_FIELD_VALUE}&date=" + new Date();
     			var selectorName = relationItem.relationConfig.selectorName;
     			url = url.replace("{NAME_VALUE}", selectorName);
     			var multi = relationItem.relationConfig.selectionMode == "multi";
@@ -239,7 +239,7 @@ function g_removeRow(dataSetId) {
 			} else {
 				// g_gridPanelDict[dataSetId].dt.removeRow(selectRecordLi[i]);
 				// $('#tt').datagrid('deleteRow',index);
-				var rowLi = g_gridPanelDict[dataSetId].dt.datagrid("getRows");
+				var rowLi = g_gridPanelDict[dataSetId].dt.datagrid("getData");
 				for (var j = 0; j < rowLi.length; j++) {
 					if (rowLi[j].id == selectRecordLi[i].id) {
 						g_gridPanelDict[dataSetId].dt.datagrid("deleteRow", j);

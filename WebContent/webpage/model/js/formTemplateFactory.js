@@ -5,10 +5,10 @@ function FormTemplateFactory() {
  * 扩展listTemplate
  */
 FormTemplateFactory.prototype.extendFormTemplate = function(modelExtraInfo) {
-	var templateIterator = new TemplateIterator();
+	var formTemplateIterator = new FormTemplateIterator();
 	if (modelExtraInfo.buttonConfig) {
 		for (var key in modelExtraInfo.buttonConfig) {
-			templateIterator.iterateAnyTemplateButton(result, function(toolbarOrColumnModel, button, result){
+			formTemplateIterator.iterateAnyTemplateButton(result, function(toolbarOrColumnModel, button, result){
 				if (button.name == key) {
 					if (!button.jsConfig) {
 						button.jsConfig = {};
