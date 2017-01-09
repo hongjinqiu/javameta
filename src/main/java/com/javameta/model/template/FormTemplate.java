@@ -59,7 +59,7 @@ import com.javameta.util.New;
 @XmlType(name = "", propOrder = {
     "id",
     "cookie",
-    "dataSourceModelId",
+    "datasourceModelId",
     "adapter",
     "description",
     "scripts",
@@ -75,7 +75,7 @@ public class FormTemplate implements Serializable {
     protected String id;
     protected Cookie cookie;
     @XmlElement(name = "data-source-model-id")
-    protected String dataSourceModelId;
+    protected String datasourceModelId;
     protected Adapter adapter;
     protected String description;
     protected String scripts;
@@ -183,27 +183,27 @@ public class FormTemplate implements Serializable {
     }
 
     /**
-     * Gets the value of the dataSourceModelId property.
+     * Gets the value of the datasourceModelId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getDataSourceModelId() {
-        return dataSourceModelId;
+    public String getDatasourceModelId() {
+        return datasourceModelId;
     }
 
     /**
-     * Sets the value of the dataSourceModelId property.
+     * Sets the value of the datasourceModelId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDataSourceModelId(String value) {
-        this.dataSourceModelId = value;
+    public void setDatasourceModelId(String value) {
+        this.datasourceModelId = value;
     }
 
     /**

@@ -1,7 +1,7 @@
-function ColumnDataSourceManager() {
+function ColumnDatasourceManager() {
 }
 /*
-ColumnDataSourceManager.prototype.createVirtualColumn = function(columnModelName, columnModel, columnIndex) {
+ColumnDatasourceManager.prototype.createVirtualColumn = function(columnModelName, columnModel, columnIndex) {
 	var self = this;
 	var yInst = self.yInst;
 	var i = columnIndex;
@@ -20,9 +20,9 @@ ColumnDataSourceManager.prototype.createVirtualColumn = function(columnModelName
 					}
 					for (var j = 0; j < virtualColumn.buttons.button.length; j++) {
 						var btnTemplate = null;
-						if (virtualColumn.buttons.button[j].Mode == "fn") {
+						if (virtualColumn.buttons.button[j].mode == "fn") {
 							btnTemplate = "<input type='button' value='{value}' onclick='doVirtualColumnBtnAction(\"{columnModelName}\", this, {handler})' class='{class}' />";
-						} else if (virtualColumn.buttons.button[j].Mode == "url") {
+						} else if (virtualColumn.buttons.button[j].mode == "url") {
 							btnTemplate = "<input type='button' value='{value}' onclick='location.href=\"{href}\"' class='{class}' />";
 						} else {
 							btnTemplate = "<input type='button' value='{value}' onclick='window.open(\"{href}\")' class='{class}' />";
@@ -53,19 +53,19 @@ ColumnDataSourceManager.prototype.createVirtualColumn = function(columnModelName
 	return null;
 }*/
 
-ColumnDataSourceManager.prototype.getColumns = function(columnModelName, columnModel) {
+ColumnDatasourceManager.prototype.getColumns = function(columnModelName, columnModel) {
 	var self = this;
 	self.yInst = Y;
 	var columnManager = new ColumnManager();
 	// 换掉createVirtualColumn,button需要做被用的判断,被用时,不显示删除按钮,
 	//columnManager.createVirtualColumn = self.createVirtualColumn;
 	var columns = columnManager.getColumns(columnModelName, columnModel);
-	if (g_dataSourceJson) {
+	if (g_datasourceJson) {
 		var datasourceIterator = new DatasourceIterator();
 		var result = "";
 		for (var i = 0; i < columns.length; i++) {
 //			columns[i].allowHTML = true;
-			datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+			datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
 				if (fieldGroup.getDataSetId() == columnModel.dataSetId && fieldGroup.id == columns[i].field) {
 					if (fieldGroup.allowEmpty == "false") {
 						columns[i].title = '<font style="color:red">*</font>' + columns[i].title;

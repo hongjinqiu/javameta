@@ -350,7 +350,7 @@
 					<documentation>分页现</documentation>
 				</annotation>
 			</attribute>
-			<attribute name="dataSource" />
+			<attribute name="datasource" />
 			<attribute name="sqlIntercept" />
 			<attribute name="orderSqlIntercept" />
 		</complexType>

@@ -97,6 +97,12 @@ public class SchemaController extends ControllerSupport {
 			JSONObject gatheringFormTemplateJsonData = JSONObject.fromObject(gatheringFormTemplate);
 			request.setAttribute("gatheringFormTemplateJsonData", gatheringFormTemplateJsonData.toString());
 		}
+		{
+			DatasourceFactory datasourceFactory = new DatasourceFactory();
+			Datasource gathering = datasourceFactory.getDatasource("GatheringBill");
+			JSONObject datasourceJson = JSONObject.fromObject(gathering);
+			request.setAttribute("datasourceJson", datasourceJson.toString());
+		}
 		
 		String view = formTemplate.getViewTemplate().getView();
 		if (view.endsWith(".jsp")) {
@@ -114,7 +120,7 @@ public class SchemaController extends ControllerSupport {
 		List<Map<String, Object>> componentItems = New.arrayList();
 		for (FormTemplateInfo formTemplateInfo: listTemplateInfoLi) {
 			String module = "组件模型";
-			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDataSourceModelId()) && StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
+			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDatasourceModelId()) && StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
 				module = "数据源模型适配";
 			}
 			Map<String, Object> componentItem = New.hashMap();
@@ -137,7 +143,7 @@ public class SchemaController extends ControllerSupport {
 		List<Map<String, Object>> componentItems = New.arrayList();
 		for (FormTemplateInfo formTemplateInfo: listTemplateInfoLi) {
 			String module = "组件模型选择器";
-			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDataSourceModelId()) && StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
+			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDatasourceModelId()) && StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
 				module = "数据源模型选择器适配";
 			}
 			Map<String, Object> componentItem = New.hashMap();
@@ -160,7 +166,7 @@ public class SchemaController extends ControllerSupport {
 		List<Map<String, Object>> componentItems = New.arrayList();
 		for (FormTemplateInfo formTemplateInfo: listTemplateInfoLi) {
 			String module = "form模型";
-			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDataSourceModelId()) && StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
+			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDatasourceModelId()) && StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
 				module = "数据源模型适配";
 			}
 			Map<String, Object> componentItem = New.hashMap();

@@ -25,7 +25,7 @@ DataTableManager.prototype.createDataGrid = function(Y, param, config) {
 			columns : columns,
 			data : data,
 			width: "100%"
-			//		,datasource: dataSource
+			//		,datasource: datasource
 	};
 	// TODO,调用easyui的grid来画一个表格出来,
 }

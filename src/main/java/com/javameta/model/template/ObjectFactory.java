@@ -34,7 +34,7 @@ import javax.xml.namespace.QName;
 public class ObjectFactory implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-    private final static QName _DataSourceModelId_QNAME = new QName("https://github.com/hongjinqiu/javameta/template", "data-source-model-id");
+    private final static QName _DatasourceModelId_QNAME = new QName("https://github.com/hongjinqiu/javameta/template", "data-source-model-id");
     private final static QName _AfterQueryData_QNAME = new QName("https://github.com/hongjinqiu/javameta/template", "after-query-data");
     private final static QName _Id_QNAME = new QName("https://github.com/hongjinqiu/javameta/template", "id");
     private final static QName _Scripts_QNAME = new QName("https://github.com/hongjinqiu/javameta/template", "scripts");
@@ -380,8 +380,8 @@ public class ObjectFactory implements Serializable {
      * 
      */
     @XmlElementDecl(namespace = "https://github.com/hongjinqiu/javameta/template", name = "data-source-model-id")
-    public JAXBElement<String> createDataSourceModelId(String value) {
-        return new JAXBElement<String>(_DataSourceModelId_QNAME, String.class, null, value);
+    public JAXBElement<String> createDatasourceModelId(String value) {
+        return new JAXBElement<String>(_DatasourceModelId_QNAME, String.class, null, value);
     }
 
     /**

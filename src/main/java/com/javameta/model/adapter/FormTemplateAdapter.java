@@ -34,13 +34,13 @@ import com.javameta.util.New;
 public class FormTemplateAdapter implements IFormTemplateAdapter {
 
 	/**
-	 * 根据formTemplate.dataSourceModelId,取出datasource,生成formTemplate配置,
+	 * 根据formTemplate.datasourceModelId,取出datasource,生成formTemplate配置,
 	 */
 	@Override
 	public void applyAdapter(FormTemplate formTemplate) {
-		if (StringUtils.isNotEmpty(formTemplate.getDataSourceModelId())) {
+		if (StringUtils.isNotEmpty(formTemplate.getDatasourceModelId())) {
 			DatasourceFactory datasourceFactory = new DatasourceFactory();
-			Datasource datasource = datasourceFactory.getDatasource(formTemplate.getDataSourceModelId());
+			Datasource datasource = datasourceFactory.getDatasource(formTemplate.getDatasourceModelId());
 			applyDetailDataSet(datasource, formTemplate);
 			applyQueryParameter(datasource, formTemplate);
 		}
@@ -82,11 +82,11 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 								if (textLi.length != 3) {
 									throw new JavametaException("dataProvider:" + dataProvider.getName() + ", dataSet:" + tmpQueryParameterDataSetId + ", queryParameter.Name:" + queryParameter.getName() + ", dsFieldMap:" + queryParameter.getDsFieldMap() + " apply failed, dsFieldMap.len != 3");
 								} else {
-									String dataSourceId = textLi[0];
+									String datasourceId = textLi[0];
 									final String dataSetId = textLi[1];
 									final String fieldId = textLi[2];
 									DatasourceFactory datasourceFactory = new DatasourceFactory();
-									Datasource outSideDatasource = datasourceFactory.getDatasource(dataSourceId);
+									Datasource outSideDatasource = datasourceFactory.getDatasource(datasourceId);
 									DatasourceIterator.iterateField(outSideDatasource, new IDatasourceFieldIterate() {
 										@Override
 										public void iterate(Field field) {
@@ -291,11 +291,11 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 					if (textLi.length != 3) {
 						throw new JavametaException("dataSet:" + columnModel.getDataSetId() + ", column.Name:" + column.getName() + ", dsFieldMap:" + column.getDsFieldMap() + " apply failed, dsFieldMap.len != 3");
 					} else {
-						String dataSourceId = textLi[0];
+						String datasourceId = textLi[0];
 						final String dataSetId = textLi[1];
 						final String fieldId = textLi[2];
 						DatasourceFactory datasourceFactory = new DatasourceFactory();
-						Datasource outSideDatasource = datasourceFactory.getDatasource(dataSourceId);
+						Datasource outSideDatasource = datasourceFactory.getDatasource(datasourceId);
 						DatasourceIterator.iterateField(outSideDatasource, new IDatasourceFieldIterate() {
 							@Override
 							public void iterate(Field field) {

@@ -29,10 +29,10 @@ js/dataTableExtend.js						finish,但是还是需要大量修改,
 js/dataTableDataSourceExtend.js				finish,但是还是需要结合easyui做大量修改,				
 js/columnManager.js							finish,
 js/columnDataSourceManager.js				finish,
-js/ds_formtoolbar.js						running,------------------------,
-js/modelService.js
-js/modelTemplateFactory.js
-js/ds_formFieldFactory.js
+js/ds_formtoolbar.js						finish,
+js/datasourceService.js						finish,
+js/datasourceFactory.js						finish,
+js/ds_formFieldFactory.js					running,--------------,
 js/formTemplateFactory.js
 js/defaultAction.js
 js/relationManager.js

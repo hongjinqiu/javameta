@@ -1,16 +1,20 @@
+function getIdUrl(id) {
+	return id.substring(0,1).toLowerCase() + id.substring(1);
+}
+
 function editData() {//修改
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.id + "/EditData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/editData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.id,
+			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id,
 			"id": bo["id"]
 		},
 		callback: function(o) {
 			formManager.applyGlobalParamFromAjaxData(o);
-			formManager.loadData2Form(g_dataSourceJson, o.bo);
+			formManager.loadData2Form(g_datasourceJson, o.bo);
 			formManager.setFormStatus("edit");
 		}
 	});
@@ -19,15 +23,15 @@ function editData() {//修改
 function saveData() {//保存
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
-	var validateResult = formManager.dsFormValidator(g_dataSourceJson, bo);
+	var validateResult = formManager.dsFormValidator(g_datasourceJson, bo);
 	
 	if (!validateResult.result) {
 		showError(validateResult.message);
 	} else {
 		ajaxRequest({
-			url: "/" + g_dataSourceJson.id + "/SaveData?format=json"
+			url: "/" + getIdUrl(g_datasourceJson.id) + "/saveData?format=json"
 			,params: {
-				"dataSourceModelId": g_dataSourceJson.id,
+				"datasourceModelId": g_datasourceJson.id,
 				"formTemplateId": g_formTemplateJsonData.id,
 				"jsonData": bo
 			},
@@ -35,7 +39,7 @@ function saveData() {//保存
 				showSuccess("保存数据成功");
 				formManager.setFormStatus("view");
 				formManager.applyGlobalParamFromAjaxData(o);
-				formManager.loadData2Form(g_dataSourceJson, o.bo);
+				formManager.loadData2Form(g_datasourceJson, o.bo);
 			}
 		});
 	}
@@ -45,15 +49,15 @@ function newData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.id + "/NewData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/newData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.id,
+			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id
 		},
 		callback: function(o) {
-			formManager.setDetailIncId(g_dataSourceJson, o.bo);
+			formManager.setDetailIncId(g_datasourceJson, o.bo);
 			formManager.applyGlobalParamFromAjaxData(o);
-			formManager.loadData2Form(g_dataSourceJson, o.bo);
+			formManager.loadData2Form(g_datasourceJson, o.bo);
 			formManager.setFormStatus("edit");
 		}
 	});
@@ -63,16 +67,16 @@ function copyData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.id + "/CopyData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/copyData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.id,
+			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id,
 			"id": bo["id"]
 		},
 		callback: function(o) {
-			formManager.setDetailIncId(g_dataSourceJson, o.bo);
+			formManager.setDetailIncId(g_datasourceJson, o.bo);
 			formManager.applyGlobalParamFromAjaxData(o);
-			formManager.loadData2Form(g_dataSourceJson, o.bo);
+			formManager.loadData2Form(g_datasourceJson, o.bo);
 			formManager.setFormStatus("edit");
 		}
 	});
@@ -83,18 +87,18 @@ function giveUpData() {
 	var bo = formManager.getBo();
 	showConfirm("您确定要放弃吗？", function(){
 		if (!bo["id"] || bo["id"] == "0") {
-			location.href = "/console/listschema?@name=" + g_dataSourceJson.id;
+			location.href = "/console/listschema?@name=" + g_datasourceJson.id;
 		} else {
 			ajaxRequest({
-				url: "/" + g_dataSourceJson.id + "/GiveUpData?format=json"
+				url: "/" + getIdUrl(g_datasourceJson.id) + "/giveUpData?format=json"
 				,params: {
-					"dataSourceModelId": g_dataSourceJson.id,
+					"datasourceModelId": g_datasourceJson.id,
 					"formTemplateId": g_formTemplateJsonData.id,
 					"id": bo["id"]
 				},
 				callback: function(o) {
 					formManager.applyGlobalParamFromAjaxData(o);
-					formManager.loadData2Form(g_dataSourceJson, o.bo);
+					formManager.loadData2Form(g_datasourceJson, o.bo);
 					formManager.setFormStatus("view");
 				}
 			});
@@ -107,14 +111,14 @@ function deleteData() {
 		var formManager = new FormManager();
 		var bo = formManager.getBo();
 		ajaxRequest({
-			url: "/" + g_dataSourceJson.id + "/DeleteData?format=json"
+			url: "/" + getIdUrl(g_datasourceJson.id) + "/deleteData?format=json"
 			,params: {
-				"dataSourceModelId": g_dataSourceJson.id,
+				"datasourceModelId": g_datasourceJson.id,
 				"formTemplateId": g_formTemplateJsonData.id,
 				"id": bo["id"]
 			},
 			callback: function(o) {
-				location.href = "/console/listschema?@name=" + g_dataSourceJson.id;
+				location.href = "/console/listschema?@name=" + g_datasourceJson.id;
 			}
 		});
 	})
@@ -124,15 +128,15 @@ function refreshData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.id + "/RefreshData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/refreshData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.id,
+			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id,
 			"id": bo["id"]
 		},
 		callback: function(o) {
 			formManager.applyGlobalParamFromAjaxData(o);
-			formManager.loadData2Form(g_dataSourceJson, o.bo);
+			formManager.loadData2Form(g_datasourceJson, o.bo);
 			formManager.setFormStatus("view");
 		}
 	});
@@ -143,7 +147,7 @@ function logList() {
 	var bo = formManager.getBo();
 	var dialog = showModalDialog({
 		"title": "被用查询",
-		"url": "/console/listschema?@name=PubReferenceLog&beReferenceDataSourceModelId=" + g_dataSourceJson.id + "&beReferenceId=" + bo["id"] + "&date=" + new Date()
+		"url": "/console/listschema?@name=PubReferenceLog&beReferenceDatasourceModelId=" + g_datasourceJson.id + "&beReferenceId=" + bo["id"] + "&date=" + new Date()
 	});
 }
 
@@ -151,16 +155,16 @@ function cancelData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.id + "/CancelData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/cancelData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.id,
+			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id,
 			"id": bo["id"]
 		},
 		callback: function(o) {
 			showSuccess("作废数据成功");
 			formManager.applyGlobalParamFromAjaxData(o);
-			formManager.loadData2Form(g_dataSourceJson, o.bo);
+			formManager.loadData2Form(g_datasourceJson, o.bo);
 			formManager.setFormStatus("view");
 		}
 	});
@@ -170,16 +174,16 @@ function unCancelData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + g_dataSourceJson.id + "/UnCancelData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/unCancelData?format=json"
 		,params: {
-			"dataSourceModelId": g_dataSourceJson.id,
+			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id,
 			"id": bo["id"]
 		},
 		callback: function(o) {
 			showSuccess("反作废数据成功");
 			formManager.applyGlobalParamFromAjaxData(o);
-			formManager.loadData2Form(g_dataSourceJson, o.bo);
+			formManager.loadData2Form(g_datasourceJson, o.bo);
 			formManager.setFormStatus("view");
 		}
 	});
@@ -191,7 +195,7 @@ function getData() {
 		url: "/ActionTest/GetData?format=json"
 		,params: {
 			"id": 26,
-			"dataSourceModelId": "ActionTest"
+			"datasourceModelId": "ActionTest"
 		},
 		callback: function(o) {
 			console.log(o);
@@ -228,29 +232,9 @@ function setBorderTmp(btn, status) {
 
 ToolbarManager.prototype.enableDisableToolbarBtn = function() {
 	if (g_formStatus == "view") {
-		var viewEnableBtnLi = ["listBtn","newBtn","copyBtn","cancelBtn","unCancelBtn","refreshBtn","usedQueryBtn"];
+		var viewEnableBtnLi = ["listBtn","newBtn","copyBtn","refreshBtn","usedQueryBtn"];
 		var viewDisableBtnLi = ["saveBtn","giveUpBtn"];
 		
-		// cancelBtn,
-		if (g_masterFormFieldDict["billStatus"]) {
-			if (g_masterFormFieldDict["billStatus"].get("value") == "1") {// 正常
-				viewEnableBtnLi.push("cancelBtn");
-				viewEnableBtnLi.push("editBtn");
-			} else {
-				viewDisableBtnLi.push("cancelBtn");
-				viewDisableBtnLi.push("editBtn");
-			}
-		} else {
-			viewEnableBtnLi.push("editBtn");
-		}
-		// unCancelBtn,
-		if (g_masterFormFieldDict["billStatus"]) {
-			if (g_masterFormFieldDict["billStatus"].get("value") == "4") {// 作废
-				viewEnableBtnLi.push("unCancelBtn");
-			} else {
-				viewDisableBtnLi.push("unCancelBtn");
-			}
-		}
 		// delBtn,
 		var isUsed = false;
 		if (g_usedCheck) {
@@ -275,28 +259,6 @@ ToolbarManager.prototype.enableDisableToolbarBtn = function() {
 				setBorderTmp(btn, "");
 			}
 		}
-		/*
-		var cancelBtn = document.getElementById("cancelBtn");
-		if (cancelBtn && g_masterFormFieldDict["billStatus"]) {
-			if (g_masterFormFieldDict["billStatus"].get("value") == "1") {
-				cancelBtn.disabled = "";
-				setBorderTmp(cancelBtn, "");
-			} else {
-				cancelBtn.disabled = "disabled";
-				setBorderTmp(cancelBtn, "disabled");
-			}
-		}
-		var unCancelBtn = document.getElementById("unCancelBtn");
-		if (unCancelBtn && g_masterFormFieldDict["billStatus"]) {
-			if (g_masterFormFieldDict["billStatus"].get("value") == "4") {
-				unCancelBtn.disabled = "";
-				setBorderTmp(unCancelBtn, "");
-			} else {
-				unCancelBtn.disabled = "disabled";
-				setBorderTmp(unCancelBtn, "disabled");
-			}
-		}
-		*/
 		
 		for (var i = 0; i < viewDisableBtnLi.length; i++) {
 			var btn = document.getElementById(viewDisableBtnLi[i]);
@@ -307,7 +269,7 @@ ToolbarManager.prototype.enableDisableToolbarBtn = function() {
 		}
 	} else {
 		var editEnableBtnLi = ["listBtn","saveBtn","giveUpBtn"];
-		var editDisableBtnLi = ["newBtn","copyBtn","editBtn","delBtn","cancelBtn","unCancelBtn","refreshBtn","usedQueryBtn"];
+		var editDisableBtnLi = ["newBtn","copyBtn","editBtn","delBtn","refreshBtn","usedQueryBtn"];
 		for (var i = 0; i < editEnableBtnLi.length; i++) {
 			var btn = document.getElementById(editEnableBtnLi[i]);
 			if (btn) {

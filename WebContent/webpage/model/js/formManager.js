@@ -58,7 +58,7 @@ FormManager.prototype.validateReadonly = function(formObj, val, Y) {
 	if (validateResult) {
 		var datasourceIterator = new DatasourceIterator();
 		var result = "";
-		datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+		datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
 			if (fieldGroup.getDataSetId() == dataSetId && fieldGroup.id == self.get("name")) {
 				var usedFormManager = new FormManager();
 				var isUsed = usedFormManager.getDataIsUsedForFormObj(formObj);
@@ -76,10 +76,10 @@ FormManager.prototype.validateReadonly = function(formObj, val, Y) {
 
 FormManager.prototype.initializeAttr = function(formObj, Y) {
 	var self = formObj;
-	if (g_dataSourceJson) {
+	if (g_datasourceJson) {
     	var datasourceIterator = new DatasourceIterator();
     	var result = "";
-    	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+    	datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
     		if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
     			if (fieldGroup.allowEmpty != true) {
     				self.set("required", true);
@@ -300,12 +300,12 @@ FormManager.prototype.updateAllFieldAttr4GlobalParam = function() {
 
 FormManager.prototype.updateSingleFieldAttr4GlobalParam = function(formObj, Y) {
 	var self = formObj;
-	if (g_dataSourceJson) {
+	if (g_datasourceJson) {
 		// 被用,赋值readonly=true
 		if (self.get("readonly") !== true) {
 			var datasourceIterator = new DatasourceIterator();
 			var result = "";
-			datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+			datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
 				if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
 					var usedFormManager = new FormManager();
 					var isUsed = usedFormManager.getDataIsUsedForFormObj(formObj);
@@ -326,7 +326,7 @@ FormManager.prototype.applyEventBehavior = function(formObj, Y) {
 	// 应用上js相关的操作,
     var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
 		if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
 			if (fieldGroup.jsConfig && fieldGroup.jsConfig.listeners) {
 				for (var key in fieldGroup.jsConfig.listeners) {
@@ -415,7 +415,7 @@ FormManager.prototype.setChoices = function(formObj) {
 
 FormManager.prototype.getBo = function() {
 	var datasourceIterator = new DatasourceIterator();
-	var dataSource = g_dataSourceJson;
+	var datasource = g_datasourceJson;
 	var bo = {"A": {}};
 	var result = "";
 	for (var key in g_masterFormFieldDict) {
@@ -424,7 +424,7 @@ FormManager.prototype.getBo = function() {
 			bo["A"][key] = formFieldObj.get("value");
 		}
 	}
-	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		var dataSetId = dataSet.id;
 		if (dataSetId != "A") {
 			var gridObj = g_gridPanelDict[dataSetId];
@@ -445,46 +445,46 @@ FormManager.prototype.getBo = function() {
 
 FormManager.prototype.getDataSetNewData = function(dataSetId) {
 	var self = this;
-	var dataSource = g_dataSourceJson;
-	var modelTemplateFactory = new ModelTemplateFactory();
+	var datasource = g_datasourceJson;
+	var datasourceFactory = new DatasourceFactory();
 	var bo = self.getBo();
 	var data = {};
-	modelTemplateFactory.applyDataSetDefaultValue(dataSource, dataSetId, bo, data);
-	modelTemplateFactory.applyDataSetCalcValue(dataSource, dataSetId, bo, data);
+	datasourceFactory.applyDataSetDefaultValue(datasource, dataSetId, bo, data);
+	datasourceFactory.applyDataSetCalcValue(datasource, dataSetId, bo, data);
 	
 	var result = "";
 	var datasourceIterator = new DatasourceIterator();
-	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		if (dataSet.id == dataSetId) {
 			if (dataSet.jsConfig && dataSet.jsConfig.afterNewData) {
 				dataSet.jsConfig.afterNewData(bo, data);
 			}
 		}
 	});
-	data["id"] = modelTemplateFactory.getSequenceNo();
+	data["id"] = datasourceFactory.getSequenceNo();
 	return data;
 }
 
 FormManager.prototype.getDataSetCopyData = function(dataSetId, srcData) {
 	var self = this;
-	var dataSource = g_dataSourceJson;
-	var modelTemplateFactory = new ModelTemplateFactory();
+	var datasource = g_datasourceJson;
+	var datasourceFactory = new DatasourceFactory();
 	var bo = self.getBo();
 	var destData = {};
-	modelTemplateFactory.applyDataSetDefaultValue(dataSource, dataSetId, bo, destData);
-	modelTemplateFactory.applyDataSetCopyValue(dataSource, dataSetId, srcData, destData);
-	modelTemplateFactory.applyDataSetCalcValue(dataSource, dataSetId, bo, destData);
+	datasourceFactory.applyDataSetDefaultValue(datasource, dataSetId, bo, destData);
+	datasourceFactory.applyDataSetCopyValue(datasource, dataSetId, srcData, destData);
+	datasourceFactory.applyDataSetCalcValue(datasource, dataSetId, bo, destData);
 	
 	var result = "";
 	var datasourceIterator = new DatasourceIterator();
-	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		if (dataSet.id == dataSetId) {
 			if (dataSet.jsConfig && dataSet.jsConfig.afterNewData) {
 				dataSet.jsConfig.afterNewData(bo, destData);
 			}
 		}
 	});
-	destData["id"] = modelTemplateFactory.getSequenceNo();
+	destData["id"] = datasourceFactory.getSequenceNo();
 	return destData;
 }
 
@@ -504,12 +504,12 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 	}
 	
 	var isDataTypeNumber = false;
-	isDataTypeNumber = isDataTypeNumber || fieldGroup.FieldDataType == "DECIMAL";
-	isDataTypeNumber = isDataTypeNumber || fieldGroup.FieldDataType == "FLOAT";
-	isDataTypeNumber = isDataTypeNumber || fieldGroup.FieldDataType == "INT";
-	isDataTypeNumber = isDataTypeNumber || fieldGroup.FieldDataType == "LONGINT";
-	isDataTypeNumber = isDataTypeNumber || fieldGroup.FieldDataType == "MONEY";
-	isDataTypeNumber = isDataTypeNumber || fieldGroup.FieldDataType == "SMALLINT";
+	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "DECIMAL";
+	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "FLOAT";
+	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "INT";
+	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "LONGINT";
+	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "MONEY";
+	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "SMALLINT";
 	
 	if (fieldGroup.allowEmpty != true) {
 		if (isDataTypeNumber && (value == "0")) {
@@ -576,7 +576,7 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 	} else if (isDataTypeNumber) {
 		// 经常用form模型来做报表查询页面,此时,界面上的控件经常是多选,因为,添加逗号支持
 		var regexp = /^-?\d*(\.\d*)?$/;
-		if (fieldGroup.RelationDS && fieldGroup.RelationDS.RelationItemLi && fieldGroup.RelationDS.RelationItemLi.length > 0) {
+		if (fieldGroup.relationDS && fieldGroup.relationDS.relationItem && fieldGroup.relationDS.relationItem.length > 0) {
 			regexp = /^-?[\d,]*(\.\d*)?$/;
 		}
 		if (fieldGroup.id != "id" && !regexp.test(value)) {
@@ -605,8 +605,8 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 		}
 	} else {
 		var isDataTypeString = false;
-		isDataTypeString = isDataTypeString || fieldGroup.FieldDataType == "STRING";
-		isDataTypeString = isDataTypeString || fieldGroup.FieldDataType == "REMARK";
+		isDataTypeString = isDataTypeString || fieldGroup.fieldType == "STRING";
+		isDataTypeString = isDataTypeString || fieldGroup.fieldType == "REMARK";
 		var isFieldLengthLimit = fieldGroup.FieldLength != "";
 		if (isDataTypeString && isFieldLengthLimit) {
 			var limit = parseFloat(fieldGroup.FieldLength);
@@ -627,7 +627,7 @@ FormManager.prototype.dsFormFieldValidator = function(value, formFieldObj) {
 	var messageLi = [];
 	var result = "";
 	var formManager = new FormManager();
-	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
 		if (fieldGroup.id == formFieldObj.get("name") && fieldGroup.getDataSetId() == formFieldObj.get("dataSetId")) {
 			var dateSeperator = formManager._getDateSeperator(fieldGroup.getDataSetId(), fieldGroup.id);
 			messageLi = formManager.dsFieldGroupValidator(value, dateSeperator, fieldGroup);
@@ -662,14 +662,14 @@ FormManager.prototype._getDateSeperator = function(dataSetId, name) {
 	return dateSeperator;
 }
 
-FormManager.prototype.dsFormValidator = function(dataSource, bo) {
+FormManager.prototype.dsFormValidator = function(datasource, bo) {
 	var datasourceIterator = new DatasourceIterator();
 	var messageLi = [];
 	var masterMessageLi = [];
 	var detailMessageDict = {};
 	var result = "";
 	var formManager = new FormManager();
-	datasourceIterator.iterateAllFieldBo(dataSource, bo, result, function(fieldGroup, data, rowIndex, result){
+	datasourceIterator.iterateAllFieldBo(datasource, bo, result, function(fieldGroup, data, rowIndex, result){
 		if (fieldGroup.isMasterField()) {
 			var formFieldObj = g_masterFormFieldDict[fieldGroup.id];
 			var value = data[fieldGroup.id];
@@ -695,7 +695,7 @@ FormManager.prototype.dsFormValidator = function(dataSource, bo) {
 		}
 	});
 	
-	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		if (dataSet.jsConfig && dataSet.jsConfig.validateEdit) {
 			var dataSetBo = bo[dataSet.id];
 			var validateEditMessageLi = dataSet.jsConfig.validateEdit(dataSetBo);
@@ -716,7 +716,7 @@ FormManager.prototype.dsFormValidator = function(dataSource, bo) {
 		}
 	});
 	
-	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		if (dataSet.id != "A" && dataSet.allowEmpty == "false") {
 			var isEmpty = false;
 			if (!bo[dataSet.id]) {
@@ -736,12 +736,12 @@ FormManager.prototype.dsFormValidator = function(dataSource, bo) {
 		}
 	});
 	
-	if (dataSource.jsConfig && dataSource.jsConfig.validate) {
-		dataSource.jsConfig.validate(bo, masterMessageLi, detailMessageDict);
+	if (datasource.jsConfig && datasource.jsConfig.validate) {
+		datasource.jsConfig.validate(bo, masterMessageLi, detailMessageDict);
 	}
 	
 	// 合计数据集错误信息到messageLi中
-	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		if (dataSet.id == "A") {
 			if (masterMessageLi.length > 0) {
 				messageLi.push(dataSet.DisplayName + "错误信息：");
@@ -770,12 +770,12 @@ FormManager.prototype.dsFormValidator = function(dataSource, bo) {
 	};
 }
 
-FormManager.prototype.dsDetailValidator = function(dataSource, dataSetId, detailDataLi) {
+FormManager.prototype.dsDetailValidator = function(datasource, dataSetId, detailDataLi) {
 	var bo = {};
 	bo[dataSetId] = detailDataLi;
 	var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		if (dataSet == "A") {
 			bo["A"] = {};
 		} else if (!bo[dataSet]) {
@@ -785,7 +785,7 @@ FormManager.prototype.dsDetailValidator = function(dataSource, dataSetId, detail
 	
 	var messageLi = [];
 	var formManager = new FormManager();
-	datasourceIterator.iterateAllFieldBo(dataSource, bo, result, function(fieldGroup, data, rowIndex, result){
+	datasourceIterator.iterateAllFieldBo(datasource, bo, result, function(fieldGroup, data, rowIndex, result){
 		if (!fieldGroup.isMasterField() && fieldGroup.getDataSetId() == dataSetId) {
 			var formFieldDict = g_gridPanelDict[dataSetId + "_addrow"].dt.getRecord(rowIndex).formFieldDict;
 			var formFieldObj = formFieldDict[fieldGroup.id];
@@ -800,7 +800,7 @@ FormManager.prototype.dsDetailValidator = function(dataSource, dataSetId, detail
 	
 	// apply model.js validateEdit 函数
 	var result = "";
-	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		if (dataSet.id == dataSetId) {
 			if (dataSet.jsConfig && dataSet.jsConfig.validateEdit) {
 				var validateEditMessageLi = dataSet.jsConfig.validateEdit(detailDataLi);
@@ -841,8 +841,8 @@ FormManager.prototype._setMasterFormFieldStatus = function(status) {
 FormManager.prototype._setDetailGridStatus = function(status) {
 	var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	var dataSource = g_dataSourceJson;
-	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	var datasource = g_datasourceJson;
+	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		if (dataSet.id != "A") {
 			var tbar = document.getElementById(dataSet.id + "_tbar");
 			if (tbar) {
@@ -888,15 +888,15 @@ FormManager.prototype.applyGlobalParamFromAjaxData = function(o) {
 }
 
 /**
- * 需要按dataSource的顺序来加载字段值,否则计算表格式时会出错
+ * 需要按datasource的顺序来加载字段值,否则计算表格式时会出错
  */
-FormManager.prototype.loadData2Form = function(dataSource, bo) {
+FormManager.prototype.loadData2Form = function(datasource, bo) {
 	var datasourceIterator = new DatasourceIterator();
 	var result = "";
 	if (bo["A"]) {
 		var keyInMaster = [];
 		// 遍历主数据集字段,按顺序加载值
-		datasourceIterator.iterateAllField(dataSource, result, function(fieldGroup, result){
+		datasourceIterator.iterateAllField(datasource, result, function(fieldGroup, result){
 			if (fieldGroup.getDataSetId() == "A") {
 				if (g_masterFormFieldDict[fieldGroup.id]) {
 					g_masterFormFieldDict[fieldGroup.id].set("value", bo["A"][fieldGroup.id] || "");
@@ -919,7 +919,7 @@ FormManager.prototype.loadData2Form = function(dataSource, bo) {
 			}
 		}
 	}
-	datasourceIterator.iterateAllDataSet(dataSource, result, function(dataSet, result){
+	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		if (dataSet.id != "A") {
 			if (g_gridPanelDict[dataSet.id]) {
 				if (bo[dataSet.id] !== undefined) {
@@ -947,14 +947,14 @@ FormManager.prototype.getFieldDict = function(formObj) {
 	return fieldDict;
 }
 
-FormManager.prototype.setDetailIncId = function(dataSource, bo) {
-	var modelTemplateFactory = new ModelTemplateFactory();
+FormManager.prototype.setDetailIncId = function(datasource, bo) {
+	var datasourceFactory = new DatasourceFactory();
 	var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	datasourceIterator.iterateDataBo(dataSource, bo, result, function(fieldGroupLi, data, rowIndex, result) {
+	datasourceIterator.iterateDataBo(datasource, bo, result, function(fieldGroupLi, data, rowIndex, result) {
 		if (!fieldGroupLi[0].isMasterField()) {
 			if (data["id"] == "0" || data["id"] == "") {
-				data["id"] = modelTemplateFactory.getSequenceNo();
+				data["id"] = datasourceFactory.getSequenceNo();
 			}
 		}
 	});

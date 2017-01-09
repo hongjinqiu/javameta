@@ -93,7 +93,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;/attribute>
  *       &lt;attribute name="localPaging" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *       &lt;attribute name="pageList" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="dataSource" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="datasource" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="sqlIntercept" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="orderSqlIntercept" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *     &lt;/restriction>
@@ -143,7 +143,7 @@ public class DataProvider implements Serializable {
     protected String pageList;
     @XmlAttribute
     @XmlSchemaType(name = "anySimpleType")
-    protected String dataSource;
+    protected String datasource;
     @XmlAttribute
     @XmlSchemaType(name = "anySimpleType")
     protected String sqlIntercept;
@@ -457,27 +457,27 @@ public class DataProvider implements Serializable {
     }
 
     /**
-     * Gets the value of the dataSource property.
+     * Gets the value of the datasource property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getDataSource() {
-        return dataSource;
+    public String getDatasource() {
+        return datasource;
     }
 
     /**
-     * Sets the value of the dataSource property.
+     * Sets the value of the datasource property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDataSource(String value) {
-        this.dataSource = value;
+    public void setDatasource(String value) {
+        this.datasource = value;
     }
 
     /**

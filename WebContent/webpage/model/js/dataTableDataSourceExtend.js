@@ -33,7 +33,7 @@ if (self.param.columnModel.editorToolbar && self.param.columnModel.editorToolbar
 		var btnTemplate = null;
 		var replObj = {};
 		var button = self.param.columnModel.editorToolbar.buttonGroupOrButtonOrSplitButton[i];
-		if (button.Mode == "fn") {
+		if (button.mode == "fn") {
 			btnTemplate = "<input type='button' value='{value}' class='{class}' onclick='{fnName}(\"{columnModelName}\")'/>";
 			replObj = {
 				value: button.text,
@@ -41,7 +41,7 @@ if (self.param.columnModel.editorToolbar && self.param.columnModel.editorToolbar
 				fnName: button.handler,
 				columnModelName: self.param.columnModelName
 			};
-		} else if (button.Mode == "url") {
+		} else if (button.mode == "url") {
 			btnTemplate = "<input type='button' value='{value}' onclick='location.href=\"{href}\"' class='{class}' />";
 			replObj = {
 				value: button.text,
@@ -68,7 +68,7 @@ if (self.param.columnModel.editorToolbar && self.param.columnModel.editorToolbar
 var formManager = new FormManager();
 var detailDataLi = pluginDataTableManager.dt.pqe.getRecords();
 var dataSetId = self.param.columnModelName;
-var validateResult = formManager.dsDetailValidator(g_dataSourceJson, dataSetId, detailDataLi);
+var validateResult = formManager.dsDetailValidator(g_datasourceJson, dataSetId, detailDataLi);
 
 if (!validateResult.result) {
 	showError(validateResult.message);

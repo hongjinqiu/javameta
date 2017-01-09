@@ -64,7 +64,7 @@ function selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, inpu
 	var gridDataLi = g_gridPanelDict["B"].dt.get("data").toJSON();
 	var notAllowDuplicateColumn = [];
 	var datasourceIterator = new DatasourceIterator();
-	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
 		if (fieldGroup.getDataSetId() == dataSetId && fieldGroup.AllowDuplicate == "false") {
 			notAllowDuplicateColumn.push(fieldGroup.id);
 		}

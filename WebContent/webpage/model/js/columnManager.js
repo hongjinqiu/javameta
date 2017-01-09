@@ -106,11 +106,11 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 					}
 					for (var j = 0; j < virtualColumn.buttons.button.length; j++) {
 						var btnTemplate = null;
-						if (virtualColumn.buttons.button[j].Mode == "fn") {
+						if (virtualColumn.buttons.button[j].mode == "fn") {
 							btnTemplate = "<a title='{value}' onclick='doVirtualColumnBtnAction(\"{columnModelName}\", this, {handler})' class='{class}' href='javascript:void(0);' style='display:block;' />";
-						} else if (virtualColumn.buttons.button[j].Mode == "url") {
+						} else if (virtualColumn.buttons.button[j].mode == "url") {
 							btnTemplate = "<a title='{value}' onclick='location.href=\"{href}\"' class='{class}' href='javascript:void(0);' style='display:block;' />";
-						} else if (virtualColumn.buttons.button[j].Mode == "url!") {
+						} else if (virtualColumn.buttons.button[j].mode == "url!") {
 							btnTemplate = "<a title='{value}' onclick='openTabOrJump(\"{href}\")' class='{class}' href='javascript:void(0);' style='display:block;' />";
 						} else {
 							btnTemplate = "<a title='{value}' onclick='window.open(\"{href}\")' class='{class}' href='javascript:void(0);' style='display:block;' />";
@@ -345,7 +345,7 @@ ColumnManager.prototype.createTriggerColumn = function(columnConfig) {
 					console.log(row);
 					console.log(columnConfig);
 					console.log(columnConfig.name);
-					console.log("未找到匹配的relationItem，有可能配置错误，目标referenceDataSourceModelId为:" + row.referenceDataSourceModelId);
+					console.log("未找到匹配的relationItem，有可能配置错误，目标referenceDatasourceModelId为:" + row.referenceDatasourceModelId);
 				}
 			}
 			var selectorName = relationItem.relationConfig.selectorName;
