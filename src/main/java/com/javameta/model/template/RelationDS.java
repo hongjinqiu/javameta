@@ -80,7 +80,7 @@ import javax.xml.bind.annotation.XmlValue;
  *                       &lt;complexContent>
  *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                           &lt;attribute name="copySrcField" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
- *                           &lt;attribute name="copyDescField" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *                           &lt;attribute name="copyDestField" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *                         &lt;/restriction>
  *                       &lt;/complexContent>
  *                     &lt;/complexType>
@@ -191,7 +191,7 @@ public class RelationDS implements Serializable {
      *             &lt;complexContent>
      *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *                 &lt;attribute name="copySrcField" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
-     *                 &lt;attribute name="copyDescField" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+     *                 &lt;attribute name="copyDestField" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
      *               &lt;/restriction>
      *             &lt;/complexContent>
      *           &lt;/complexType>
@@ -334,7 +334,7 @@ public class RelationDS implements Serializable {
          *   &lt;complexContent>
          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
          *       &lt;attribute name="copySrcField" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
-         *       &lt;attribute name="copyDescField" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+         *       &lt;attribute name="copyDestField" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
          *     &lt;/restriction>
          *   &lt;/complexContent>
          * &lt;/complexType>
@@ -352,7 +352,7 @@ public class RelationDS implements Serializable {
             protected String copySrcField;
             @XmlAttribute
             @XmlSchemaType(name = "anySimpleType")
-            protected String copyDescField;
+            protected String copyDestField;
 
             /**
              * Gets the value of the copySrcField property.
@@ -379,27 +379,27 @@ public class RelationDS implements Serializable {
             }
 
             /**
-             * Gets the value of the copyDescField property.
+             * Gets the value of the copyDestField property.
              * 
              * @return
              *     possible object is
              *     {@link String }
              *     
              */
-            public String getCopyDescField() {
-                return copyDescField;
+            public String getCopyDestField() {
+                return copyDestField;
             }
 
             /**
-             * Sets the value of the copyDescField property.
+             * Sets the value of the copyDestField property.
              * 
              * @param value
              *     allowed object is
              *     {@link String }
              *     
              */
-            public void setCopyDescField(String value) {
-                this.copyDescField = value;
+            public void setCopyDestField(String value) {
+                this.copyDestField = value;
             }
 
         }

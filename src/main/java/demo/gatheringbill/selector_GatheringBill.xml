@@ -99,7 +99,7 @@
 		<auto-column name="accountId">
 			<relationDS>
 				<relationItem name="BankAccount">
-					<copyConfig copyDescField="receiveBankId" copySrcField="bankId" />
+					<copyConfig copyDestField="receiveBankId" copySrcField="bankId" />
 				</relationItem>
 			</relationDS>
 		</auto-column>

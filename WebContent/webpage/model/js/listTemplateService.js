@@ -49,8 +49,8 @@ function IterateFunc(queryParameter, result) {
 
 // toolbarOrDataProviderOrColumnModel
 ListFormTemplateIterator.prototype._iterateTemplateQueryParameter = function(result, isContinue, iterateFunc) {// TODO,待转移,
-	for (var i = 0; i < listTemplate.QueryParameterGroup.QueryParameterLi.length; i++) {
-		var queryParameter = listTemplate.QueryParameterGroup.QueryParameterLi[i];
+	for (var i = 0; i < listTemplate.queryParameters.fixedParameterOrQueryParameter.length; i++) {
+		var queryParameter = listTemplate.queryParameters.fixedParameterOrQueryParameter[i];
 		var iterateResult = iterateFunc(queryParameter);
 		if (!isContinue && iterateResult) {
 			return;

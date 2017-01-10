@@ -69,6 +69,8 @@
 
 		<auto-column name="billDate" colSpan="2" labelWidth="13%" columnWidth="20%" rendererTemplate=""/>
 		<auto-column name="billNo" colSpan="2" labelWidth="13%" columnWidth="20%">
+			<editor name="textfield">
+			</editor>
 			<column-model name="A_1_property">
 				<auto-column name="propertyTest"></auto-column>
 			</column-model>
@@ -86,8 +88,8 @@
 				<relationItem name="BankAccount">
 					<relationExpr mode="text">true</relationExpr>
 					<relationConfig displayField="" selectionMode="single" selectorName="BankAccountSelector" selectorTitle="" valueField="" />
-					<copyConfig copyDescField="receiveBankId" copySrcField="bankId" />
-					<copyConfig copyDescField="accountProperty" copySrcField="accountProperty" />
+					<copyConfig copyDestField="receiveBankId" copySrcField="bankId" />
+					<copyConfig copyDestField="accountProperty" copySrcField="accountProperty" />
 				</relationItem>
 			</relationDS>
 		</auto-column>
@@ -119,7 +121,7 @@
 		<auto-column name="bankId" colSpan="2" labelWidth="13%" columnWidth="20%">
 			<relationDS>
 				<relationItem name="Bank">
-					<copyConfig copyDescField="bankShort" copySrcField="bankShort" />
+					<copyConfig copyDestField="bankShort" copySrcField="bankShort" />
 				</relationItem>
 			</relationDS>
 		</auto-column>
@@ -136,9 +138,9 @@
 					<relationItem name="BankAccountCurrencyType"><!-- 需要修改从 BankAccountCurrencyType 中查找 -->
 						<relationExpr>true</relationExpr>
 						<relationConfig selectorName="BankAccountCurrencyTypeSelector" displayField="code,name" valueField="id" selectionMode="multi" />
-						<copyConfig copyDescField="bankAccountBId" copySrcField="bankAccountBId" />
-						<copyConfig copyDescField="accountId" copySrcField="bankAccountId" />
-						<copyConfig copyDescField="currencyTypeId" copySrcField="currencyTypeId" />
+						<copyConfig copyDestField="bankAccountBId" copySrcField="bankAccountBId" />
+						<copyConfig copyDestField="accountId" copySrcField="bankAccountId" />
+						<copyConfig copyDestField="currencyTypeId" copySrcField="currencyTypeId" />
 					</relationItem>
 				</relationDS>
 			</button>
@@ -165,7 +167,7 @@
 		<auto-column name="accountId">
 			<relationDS>
 				<relationItem name="BankAccount">
-					<copyConfig copyDescField="bankId" copySrcField="bankId" />
+					<copyConfig copyDestField="bankId" copySrcField="bankId" />
 				</relationItem>
 			</relationDS>
 		</auto-column>

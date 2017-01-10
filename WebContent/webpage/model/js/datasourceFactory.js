@@ -103,7 +103,7 @@ DatasourceFactory.prototype._applyRelationFieldValue = function(datasource) {
 			var relationItem = fieldGroup.relationDS.relationItem[0];
 			var triggerConfig = {
 				displayField: commonUtil.getFuncOrString(relationItem.displayField),
-				valueField: commonUtil.getFuncOrString(relationItem.ValueField),
+				valueField: commonUtil.getFuncOrString(relationItem.valueField),
 				selectorName: commonUtil.getFuncOrString(relationItem.id),
 				selectionMode: "single"
 			};

@@ -76,6 +76,11 @@ ColumnSequenceService.prototype._buildSequenceStructDict = function(columnLi) {
 	return sequenceStructDict;
 }
 
+/**
+ * 返回按前驱后继顺序的columnLi,使其可以依次计算,
+ * @param columnLi
+ * @returns {Array}
+ */
 ColumnSequenceService.prototype.buildSequenceColumnLi = function(columnLi) {
 	var self = this;
 	var result = [];

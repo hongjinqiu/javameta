@@ -709,7 +709,22 @@
 					</complexType>
 				</element>
 			</sequence>
-			<attribute name="name"></attribute>
+			<attribute name="name">
+				<simpleType>
+					<restriction base="string">
+						<enumeration value="textfield" />
+						<enumeration value="hiddenfield" />
+						<enumeration value="combofield" />
+						<enumeration value="checkboxfield" />
+						<enumeration value="radiofield" />
+						<enumeration value="numberfield" />
+						<enumeration value="datefield" />
+						<enumeration value="textareafield" />
+						<enumeration value="triggerfield" />
+						<enumeration value="displayfield" />
+					</restriction>
+				</simpleType>
+			</attribute>
 		</complexType>
 	</element>
 	
@@ -780,7 +795,7 @@
 							<element name="copyConfig" minOccurs="0" maxOccurs="unbounded">
 								<complexType>
 									<attribute name="copySrcField"></attribute>
-									<attribute name="copyDescField"></attribute>
+									<attribute name="copyDestField"></attribute>
 								</complexType>
 							</element>
 						</sequence>

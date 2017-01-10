@@ -1,44 +1,40 @@
 function FormFieldFactory() {
 }
 
-FormFieldFactory.prototype.getFormField = function(Y, name, dataSetId) {
+FormFieldFactory.prototype.getFormField = function(id, name, dataSetId) {
 	var self = this;
 	var field = null;
 	// 从column-attribute里面读取
-	for (var i = 0; i < g_formTemplateJsonData.FormElemLi.length; i++) {
-		var formElem = g_formTemplateJsonData.FormElemLi[i];
+	for (var i = 0; i < g_formTemplateJsonData.toolbarOrDataProviderOrColumnModel.length; i++) {
+		var formElem = g_formTemplateJsonData.toolbarOrDataProviderOrColumnModel[i];
 		if (formElem.xmlName == "column-model") {
-			if (formElem.columnModel.dataSetId == dataSetId) {
+			if (formElem.dataSetId == dataSetId) {
 				var flag = false;
-				if (formElem.columnModel.idColumn.name == name) {
-					field = new Y.PHiddenField({
+				if (formElem.idColumn.name == name) {
+					field = new PHiddenField({
+						id: id,
 						name : name,
 						dataSetId: dataSetId,
 						validateInline: true
 					});
-				} else if (formElem.columnModel.columnList) {
-					for (var j = 0; j < formElem.columnModel.columnList.length; j++) {
-						var column = formElem.columnModel.columnList[j];
+				} else if (formElem.columnList) {
+					for (var j = 0; j < formElem.columnList.length; j++) {
+						var column = formElem.columnList[j];
 						if (column.name == name) {
 							if (column.hideable) {
-								field = new Y.PHiddenField({
+								field = new PHiddenField({
+									id: id,
 									name : name,
 									dataSetId: dataSetId,
 									validateInline: true
 								});
 							} else {
-								if (column.ColumnAttributeLi) {
-									for (var k = 0; k < column.ColumnAttributeLi.length; k++) {
-										var attribute = column.ColumnAttributeLi[k];
-										if (attribute.name == "editor") {
-											field = self._getFieldByAttributeValue(Y, attribute.Value, name, dataSetId);
-											break;
-										}
-									}
+								if (column.editor && column.editor.name) {
+									field = self._getFieldByAttributeValue(id, column.editor.name, name, dataSetId);
 								}
 								
 								if (field == null) {
-									field = self._getFieldByColumnName(Y, column.xmlName, name, dataSetId);
+									field = self._getFieldByColumnName(id, column.xmlName, name, dataSetId);
 								}
 							}
 							
@@ -55,7 +51,8 @@ FormFieldFactory.prototype.getFormField = function(Y, name, dataSetId) {
 	}
 	
 	if (field == null) {
-		field = new Y.PTextField({
+		field = new PTextField({
+			id: id,
 			name : name, 
 			dataSetId: dataSetId, 
 			validateInline: true
@@ -64,65 +61,75 @@ FormFieldFactory.prototype.getFormField = function(Y, name, dataSetId) {
 	return field;
 }
 
-FormFieldFactory.prototype._getFieldByAttributeValue = function(Y, value, name, dataSetId) {
+FormFieldFactory.prototype._getFieldByAttributeValue = function(id, value, name, dataSetId) {
 	if (value == "textfield") {
-		return new Y.PTextField({
+		return new PTextField({
+			id: id,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true
 		});
 	} else if (value == "hiddenfield") {
-		return new Y.PHiddenField({
+		return new PHiddenField({
+			id: id,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true
 		});
 	} else if (value == "combofield") {
-		return new Y.PSelectField({
+		return new PSelectField({
+			id: id,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true
 		});
 	} else if (value == "checkboxfield") {
-		return new Y.PChoiceField({
+		return new PChoiceField({
+			id: id,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true,
 			multi: true
 		});
 	} else if (value == "radiofield") {
-		return new Y.PChoiceField({
+		return new PChoiceField({
+			id: id,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true
 		});
 	} else if (value == "numberfield") {
-		return new Y.PNumberField({
+		return new PNumberField({
+			id: id,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true
 		});
 	} else if (value == "datefield") {
-		return new Y.PDateField({
+		return new PDateField({
+			id: id,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true
 		});
 	} else if (value == "textareafield") {
-		return new Y.PTextareaField({
+		return new PTextareaField({
+			id: id,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true
 		});
 	} else if (value == "triggerfield") {
-		return new Y.PTriggerField({
+		return new PTriggerField({
+			id: id,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true
 //			,multi: true
 		});
 	} else if (value == "displayfield") {
-		return new Y.PDisplayField({
+		return new PDisplayField({
+			id: id,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true
@@ -131,33 +138,38 @@ FormFieldFactory.prototype._getFieldByAttributeValue = function(Y, value, name, 
 	return null;
 }
 
-FormFieldFactory.prototype._getFieldByColumnName = function(Y, columnName, name, dataSetId) {
+FormFieldFactory.prototype._getFieldByColumnName = function(id, columnName, name, dataSetId) {
 	if (columnName == "trigger-column") {
-		return new Y.PTriggerField({
+		return new PTriggerField({
+			id: id,
 			name : name, 
 			dataSetId: dataSetId, 
 			validateInline: true
 		});
 	} else if (columnName == "string-column") {
-		return new Y.PTextField({
+		return new PTextField({
+			id: id,
 			name : name, 
 			dataSetId: dataSetId, 
 			validateInline: true
 		});
 	} else if (columnName == "number-column") {
-		return new Y.PNumberField({
+		return new PNumberField({
+			id: id,
 			name : name, 
 			dataSetId: dataSetId, 
 			validateInline: true
 		});
 	} else if (columnName == "date-column") {
-		return new Y.PDateField({
+		return new PDateField({
+			id: id,
 			name : name, 
 			dataSetId: dataSetId, 
 			validateInline: true
 		});
 	} else if (columnName == "dictionary-column") {
-		return new Y.PSelectField({
+		return new PSelectField({
+			id: id,
 			name : name, 
 			dataSetId: dataSetId, 
 			validateInline: true

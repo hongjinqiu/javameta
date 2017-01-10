@@ -50,7 +50,7 @@
 					<relationItem name="CurrencyType">
 						<relationExpr>true</relationExpr>
 						<relationConfig selectorName="CurrencyTypeSelector" displayField="code,name" valueField="id" selectionMode="multi" />
-						<copyConfig copyDescField="currencyTypeId" copySrcField="id" />
+						<copyConfig copyDestField="currencyTypeId" copySrcField="id" />
 					</relationItem>
 				</relationDS>
 			</button>

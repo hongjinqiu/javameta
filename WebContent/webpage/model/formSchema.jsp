@@ -32,18 +32,27 @@ js/columnDataSourceManager.js				finish,
 js/ds_formtoolbar.js						finish,
 js/datasourceService.js						finish,
 js/datasourceFactory.js						finish,
-js/ds_formFieldFactory.js					finish,跳过,只当参考,------,实际绘制时,需要生成html和相关js,
+js/ds_formFieldFactory.js					finish,
+	getRowIndex	[row]	Return the specified row index, the row parameter can be a row record or an id field value.
+	selectRow	index	Select a row, the row index start with 0.
+	selectRecord	idValue	Select a row by passing id value parameter.
+	
+	unselectRow	index	Unselect a row.
+	
 	返回PTextField之类的,那么,能不能返回easyui的实现呢?
 js/formTemplateFactory.js					finish,
 js/defaultAction.js							finish,
 js/relationManager.js						finish,
-js/listTemplateService.js					running,-------------------,
-js/templateService.js
+js/listTemplateService.js					finish,相应的方法转移到templateService.js里面,这个类没用了,
+js/templateService.js						finish,
 	listTemplateService.js里面的东东是要干掉的,需要把相应的方法和值给弄到,templateService.js里面去,
-js/columnSequenceService.js
-js/formManager.js
+js/columnSequenceService.js					finish,
+js/formField.js								finish,
+js/formTriggerField.js						finish,
+js/formManager.js							running,------------------------------,
 
-
+dt.getRecord的相关修改,						running,--------------------------,
+g_gridPanelDict[dataSet.id].dt				running,--------------------------,
 
 "></script>
  -->
@@ -57,6 +66,26 @@ js/formManager.js
 		var g_datasourceJson = null;
 	</c:if>
 	var gatheringFormTemplateJsonData = ${gatheringFormTemplateJsonData};
+	
+	
+	var g_popupFormField = {};// 用于表格弹出时,存放弹出框控件数据引用,
+	
+	$.extend($.fn.validatebox.defaults.rules, {
+		alwaysTrue: {
+	        validator: function(value,param){
+	        	console.log("always true");
+	        	console.log(this);
+	            return false;
+	        }
+	    },
+	    alwaysFalse: {
+	        validator: function(value,param){
+	        	console.log("always false");
+	        	console.log(this);
+	            return false;
+	        }
+	    }
+	});
 </script>
 </head>
 
@@ -64,5 +93,6 @@ js/formManager.js
 ddddddddddddddd_wwwwwwwwwww
 eeeeeea
 dd
+<input id="i_a" type="text" name="name1" value="name1" />
 </body>
 </html>
