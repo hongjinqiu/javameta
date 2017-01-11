@@ -49,11 +49,10 @@ js/templateService.js						finish,
 js/columnSequenceService.js					finish,
 js/formField.js								finish,
 js/formTriggerField.js						finish,
-js/formManager.js							running,------------------------------,
-
-dt.getRecord的相关修改,						running,--------------------------,
+js/formManager.js							finish,
+dt.getRecord的相关修改,						finish,
 g_gridPanelDict[dataSet.id].dt				running,--------------------------,
-
+	running,-------------,
 "></script>
  -->
 <script type="text/javascript">
@@ -75,6 +74,9 @@ g_gridPanelDict[dataSet.id].dt				running,--------------------------,
 	        validator: function(value,param){
 	        	console.log("always true");
 	        	console.log(this);
+	        	$(this).validatebox("options").invalidMessage = Math.random() + "<br />aaaa<br />eeee";
+	        	//$(this).validatebox("options").required = true;
+	        	//$(this).validatebox({invalidMessage: Math.random() + ""});
 	            return false;
 	        }
 	    },
@@ -82,9 +84,27 @@ g_gridPanelDict[dataSet.id].dt				running,--------------------------,
 	        validator: function(value,param){
 	        	console.log("always false");
 	        	console.log(this);
+	        	//$(this).validatebox({invalidMessage: Math.random() + ""});
 	            return false;
 	        }
 	    }
+	});
+	$(document).ready(function(){
+		$("#i_a").validatebox({
+			validType: "alwaysTrue",
+			invalidMessage: "test222"
+		});
+		$('#nn').numberbox({
+		    min:0,
+		    prefix:"$",
+		    precision:"3",
+		    decimalSeparator: ".",
+		    groupSeparator: ",",
+		    suffix: "%"
+		    /* self.set("decimalSeparator", ".");
+		self.set("groupSeparator", "");
+		self.set("suffix", "%"); */
+		});
 	});
 </script>
 </head>
@@ -94,5 +114,7 @@ ddddddddddddddd_wwwwwwwwwww
 eeeeeea
 dd
 <input id="i_a" type="text" name="name1" value="name1" />
+<br />
+<input type="text" id="nn" />
 </body>
 </html>

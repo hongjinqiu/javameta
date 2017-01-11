@@ -37,42 +37,57 @@ validType:['email','length[0,20]']
 		return new PDisplayField({							finish,
 */
 
+function commonValidate(value, param) {
+	var formManager = new FormManager();
+	var dataSetId = $(this).attr("dataSetId");
+	if (dataSetId == "A") {
+		var name = $(this).attr("name");
+		var formObj = g_masterFormFieldDict[name];
+		return formManager.dsFormFieldValidator(value, formObj); 
+	} else {
+		if (formManager.isMatchDetailEditor(dataSetId)) {
+			var name = $(this).attr("name");
+			var formObj = g_popupFormField[name];
+			return formManager.dsFormFieldValidator(value, formObj);
+		}
+	}
+	return true;
+}
+
 function validateTextField(value, param) {
-	// new FormManager().validateReadonly(self, val, Y);// 不知道做什么的，先不管，
-//	g_masterFormFieldDict,// $(this).attr("id"),$(this).attr("name"),
-//	g_popupFormField,
+	return commonValidate(value, param);
 }
 
 function validateHiddenField(value, param) {
-	
+	return commonValidate(value, param);
 }
 
 function validateSelectField(value, param) {
-	
+	return commonValidate(value, param);
 }
 
 function validateChoiceField(value, param) {
-	
+	return commonValidate(value, param);
 }
 
 function validateNumberField(value, param) {
-	
+	return commonValidate(value, param);
 }
 
 function validateDateField(value, param) {
-	
+	return commonValidate(value, param);
 }
 
 function validateTextareaField(value, param) {
-	
+	return commonValidate(value, param);
 }
 
 function validateTriggerField(value, param) {
-	
+	return commonValidate(value, param);
 }
 
 function validateDisplayField(value, param) {
-	
+	return commonValidate(value, param);
 }
 
 $.extend($.fn.validatebox.defaults.rules, {
@@ -113,24 +128,31 @@ function formFieldCommonGet(self, key) {
 		return $("#" + self.config.id).attr("readonly") == "readonly";
 	}
 	if (key == "error") {
-		return self.error;
+		return $("#" + self.config.id).validatebox("options").invalidMessage;
 	}
 	return self.config[key];
 }
 
 function formFieldCommonSet(self, key, value) {
+	// TODO required的判断,先根据class,判断其有无对应的class,"validatebox-text",
+	// 若有值，再进行赋值，$(this).validatebox("options").required = true;
 	if (key == "value") {
 		$("#" + self.config.id).val(value);
 		return;
 	}
 	if (key == "readonly") {
 		if (value) {
-			$("#" + self.config.id).attr("readonly", value);
+			$("#" + self.config.id).attr("readonly", "readonly");
 		} else {
 			$("#" + self.config.id).removeAttr("readonly");
 		}
 		return;
 	}
+	if (key == "error") {
+		$("#" + self.config.id).validatebox("options").invalidMessage = value;
+		return;
+	}
+	
 	self.config[key] = value;
 }
 
@@ -152,17 +174,12 @@ function PTextField(param) {
 
 PTextField.prototype.get = function(key) {
 	var self = this;
-	formFieldCommonGet(self, key);
+	return formFieldCommonGet(self, key);
 }
 
 PTextField.prototype.set = function(key, value) {
 	var self = this;
 	
-	if (key == "error") {
-		self.error = value;
-		$("#" + self.config.id).validatebox({validType:"validateTextField", invalidMessage: value});
-		return;
-	}
 	formFieldCommonSet(self, key, value);
 }
 
@@ -184,17 +201,12 @@ function PHiddenField(param) {
 
 PHiddenField.prototype.get = function(key) {
 	var self = this;
-	formFieldCommonGet(self, key);
+	return formFieldCommonGet(self, key);
 }
 
 PHiddenField.prototype.set = function(key, value) {
 	var self = this;
 	
-	if (key == "error") {
-		self.error = value;
-		$("#" + self.config.id).validatebox({validType:"validateHiddenField", invalidMessage: value});
-		return;
-	}
 	formFieldCommonSet(self, key, value);
 }
 
@@ -218,17 +230,12 @@ function PSelectField(param) {
 
 PSelectField.prototype.get = function(key) {
 	var self = this;
-	formFieldCommonGet(self, key);
+	return formFieldCommonGet(self, key);
 }
 
 PSelectField.prototype.set = function(key, value) {
 	var self = this;
 	
-	if (key == "error") {
-		self.error = value;
-		$("#" + self.config.id).validatebox({validType:"validateSelectField", invalidMessage: value});
-		return;
-	}
 	formFieldCommonSet(self, key, value);
 }
 
@@ -251,17 +258,22 @@ function PChoiceField(param) {
 
 PChoiceField.prototype.get = function(key) {
 	var self = this;
-	formFieldCommonGet(self, key);
+	
+	if (key == "choices") {
+		return $("#" + self.get("id")).combobox("getData");
+	}
+	
+	return formFieldCommonGet(self, key);
 }
 
 PChoiceField.prototype.set = function(key, value) {
 	var self = this;
 	
-	if (key == "error") {
-		self.error = value;
-		$("#" + self.config.id).validatebox({validType:"validateChoiceField", invalidMessage: value});
+	if (key == "choices") {
+		$("#" + self.get("id")).combobox("loadData", value);
 		return;
 	}
+	
 	formFieldCommonSet(self, key, value);
 }
 
@@ -283,17 +295,49 @@ function PNumberField(param) {
 
 PNumberField.prototype.get = function(key) {
 	var self = this;
-	formFieldCommonGet(self, key);
+	if (key == "prefix") {
+		return $("#" + self.config.id).numberbox("options").prefix;
+	}
+	if (key == "precision") {
+		return $("#" + self.config.id).numberbox("options").precision;
+	}
+	if (key == "decimalSeparator") {
+		return $("#" + self.config.id).numberbox("options").decimalSeparator;
+	}
+	if (key == "groupSeparator") {
+		return $("#" + self.config.id).numberbox("options").groupSeparator;
+	}
+	if (key == "suffix") {
+		return $("#" + self.config.id).numberbox("options").suffix;
+	}
+	
+	return formFieldCommonGet(self, key);
 }
 
 PNumberField.prototype.set = function(key, value) {
 	var self = this;
 	
-	if (key == "error") {
-		self.error = value;
-		$("#" + self.config.id).validatebox({validType:"validateNumberField", invalidMessage: value});
+	if (key == "prefix") {
+		$("#" + self.config.id).numberbox("options").prefix = value;
 		return;
 	}
+	if (key == "precision") {
+		$("#" + self.config.id).numberbox("options").precision = value;
+		return;
+	}
+	if (key == "decimalSeparator") {
+		$("#" + self.config.id).numberbox("options").decimalSeparator = value;
+		return;
+	}
+	if (key == "groupSeparator") {
+		$("#" + self.config.id).numberbox("options").groupSeparator = value;
+		return;
+	}
+	if (key == "suffix") {
+		$("#" + self.config.id).numberbox("options").suffix = value;
+		return;
+	}
+	
 	formFieldCommonSet(self, key, value);
 }
 
@@ -339,17 +383,12 @@ function PDateField(param) {
 
 PDateField.prototype.get = function(key) {
 	var self = this;
-	formFieldCommonGet(self, key);
+	return formFieldCommonGet(self, key);
 }
 
 PDateField.prototype.set = function(key, value) {
 	var self = this;
 	
-	if (key == "error") {
-		self.error = value;
-		$("#" + self.config.id).validatebox({validType:"validateDateField", invalidMessage: value});
-		return;
-	}
 	formFieldCommonSet(self, key, value);
 }
 
@@ -375,17 +414,12 @@ function PTextareaField(param) {
 
 PTextareaField.prototype.get = function(key) {
 	var self = this;
-	formFieldCommonGet(self, key);
+	return formFieldCommonGet(self, key);
 }
 
 PTextareaField.prototype.set = function(key, value) {
 	var self = this;
 	
-	if (key == "error") {
-		self.error = value;
-		$("#" + self.config.id).validatebox({validType:"validateTextareaField", invalidMessage: value});
-		return;
-	}
 	formFieldCommonSet(self, key, value);
 }
 
@@ -410,17 +444,12 @@ function PDisplayField(param) {
 
 PDisplayField.prototype.get = function(key) {
 	var self = this;
-	formFieldCommonGet(self, key);
+	return formFieldCommonGet(self, key);
 }
 
 PDisplayField.prototype.set = function(key, value) {
 	var self = this;
 	
-	if (key == "error") {
-		self.error = value;
-		$("#" + self.config.id).validatebox({validType:"validateDisplayField", invalidMessage: value});
-		return;
-	}
 	formFieldCommonSet(self, key, value);
 }
 

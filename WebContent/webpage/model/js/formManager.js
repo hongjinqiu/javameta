@@ -1,6 +1,19 @@
 function FormManager() {
 }
 
+FormManager.prototype.isMatchDetailEditor = function(dateSetId) {
+	var isPopup = false;
+	if (g_popupFormField) {
+		for (var key in g_popupFormField) {
+			if (g_popupFormField[key].get("dataSetId") == dataSetId) {
+				isPopup = true;
+			}
+			break;
+		}
+	}
+	return isPopup;
+}
+
 FormManager.prototype.getDataIsUsedForFormObj = function(formObj) {
 	var self = formObj;
 	var dataSetId = self.get("dataSetId");
@@ -17,15 +30,12 @@ FormManager.prototype.getDataIsUsedForFormObj = function(formObj) {
 	} else {
 		if (g_usedCheck) {
 			if (g_usedCheck[dataSetId]) {
-				if (g_gridPanelDict[dataSetId + "_addrow"]) {
-					var record = g_gridPanelDict[dataSetId + "_addrow"].dt.getRecord(self._fieldNode);
-					// 由于在createDataGrid之前,已经在全局的g_gridPanelDict中放置 b_addrow,因此,需要判断空,
-					if (record && record.formFieldDict) {
-						var fieldDict = record.formFieldDict;
-						var idValue = fieldDict["id"].get("value");
-						if (g_usedCheck[dataSetId][idValue]) {
-							isUsed = true;
-						}
+				// 现在的表格是一个弹出form页面,没有多条数据,取得这个弹出的一行是否被用,
+				var formManager = new FormManager();
+				if (formManager.isMatchDetailEditor(dataSetId)) {
+					var idValue = g_popupFormField["id"].get("value");
+					if (g_usedCheck[dataSetId][idValue]) {
+						isUsed = true;
 					}
 				}
 			}
@@ -34,20 +44,23 @@ FormManager.prototype.getDataIsUsedForFormObj = function(formObj) {
 	return isUsed;
 }
 
-FormManager.prototype.validateReadonly = function(formObj, val, Y) {
+/**
+ * 返回	false	表示formObj readonly,不可编辑
+ * @param formObj
+ * @param val
+ * @returns {Boolean}
+ */
+FormManager.prototype.validateReadonly = function(formObj) {
 	var self = formObj;
-	if (!Y.Lang.isBoolean(val)) {
-		return false;
-	}
 	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
 	var dataSetId = self.get("dataSetId");
-	var validateResult = true;
+	var validateResult = false;
 	
 	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
 		if (column.name == self.get("name")) {
-			if (column.FixReadOnly && !val) {
-				validateResult = false;
+			if (column.fixReadOnly) {
+				validateResult = true;
 			}
 			return true;
 		}
@@ -55,16 +68,16 @@ FormManager.prototype.validateReadonly = function(formObj, val, Y) {
 	});
 
 	// 验证被用
-	if (validateResult) {
+	if (!validateResult) {
 		var datasourceIterator = new DatasourceIterator();
 		var result = "";
 		datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
 			if (fieldGroup.getDataSetId() == dataSetId && fieldGroup.id == self.get("name")) {
 				var usedFormManager = new FormManager();
 				var isUsed = usedFormManager.getDataIsUsedForFormObj(formObj);
-				if (isUsed && !val) {
-					if (fieldGroup.DenyEditInUsed) {
-						validateResult = false;
+				if (isUsed) {
+					if (fieldGroup.denyEditInUsed) {
+						validateResult = true;
 					}
 				}
 			}
@@ -74,7 +87,7 @@ FormManager.prototype.validateReadonly = function(formObj, val, Y) {
 	return validateResult;
 }
 
-FormManager.prototype.initializeAttr = function(formObj, Y) {
+FormManager.prototype.initializeAttr = function(formObj) {
 	var self = formObj;
 	if (g_datasourceJson) {
     	var datasourceIterator = new DatasourceIterator();
@@ -92,22 +105,22 @@ FormManager.prototype.initializeAttr = function(formObj, Y) {
     	var dataSetId = self.get("dataSetId");
     	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
     		if (column.name == self.get("name")) {
-    			if (column.FixReadOnly) {
+    			if (column.fixReadOnly) {
     				self.set("readonly", true);
-    			} else if (column.ReadOnly) {
+    			} else if (column.readOnly) {
     				self.set("readonly", true);
     			}
     			if (column.zeroShowEmpty) {
     				self.set("zeroShowEmpty", true);
     			}
-    			if (column.FieldWidth != "") {
-    				self.set("fieldWidth", column.FieldWidth);
+    			if (column.fieldWidth != "") {
+    				self.set("fieldWidth", column.fieldWidth);
     			}
-    			if (column.FieldHeight != "") {
-    				self.set("fieldHeight", column.FieldHeight);
+    			if (column.fieldHeight != "") {
+    				self.set("fieldHeight", column.fieldHeight);
     			}
-    			if (column.FieldCls != "") {
-    				self.set("fieldCls", column.FieldCls);
+    			if (column.fieldCls != "") {
+    				self.set("fieldCls", column.fieldCls);
     			}
     			return true;
     		}
@@ -116,168 +129,36 @@ FormManager.prototype.initializeAttr = function(formObj, Y) {
     	
     	// apply number field currencyFormat
     	var formManager = new FormManager();
-    	formManager.applyNumberDisplayPattern(formObj, Y);
+    	formManager.applyNumberDisplayPattern(formObj);
 
-    	formObj.after("render", function(){
-    		formManager.updateSingleFieldAttr4GlobalParam(formObj, Y);
-    	});
-    	self.set("validator", formManager.dsFormFieldValidator);
+    	formManager.updateSingleFieldAttr4GlobalParam(formObj);
+    	
+//    	self.set("validator", formManager.dsFormFieldValidator);
     }
 }
 
 /**
- * 获取币别格式
+ * 应用numberField的格式化,
  */
-FormManager.prototype._getCurrencyFormat = function(dataSetId, currencyField, fieldDict) {// 本行记录中是否存在对应币别
-	var self = this;
-	var prefix = null;
-	var decimalPlaces = null;
-	var currencyFieldColumnConfig = null;
-	var formTemplateIterator = new FormTemplateIterator();
-	var result = "";
-	
-	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
-		if (column.name == currencyField) {
-			currencyFieldColumnConfig = column;
-			return true;
-		}
-		return false;
-	});
-
-	if (currencyFieldColumnConfig) {
-		var commonUtil = new CommonUtil();
-		var bo = self.getBo();
-		var data = {};
-		for (var item in fieldDict) {
-			data[item] = fieldDict[item].get("value");
-		}
-		var relationItem = commonUtil.getRelationItem(currencyFieldColumnConfig.relationDS, bo, data);
-		var selectorName = relationItem.relationConfig.selectorName;
-		
-		var relationBo = g_relationManager.getRelationBo(selectorName, data[currencyField]);
-		if (relationBo) {
-			prefix = relationBo["currencyTypeSign"];
-			decimalPlaces = parseInt(relationBo["amtDecimals"]) - 1;
-		}
-	}
-	return {
-		prefix: prefix,
-		decimalPlaces: decimalPlaces
-	}
-}
-
-/**
- * 应用numberField的currency的格式化
- */
-FormManager.prototype.applyNumberDisplayPattern = function(formObj, Y) {
+FormManager.prototype.applyNumberDisplayPattern = function(formObj) {
 	var self = formObj;
 	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
 	var dataSetId = self.get("dataSetId");
-	
 	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
-		if (column.name == self.get("name")) {
-			var currencyField = column.CurrencyField;
-			if (currencyField) {
-				self.set("displayPattern", function(formObj, column, Y){
-					return function(value) {
-						var self = formObj;
-						if (typeof(value) == "string") {
-							value = parseFloat(value);
-						}
-						var dataSetId = self.get("dataSetId");
-						var formManager = new FormManager();
-						var fieldDict = self._getFieldDict();
-						var currencyField = column.CurrencyField;
-						var prefix = null;
-						var decimalPlaces = null;
-						if (column.IsMoney) {// 是否金额
-							if (sysParam[currencyField]) {// 本位币
-								prefix = sysParam[currencyField]["prefix"];
-								decimalPlaces = sysParam[currencyField]["decimalPlaces"];
-							}
-							if (fieldDict[currencyField]) {// 本行记录中是否存在对应币别
-								var currencyFormat = formManager._getCurrencyFormat(dataSetId, currencyField, fieldDict);
-								prefix = currencyFormat["prefix"];
-								decimalPlaces = currencyFormat["decimalPlaces"];
-							}
-						} else if (column.IsUnitPrice) {// 单价
-							if (sysParam[currencyField]) {// 本位币
-								prefix = sysParam[currencyField]["prefix"];
-								decimalPlaces = sysParam[currencyField]["unitPriceDecimalPlaces"];
-							}
-							if (fieldDict[currencyField]) {// 本行记录中是否存在对应币别
-								var currencyFormat = formManager._getCurrencyFormat(dataSetId, currencyField, fieldDict);
-								prefix = currencyFormat["prefix"];
-								decimalPlaces = currencyFormat["decimalPlaces"];
-							}
-						} else if (column.IsCost) {// 成本
-							if (sysParam[currencyField]) {// 本位币
-								prefix = sysParam[currencyField]["prefix"];
-								decimalPlaces = sysParam["unitCostDecimalPlaces"];
-							}
-							if (fieldDict[currencyField]) {// 本行记录中是否存在对应币别
-								var currencyFormat = formManager._getCurrencyFormat(dataSetId, currencyField, fieldDict);
-								prefix = currencyFormat["prefix"];
-								decimalPlaces = currencyFormat["decimalPlaces"];
-							}
-						} else {// 是否金额
-							if (sysParam[currencyField]) {// 本位币
-								prefix = sysParam[currencyField]["prefix"];
-								decimalPlaces = sysParam[currencyField]["decimalPlaces"];
-							}
-							if (fieldDict[currencyField]) {// 本行记录中是否存在对应币别
-								var currencyFormat = formManager._getCurrencyFormat(dataSetId, currencyField, fieldDict);
-								prefix = currencyFormat["prefix"];
-								decimalPlaces = currencyFormat["decimalPlaces"];
-							}
-						}
-	
-						if (prefix !== null) {
-							return Y.DataType.Number.format(value, {
-								prefix : prefix,
-								decimalPlaces : decimalPlaces,
-								decimalSeparator : ".",
-								thousandsSeparator : sysParam.thousandsSeparator,
-								suffix : ""
-							});
-						} else {
-							console.log("在系统参数和本行记录中,没有找到currencyField:" + currencyField + ", fieldName is:" + formObj.get("name"));
-						}
-					};
-				}(formObj, column, Y));
-			} else if (column.IsPercent) {
-				self.set("displayPattern", function(formObj, column, Y){
-					return function(value) {
-						var self = formObj;
-						if (typeof(value) == "string") {
-							value = parseFloat(value);
-						}
-						return Y.DataType.Number.format(value, {
-							prefix : "",
-							decimalPlaces : sysParam["percentDecimalPlaces"],
-							decimalSeparator : ".",
-							thousandsSeparator : sysParam.thousandsSeparator,
-							suffix : "%"
-						});
-					};
-				}(formObj, column, Y));
+		if (column.xmlName == "number-column" && column.name == self.get("name")) {
+			if (column.isPercent) {
+				self.set("prefix", "");
+				self.set("precision", 2);
+				self.set("decimalSeparator", ".");
+				self.set("groupSeparator", "");
+				self.set("suffix", "%");
 			} else {
-				self.set("displayPattern", function(formObj, column, Y){
-					return function(value) {
-						var self = formObj;
-						if (typeof(value) == "string") {
-							value = parseFloat(value);
-						}
-						return Y.DataType.Number.format(value, {
-							prefix : column.Prefix,
-							decimalPlaces : column.DecimalPlaces,
-							decimalSeparator : column.DecimalSeparator,
-							thousandsSeparator : column.ThousandsSeparator,
-							suffix : column.Suffix
-						});
-					};
-				}(formObj, column, Y));
+				self.set("prefix", column.prefix);
+				self.set("precision", column.decimalPlaces);
+				self.set("decimalSeparator", column.decimalSeparator);
+				self.set("groupSeparator", column.thousandsSeparator);
+				self.set("suffix", column.suffix);
 			}
 			return true;
 		}
@@ -290,15 +171,13 @@ FormManager.prototype.applyNumberDisplayPattern = function(formObj, Y) {
  */
 FormManager.prototype.updateAllFieldAttr4GlobalParam = function() {
 	var self = this;
-	executeGYUI(function(Y){
-		for (var key in g_masterFormFieldDict) {
-			var formObj = g_masterFormFieldDict[key];
-			self.updateSingleFieldAttr4GlobalParam(formObj, Y);
-		}
-	});
+	for (var key in g_masterFormFieldDict) {
+		var formObj = g_masterFormFieldDict[key];
+		self.updateSingleFieldAttr4GlobalParam(formObj, Y);
+	}
 }
 
-FormManager.prototype.updateSingleFieldAttr4GlobalParam = function(formObj, Y) {
+FormManager.prototype.updateSingleFieldAttr4GlobalParam = function(formObj) {
 	var self = formObj;
 	if (g_datasourceJson) {
 		// 被用,赋值readonly=true
@@ -309,7 +188,7 @@ FormManager.prototype.updateSingleFieldAttr4GlobalParam = function(formObj, Y) {
 				if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
 					var usedFormManager = new FormManager();
 					var isUsed = usedFormManager.getDataIsUsedForFormObj(formObj);
-					if (isUsed && fieldGroup.DenyEditInUsed) {
+					if (isUsed && fieldGroup.denyEditInUsed) {
 						self.set("readonly", true);
 					}
 				}
@@ -318,7 +197,7 @@ FormManager.prototype.updateSingleFieldAttr4GlobalParam = function(formObj, Y) {
 	}
 }
 
-FormManager.prototype.applyEventBehavior = function(formObj, Y) {
+FormManager.prototype.applyEventBehavior = function(formObj) {
 	var self = formObj;
 	
 	var dataSetId = self.get("dataSetId");
@@ -330,34 +209,27 @@ FormManager.prototype.applyEventBehavior = function(formObj, Y) {
 		if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
 			if (fieldGroup.jsConfig && fieldGroup.jsConfig.listeners) {
 				for (var key in fieldGroup.jsConfig.listeners) {
-					if (key == "valueChange") {
-						self.after("valueChange", function(key) {
-							return function(e) {
-								fieldGroup.jsConfig.listeners[key](e, self);
-							}
-						}(key));
-					} else {
-						self._fieldNode.on(key, function(key) {
-							return function(e) {
-								fieldGroup.jsConfig.listeners[key](e, self);
-							}
-						}(key));
-					}
+					var id = self.get("id");
+					$("#" + id).on(key, function(key) {
+						return function(e) {
+							fieldGroup.jsConfig.listeners[key](e, self);
+						}
+					}(key));
 				}
 			}
 		}
 	});
-	// observe的添加,主要用于清值,如果是用tree需要联动呢?到时再添加呗
+	// observe的添加,主要用于清值,暂时不支持树联动,
 	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
 	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
 		if (column.name == name) {
-			if (column.ColumnAttributeLi) {
-				for (var i = 0; i < column.ColumnAttributeLi.length; i++) {
-					if (column.ColumnAttributeLi[i].name == "observe") {
-						var observeFields = column.ColumnAttributeLi[i].Value.split(",");
+			if (column.columnAttribute) {
+				for (var i = 0; i < column.columnAttribute.length; i++) {
+					if (column.columnAttribute[i].name == "observe") {
+						var observeFields = column.columnAttribute[i].value.split(",");
 						if (dataSetId == "A") {
-							self.after("valueChange", function() {
+							$("#" + self.get("id")).on("change", function() {
 								for (var j = 0; j < observeFields.length; j++) {
 									var targetObj = g_masterFormFieldDict[observeFields[j]];
 									if (targetObj) {
@@ -366,11 +238,11 @@ FormManager.prototype.applyEventBehavior = function(formObj, Y) {
 								}
 							});
 						} else {
-							self.after("valueChange", function() {
-								if (g_gridPanelDict[dataSetId + "_addrow"]) {
-									var formFieldDict = g_gridPanelDict[dataSetId + "_addrow"].dt.getRecord(self._fieldNode).formFieldDict;
+							$("#" + self.get("id")).on("change", function() {
+								var formManager = new FormManager();
+								if (formManager.isMatchDetailEditor(dataSetId)) {
 									for (var j = 0; j < observeFields.length; j++) {
-										var targetObj = formFieldDict[observeFields[j]];
+										var targetObj = g_popupFormField[observeFields[j]];
 										if (targetObj) {
 											targetObj.set("value", "");
 										}
@@ -429,15 +301,13 @@ FormManager.prototype.getBo = function() {
 		if (dataSetId != "A") {
 			var gridObj = g_gridPanelDict[dataSetId];
 			if (gridObj) {
-				bo[dataSetId] = gridObj.dt.get("data").toJSON();
+				bo[dataSetId] = gridObj.dt.datagrid("getData");
 			}
 		}
 	});
 	if (bo["A"] && bo["A"]["id"]) {
-		bo["_id"] = bo["A"]["id"];
 		bo["id"] = bo["A"]["id"];
 	} else {
-		bo["_id"] = "";
 		bo["id"] = "";
 	}
 	return bo;
@@ -505,11 +375,11 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 	
 	var isDataTypeNumber = false;
 	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "DECIMAL";
+	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "DOUBLE";
 	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "FLOAT";
 	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "INT";
-	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "LONGINT";
-	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "MONEY";
-	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "SMALLINT";
+	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "LONG";
+	isDataTypeNumber = isDataTypeNumber || fieldGroup.fieldType == "SHORT";
 	
 	if (fieldGroup.allowEmpty != true) {
 		if (isDataTypeNumber && (value == "0")) {
@@ -518,34 +388,18 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 		}
 	}
 	
-	var isUnLimit = fieldGroup.LimitOption == undefined || fieldGroup.LimitOption == "" || fieldGroup.LimitOption == "unLimit";
-	var dateEnumLi = ["YEAR","YEARMONTH","DATE","TIME","DATETIME"];
+	var isUnLimit = fieldGroup.limitOption == undefined || fieldGroup.limitOption == "" || fieldGroup.limitOption == "unLimit";
+	var dateEnumLi = ["DATE","TIME","TIMESTAMP"];
 	var isDate = false;
 	for (var i = 0; i < dateEnumLi.length; i++) {
-		if (dateEnumLi[i] == fieldGroup.FieldNumberType) {
+		if (dateEnumLi[i] == fieldGroup.fieldType) {
 			isDate = true;
 			break;
 		}
 	}
 	if (isDataTypeNumber && isDate) {
 		var isAllowEmptyAndZero = fieldGroup.allowEmpty && (value == "0" || value == "");
-		if (fieldGroup.FieldNumberType == "YEAR") {
-			if (!/^\d{4}$/.test(value) && !isAllowEmptyAndZero) {
-				messageLi.push("格式错误，正确格式类似于：1970");
-				return messageLi;
-			}
-		} else if (fieldGroup.FieldNumberType == "YEARMONTH") {
-			var message = "";
-			if (dateSeperator == "-") {
-				message = "格式错误，正确格式类似于：1970-01";
-			} else {
-				message = "格式错误，正确格式类似于：1970/01";
-			}
-			if (!/^\d{4}\d{2}$/.test(value) && !isAllowEmptyAndZero) {
-				messageLi.push(message);
-				return messageLi;
-			}
-		} else if (fieldGroup.FieldNumberType == "DATE") {
+		if (fieldGroup.fieldType == "DATE") {
 			var message = "";
 			if (dateSeperator == "-") {
 				message = "格式错误，正确格式类似于：1970-01-02";
@@ -556,12 +410,12 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 				messageLi.push(message);
 				return messageLi;
 			}
-		} else if (fieldGroup.FieldNumberType == "TIME") {
+		} else if (fieldGroup.fieldType == "TIME") {
 			if (!/^\d{2}\d{2}\d{2}$/.test(value) && !isAllowEmptyAndZero) {
 				messageLi.push("格式错误，正确格式类似于：03:04:05");
 				return messageLi;
 			}
-		} else if (fieldGroup.FieldNumberType == "DATETIME") {
+		} else if (fieldGroup.fieldType == "TIMESTAMP") {
 			var message = "";
 			if (dateSeperator == "-") {
 				message = "格式错误，正确格式类似于：1970-01-02 03:04:05";
@@ -585,33 +439,32 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 		}
 		if (!isUnLimit) {
 			var fieldValueFloat = parseFloat(value);
-			if (fieldGroup.LimitOption == "limitMax") {
-				var maxValue = parseFloat(fieldGroup.LimitMax);
+			if (fieldGroup.limitOption == "limitMax") {
+				var maxValue = parseFloat(fieldGroup.limitMax);
 				if (maxValue < fieldValueFloat) {
-					messageLi.push("超出最大值" + fieldGroup.LimitMax);
+					messageLi.push("超出最大值" + fieldGroup.limitMax);
 				}
-			} else if (fieldGroup.LimitOption == "limitMin") {
-				var minValue = parseFloat(fieldGroup.LimitMin);
+			} else if (fieldGroup.limitOption == "limitMin") {
+				var minValue = parseFloat(fieldGroup.limitMin);
 				if (fieldValueFloat < minValue) {
-					messageLi.push("小于最小值" + fieldGroup.LimitMin);
+					messageLi.push("小于最小值" + fieldGroup.limitMin);
 				}
-			} else if (fieldGroup.LimitOption == "limitRange") {
-				var minValue = parseFloat(fieldGroup.LimitMin);
-				var maxValue = parseFloat(fieldGroup.LimitMax);
+			} else if (fieldGroup.limitOption == "limitRange") {
+				var minValue = parseFloat(fieldGroup.limitMin);
+				var maxValue = parseFloat(fieldGroup.limitMax);
 				if (fieldValueFloat < minValue || maxValue < fieldValueFloat) {
-					messageLi.push("超出范围("+fieldGroup.LimitMin+"~"+fieldGroup.LimitMax+")");
+					messageLi.push("超出范围("+fieldGroup.limitMin+"~"+fieldGroup.limitMax+")");
 				}
 			}
 		}
 	} else {
 		var isDataTypeString = false;
 		isDataTypeString = isDataTypeString || fieldGroup.fieldType == "STRING";
-		isDataTypeString = isDataTypeString || fieldGroup.fieldType == "REMARK";
-		var isFieldLengthLimit = fieldGroup.FieldLength != "";
+		var isFieldLengthLimit = fieldGroup.fieldLength != "";
 		if (isDataTypeString && isFieldLengthLimit) {
-			var limit = parseFloat(fieldGroup.FieldLength);
+			var limit = parseFloat(fieldGroup.fieldLength);
 			if (value.length > limit) {
-				messageLi.push("长度超出最大值"+fieldGroup.FieldLength);
+				messageLi.push("长度超出最大值"+fieldGroup.fieldLength);
 			}
 		}
 	}
@@ -662,6 +515,12 @@ FormManager.prototype._getDateSeperator = function(dataSetId, name) {
 	return dateSeperator;
 }
 
+/**
+ * 表单验证
+ * @param datasource
+ * @param bo
+ * @returns
+ */
 FormManager.prototype.dsFormValidator = function(datasource, bo) {
 	var datasourceIterator = new DatasourceIterator();
 	var messageLi = [];
@@ -675,8 +534,7 @@ FormManager.prototype.dsFormValidator = function(datasource, bo) {
 			var value = data[fieldGroup.id];
 			if (value !== undefined && formFieldObj) {
 				if(!formManager.dsFormFieldValidator(value, formFieldObj)) {
-//					messageLi.push(fieldGroup.DisplayName + formFieldObj.get("error"));
-					masterMessageLi.push(fieldGroup.DisplayName + formFieldObj.get("error"));
+					masterMessageLi.push(fieldGroup.displayName + formFieldObj.get("error"));
 				}
 			}
 		} else {
@@ -685,11 +543,10 @@ FormManager.prototype.dsFormValidator = function(datasource, bo) {
 				var dateSeperator = formManager._getDateSeperator(fieldGroup.getDataSetId(), fieldGroup.id);
 				var lineMessageLi = formManager.dsFieldGroupValidator(value, dateSeperator, fieldGroup);
 				if (lineMessageLi.length > 0) {
-//					messageLi.push("序号为" + (rowIndex + 1) + "的分录，" + fieldGroup.DisplayName + lineMessageLi.join("，"));
 					if (!detailMessageDict[fieldGroup.getDataSetId()]) {
 						detailMessageDict[fieldGroup.getDataSetId()] = [];
 					}
-					detailMessageDict[fieldGroup.getDataSetId()].push("序号为" + (rowIndex + 1) + "的分录，" + fieldGroup.DisplayName + lineMessageLi.join("，"));
+					detailMessageDict[fieldGroup.getDataSetId()].push("序号为" + (rowIndex + 1) + "的分录，" + fieldGroup.displayName + lineMessageLi.join("，"));
 				}
 			}
 		}
@@ -699,11 +556,7 @@ FormManager.prototype.dsFormValidator = function(datasource, bo) {
 		if (dataSet.jsConfig && dataSet.jsConfig.validateEdit) {
 			var dataSetBo = bo[dataSet.id];
 			var validateEditMessageLi = dataSet.jsConfig.validateEdit(dataSetBo);
-//			if (validateEditMessageLi.length > 0){
-//				messageLi.push(dataSet.DisplayName + "错误信息：");
-//			}
 			for (var i = 0; i < validateEditMessageLi.length; i++) {
-//				messageLi.push(validateEditMessageLi[i]);
 				if (dataSet.id == "A") {
 					masterMessageLi.push(validateEditMessageLi[i]);
 				} else {
@@ -717,7 +570,7 @@ FormManager.prototype.dsFormValidator = function(datasource, bo) {
 	});
 	
 	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
-		if (dataSet.id != "A" && dataSet.allowEmpty == "false") {
+		if (dataSet.id != "A" && dataSet.allowEmpty != true) {
 			var isEmpty = false;
 			if (!bo[dataSet.id]) {
 				isEmpty = true;
@@ -727,11 +580,11 @@ FormManager.prototype.dsFormValidator = function(datasource, bo) {
 				}
 			}
 			if (isEmpty) {
-//				messageLi.push("分录:"+dataSet.DisplayName+"不允许为空");
+//				messageLi.push("分录:"+dataSet.displayName+"不允许为空");
 				if (!detailMessageDict[dataSet.id]) {
 					detailMessageDict[dataSet.id] = [];
 				}
-				detailMessageDict[dataSet.id].push("分录"+dataSet.DisplayName+"不允许为空");
+				detailMessageDict[dataSet.id].push("分录"+dataSet.displayName+"不允许为空");
 			}
 		}
 	});
@@ -744,14 +597,14 @@ FormManager.prototype.dsFormValidator = function(datasource, bo) {
 	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		if (dataSet.id == "A") {
 			if (masterMessageLi.length > 0) {
-				messageLi.push(dataSet.DisplayName + "错误信息：");
+				messageLi.push(dataSet.displayName + "错误信息：");
 				for (var i = 0; i < masterMessageLi.length; i++) {
 					messageLi.push(masterMessageLi[i]);
 				}
 			}
 		} else {
 			if (detailMessageDict[dataSet.id] && detailMessageDict[dataSet.id].length > 0) {
-				messageLi.push(dataSet.DisplayName + "错误信息：");
+				messageLi.push(dataSet.displayName + "错误信息：");
 				for (var i = 0; i < detailMessageDict[dataSet.id].length; i++) {
 					messageLi.push(detailMessageDict[dataSet.id][i]);
 				}
@@ -770,6 +623,13 @@ FormManager.prototype.dsFormValidator = function(datasource, bo) {
 	};
 }
 
+/**
+ * 编辑分录编辑器
+ * @param datasource
+ * @param dataSetId
+ * @param detailDataLi
+ * @returns
+ */
 FormManager.prototype.dsDetailValidator = function(datasource, dataSetId, detailDataLi) {
 	var bo = {};
 	bo[dataSetId] = detailDataLi;
@@ -787,12 +647,13 @@ FormManager.prototype.dsDetailValidator = function(datasource, dataSetId, detail
 	var formManager = new FormManager();
 	datasourceIterator.iterateAllFieldBo(datasource, bo, result, function(fieldGroup, data, rowIndex, result){
 		if (!fieldGroup.isMasterField() && fieldGroup.getDataSetId() == dataSetId) {
-			var formFieldDict = g_gridPanelDict[dataSetId + "_addrow"].dt.getRecord(rowIndex).formFieldDict;
-			var formFieldObj = formFieldDict[fieldGroup.id];
-			var value = data[fieldGroup.id];
-			if (value !== undefined && formFieldObj) {
-				if(!formManager.dsFormFieldValidator(value, formFieldObj)) {
-					messageLi.push("序号为" + (rowIndex + 1) + "的分录，" + fieldGroup.DisplayName + formFieldObj.get("error"));
+			if (formManager.isMatchDetailEditor(dataSetId)) {
+				var formFieldObj = g_popupFormField[fieldGroup.id];
+				var value = data[fieldGroup.id];
+				if (value !== undefined && formFieldObj) {
+					if(!formManager.dsFormFieldValidator(value, formFieldObj)) {
+						messageLi.push("序号为" + (rowIndex + 1) + "的分录，" + fieldGroup.displayName + formFieldObj.get("error"));
+					}
 				}
 			}
 		}
@@ -858,19 +719,9 @@ FormManager.prototype._setDetailGridStatus = function(status) {
 				formTemplateIterator.iterateAnyTemplateColumn(dataSet.id, result, function(column, result){
 					if (column.xmlName == "virtual-column") {
 						if (status == "view") {
-							var virtualColumn = g_gridPanelDict[dataSet.id].dt.getColumn(column.name);
-							if (virtualColumn) {
-								g_gridPanelDict[dataSet.id].virtualColumn = virtualColumn;
-								g_gridPanelDict[dataSet.id].dt.removeColumn(column.name);
-							}
+							g_gridPanelDict[dataSet.id].dt.datagrid("hideColumn", column.name);
 						} else {
-							var virtualColumn = g_gridPanelDict[dataSet.id].dt.getColumn(column.name);
-							if (!virtualColumn) {
-								virtualColumn = g_gridPanelDict[dataSet.id].virtualColumn;
-								if (virtualColumn) {
-									g_gridPanelDict[dataSet.id].dt.addColumn(virtualColumn, 1);
-								}
-							}
+							g_gridPanelDict[dataSet.id].dt.datagrid("showColumn", column.name);
 						}
 						return true;
 					}
@@ -923,9 +774,9 @@ FormManager.prototype.loadData2Form = function(datasource, bo) {
 		if (dataSet.id != "A") {
 			if (g_gridPanelDict[dataSet.id]) {
 				if (bo[dataSet.id] !== undefined) {
-					g_gridPanelDict[dataSet.id].dt.set("data", bo[dataSet.id]);
+					g_gridPanelDict[dataSet.id].dt.datagrid("loadData", bo[dataSet.id]);
 				} else {
-					g_gridPanelDict[dataSet.id].dt.set("data", []);
+					g_gridPanelDict[dataSet.id].dt.datagrid("loadData", []);
 				}
 			}
 		}
@@ -939,9 +790,9 @@ FormManager.prototype.getFieldDict = function(formObj) {
 	if (dataSetId == "A") {
 		fieldDict = g_masterFormFieldDict;
 	} else {
-		if (g_gridPanelDict[dataSetId + "_addrow"]) {
-			var record = g_gridPanelDict[dataSetId + "_addrow"].dt.getRecord(self._fieldNode);
-			fieldDict = record.formFieldDict;
+		var formManager = new FormManager();
+		if (formManager.isMatchDetailEditor(dataSetId)) {
+			fieldDict = g_popupFormField;
 		}
 	}
 	return fieldDict;

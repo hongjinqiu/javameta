@@ -108,45 +108,6 @@ function g_pluginAddRow(dataSetId) {
 	// TODO,修改成弹出Form的方式来修改,
 }
 
-/**
- * 插件表头删除,删除多行,弹出框如果是form表单页,当前没用,
- */
-function g_pluginRemoveRow(dataSetId) {
-	var selectRecordLi = g_gridPanelDict[dataSetId + "_addrow"].getSelectRecordLi();
-	if (selectRecordLi.length == 0) {
-		showAlert("请先选择");
-	} else {
-		for (var i = 0; i < selectRecordLi.length; i++) {
-			g_gridPanelDict[dataSetId + "_addrow"].dt.removeRow(selectRecordLi[i]);
-		}
-	}
-}
-
-/**
- * 点击删除,删除一行,弹出框如果是form表单页,当前没用,
- */
-function g_pluginRemoveSingleRow(o, dataSetId) {
-	g_gridPanelDict[dataSetId + "_addrow"].dt.removeRow(o);
-}
-
-/**
- * 点击行项复制,复制一行,弹出框如果是form表单页,当前没用,
- */
-function g_pluginCopyRow(o, dataSetId) {
-	var formManager = new FormManager();
-	var id = o.get("id");
-	var li = g_gridPanelDict[dataSetId + "_addrow"].dt.pqe.getRecords();
-	var data = {};
-	for (var i = 0; i < li.length; i++) {
-		if (li[i].id == id) {
-			data = li[i];
-			break;
-		}
-	}
-	var data = formManager.getDataSetCopyData(dataSetId, data);
-	g_gridPanelDict[dataSetId + "_addrow"].dt.addRow(data);
-}
-
 /*
 	"buttonConfig": {
 		"selectRowBtn": {
@@ -257,7 +218,8 @@ function g_removeRow(dataSetId) {
  * 点击删除,删除一行
  */
 function g_removeSingleRow(o, dataSetId) {
-	g_gridPanelDict[dataSetId].dt.removeRow(o);
+	var index = g_gridPanelDict[dataSetId].dt.datagrid("getRowIndex", o);
+	g_gridPanelDict[dataSetId].dt.datagrid("deleteRow", index);
 }
 
 /**
@@ -265,7 +227,7 @@ function g_removeSingleRow(o, dataSetId) {
  */
 function g_editSingleRow(o, dataSetId) {
 	var inputDataLi = [];
-	inputDataLi.push(o.toJSON());
+	inputDataLi.push(o);
 	g_gridPanelDict[dataSetId].createAddRowGrid(inputDataLi);
 }
 

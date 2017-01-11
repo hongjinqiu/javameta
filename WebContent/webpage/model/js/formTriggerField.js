@@ -236,16 +236,12 @@ PTriggerField.prototype._relationFuncTemplate = function(dataSetId, column) {
 
 PTriggerField.prototype.get = function(key) {
 	var self = this;
+	
 	formFieldCommonGet(self, key);
 }
 
 PTriggerField.prototype.set = function(key, value) {
 	var self = this;
 	
-	if (key == "error") {
-		self.error = value;
-		$("#" + self.config.id).validatebox({validType:"validateTriggerField", invalidMessage: value});
-		return;
-	}
 	formFieldCommonSet(self, key, value);
 }
