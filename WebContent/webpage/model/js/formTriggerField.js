@@ -4,20 +4,24 @@ function PTriggerField(param) {
 	for (var key in param) {
 		config[key] = param;
 	}
+	$("#" + config.id).textbox({
+		readonly: true
+	});
+	$("#" + config.id).validatebox({
+		validType:"validateTriggerField"
+	});
+	for ( var key in param) {
+		self.set(key, param[key]);
+	}
+
 	var formManager = new FormManager();
 	formManager.initializeAttr(self);
 	self.initializeAttr();
 	self.applyEventBehavior();
 	formManager.applyEventBehavior(self);
-	// apply readonly,
-	$("#" + config.id).validatebox({
-		validType:"validateTriggerField"
-	});
-	
-	self.error = "";
 }
 
-PTriggerField.prototype.initializeAttr = function() {// TODO
+PTriggerField.prototype.initializeAttr = function() {
 	var self = this;
 	// 需要配置在extraInfo里面,
 	var selectFunc = function(selectValueLi, formObj){
@@ -33,7 +37,7 @@ PTriggerField.prototype.initializeAttr = function() {// TODO
 	var selectorName = "";
 	var displayField = "";
 	var valueField = "id";
-	var selectorTitle;
+	var selectorTitle = "";
 	
 	self._setDefaultSelectAction();
 	
@@ -195,9 +199,11 @@ PTriggerField.prototype._getFieldDict = function() {
 		if (g_popupFormField) {
 			// 判断弹出框是否存在
 			var isExists = false;
+//			isMatchDetailEditor
+			var formManager = new FormManager();
 			for (var key in g_popupFormField) {
 				var id = g_popupFormField[key].get("id");
-				if ($("#" + id).length > 0) {
+				if ($("#" + id).length > 0 && formManager.isMatchDetailEditor(dataSetId)) {
 					isExists = true;
 				}
 				break;
@@ -234,14 +240,48 @@ PTriggerField.prototype._relationFuncTemplate = function(dataSetId, column) {
 	}
 }
 
+PTriggerField.prototype._getStringOrFunctionResult = function(val){
+	if (val) {
+		if (typeof(val) == "function") {
+			return val();
+		}
+		return val;
+	}
+	return "";
+}
+
+PTriggerField.prototype._getBooleanOrFunctionResult = function(val){
+	if (typeof(val) == "function") {
+		return val();
+	}
+	return val;
+}
+
+PTriggerField.prototype._syncDisplayValue = function() {// TODO,
+	var self = this;
+	var selectorName = this._getStringOrFunctionResult(this.get("selectorName"));
+}
+
+
 PTriggerField.prototype.get = function(key) {
 	var self = this;
 	
-	formFieldCommonGet(self, key);
+	if (key == "value") {
+		return self.config[key];
+	}
+	
+	return formFieldCommonGet(self, key);
 }
 
 PTriggerField.prototype.set = function(key, value) {
 	var self = this;
 	
+	if (key == "value") {
+		self.config[key] = value;
+		// TODO set display value,
+		return;
+	}
+	
 	formFieldCommonSet(self, key, value);
 }
+

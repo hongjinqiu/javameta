@@ -89,7 +89,7 @@ FormFieldFactory.prototype._getFieldByAttributeValue = function(id, value, name,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true,
-			multi: true
+			multiple: true
 		});
 	} else if (value == "radiofield") {
 		return new PChoiceField({
@@ -125,7 +125,7 @@ FormFieldFactory.prototype._getFieldByAttributeValue = function(id, value, name,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true
-//			,multi: true
+//			,multiple: true
 		});
 	} else if (value == "displayfield") {
 		return new PDisplayField({

@@ -53,6 +53,11 @@ js/formManager.js							finish,
 dt.getRecord的相关修改,						finish,
 g_gridPanelDict[dataSet.id].dt				running,--------------------------,
 	running,-------------,
+	再整合一个,整合r-trigger-field到trigger-field中,		多了两个东东,多了选择按钮,查看按钮和删除按钮,
+	单选时,有查看按钮,多选时,没有查看按钮,
+	_getStringOrFunctionResult,				finish,
+	this.on('valueChange', Y.bind(function(e) {		running,----------------------,
+	
 "></script>
  -->
 <script type="text/javascript">
@@ -105,6 +110,26 @@ g_gridPanelDict[dataSet.id].dt				running,--------------------------,
 		self.set("groupSeparator", "");
 		self.set("suffix", "%"); */
 		});
+		$('#dd').datebox({
+		    required:true,
+		    formatter: function(date) {
+				var y = date.getFullYear();
+				var m = date.getMonth()+1;
+				if (m < 10) {
+					m = "0" + m;
+				}
+				var d = date.getDate();
+				if (d < 10) {
+					d = "0" + d;
+				}
+				return y + "/" + m + "/" + d;
+			}
+		});
+		$('#dt').datetimebox({
+		    value: '3/4/2010 2:3',
+		    required: true,
+		    showSeconds: true
+		});
 	});
 </script>
 </head>
@@ -116,5 +141,9 @@ dd
 <input id="i_a" type="text" name="name1" value="name1" />
 <br />
 <input type="text" id="nn" />
+<br />
+<input id="dd" type="text" />
+<br />
+<input id="dt" type="text" name="birthday">
 </body>
 </html>

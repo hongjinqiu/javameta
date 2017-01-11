@@ -171,12 +171,19 @@ ColumnManager.prototype.createNumberColumn = function(columnConfig, columnModel)
 }
 
 ColumnManager.prototype.convertDate2DisplayPattern = function(displayPattern) {
-	displayPattern = displayPattern.replace("yyyy", "%Y");
-	displayPattern = displayPattern.replace("MM", "%m");
-	displayPattern = displayPattern.replace("dd", "%d");
-	displayPattern = displayPattern.replace("HH", "%H");
-	displayPattern = displayPattern.replace("mm", "%M");
-	displayPattern = displayPattern.replace("ss", "%S");
+//	displayPattern = displayPattern.replace("yyyy", "%Y");
+//	displayPattern = displayPattern.replace("MM", "%m");
+//	displayPattern = displayPattern.replace("dd", "%d");
+//	displayPattern = displayPattern.replace("HH", "%H");
+//	displayPattern = displayPattern.replace("mm", "%M");
+//	displayPattern = displayPattern.replace("ss", "%S");
+	
+	displayPattern = displayPattern.replace("yyyy", "yyyy");
+	displayPattern = displayPattern.replace("MM", "MM");
+	displayPattern = displayPattern.replace("dd", "dd");
+	displayPattern = displayPattern.replace("HH", "HH");
+	displayPattern = displayPattern.replace("mm", "mm");
+	displayPattern = displayPattern.replace("ss", "ss");
 	return displayPattern; 
 }
 

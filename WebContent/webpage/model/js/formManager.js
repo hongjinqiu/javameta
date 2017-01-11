@@ -132,8 +132,6 @@ FormManager.prototype.initializeAttr = function(formObj) {
     	formManager.applyNumberDisplayPattern(formObj);
 
     	formManager.updateSingleFieldAttr4GlobalParam(formObj);
-    	
-//    	self.set("validator", formManager.dsFormFieldValidator);
     }
 }
 
