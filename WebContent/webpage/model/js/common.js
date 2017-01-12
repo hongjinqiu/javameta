@@ -196,6 +196,15 @@ function showConfirm(msg, callback, width, height){
 	});
 }
 
+function objectReplace(text, obj) {
+	for (var key in obj) {
+		var regExp = new RegExp("{" + key + "}");
+		regExp.global = true;
+		text = text.replace(regExp, obj[key]);
+	}
+	return text;
+}
+
 /**
  * 配置demo:
  * {

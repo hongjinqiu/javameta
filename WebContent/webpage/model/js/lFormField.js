@@ -18,20 +18,10 @@ validType:['email','length[0,20]']
  */
 
 function commonValidate(value, param) {
-	var formManager = new FormManager();
-	var dataSetId = $(this).attr("dataSetId");
-	if (dataSetId == "A") {
-		var name = $(this).attr("name");
-		var formObj = g_masterFormFieldDict[name];
-		return formManager.dsFormFieldValidator(value, formObj);
-	} else {
-		if (formManager.isMatchDetailEditor(dataSetId)) {
-			var name = $(this).attr("name");
-			var formObj = g_popupFormField[name];
-			return formManager.dsFormFieldValidator(value, formObj);
-		}
-	}
-	return true;
+	var lFormManager = new LFormManager();
+	var name = $(this).attr("name");
+	var formObj = g_masterFormFieldDict[name];
+	return lFormManager.queryParameterFieldValidator(value, formObj);
 }
 
 function validateTextField(value, param) {
@@ -168,7 +158,7 @@ function formFieldCommonSet(self, key, value) {
 	self.config[key] = value;
 }
 
-function PTextField(param) {
+function LTextField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
@@ -185,23 +175,23 @@ function PTextField(param) {
 		self.set(key, param[key]);
 	}
 
-	var formManager = new FormManager();
-	formManager.initializeAttr(self);
-	formManager.applyEventBehavior(self);
+	var lFormManager = new LFormManager();
+	lFormManager.initializeAttr(self);
+	lFormManager.applyEventBehavior(self);
 }
 
-PTextField.prototype.get = function(key) {
+LTextField.prototype.get = function(key) {
 	var self = this;
 	return formFieldCommonGet(self, key);
 }
 
-PTextField.prototype.set = function(key, value) {
+LTextField.prototype.set = function(key, value) {
 	var self = this;
 
 	formFieldCommonSet(self, key, value);
 }
 
-function PHiddenField(param) {
+function LHiddenField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
@@ -216,23 +206,23 @@ function PHiddenField(param) {
 		self.set(key, param[key]);
 	}
 
-	var formManager = new FormManager();
-	formManager.initializeAttr(self);
-	formManager.applyEventBehavior(self);
+	var lFormManager = new LFormManager();
+	lFormManager.initializeAttr(self);
+	lFormManager.applyEventBehavior(self);
 }
 
-PHiddenField.prototype.get = function(key) {
+LHiddenField.prototype.get = function(key) {
 	var self = this;
 	return formFieldCommonGet(self, key);
 }
 
-PHiddenField.prototype.set = function(key, value) {
+LHiddenField.prototype.set = function(key, value) {
 	var self = this;
 
 	formFieldCommonSet(self, key, value);
 }
 
-function PSelectField(param) {
+function LSelectField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
@@ -252,24 +242,27 @@ function PSelectField(param) {
 		self.set(key, param[key]);
 	}
 
-	var formManager = new FormManager();
-	formManager.initializeAttr(self);
-	formManager.setChoices(self);
-	formManager.applyEventBehavior(self);
+	var lFormManager = new LFormManager();
+	lFormManager.initializeAttr(self);
+
+	var choiceFieldManager = new ChoiceFieldManager();
+	self.set("choices", choiceFieldManager.getChoices(self.get("name")));
+	
+	lFormManager.applyEventBehavior(self);
 }
 
-PSelectField.prototype.get = function(key) {
+LSelectField.prototype.get = function(key) {
 	var self = this;
 	return formFieldCommonGet(self, key);
 }
 
-PSelectField.prototype.set = function(key, value) {
+LSelectField.prototype.set = function(key, value) {
 	var self = this;
 
 	formFieldCommonSet(self, key, value);
 }
 
-function PChoiceField(param) {
+function LChoiceField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
@@ -289,13 +282,16 @@ function PChoiceField(param) {
 		self.set(key, param[key]);
 	}
 
-	var formManager = new FormManager();
-	formManager.initializeAttr(self);
-	formManager.setChoices(self);
-	formManager.applyEventBehavior(self);
+	var lFormManager = new LFormManager();
+	lFormManager.initializeAttr(self);
+	
+	var choiceFieldManager = new ChoiceFieldManager();
+	self.set("choices", choiceFieldManager.getChoices(self.get("name")));
+	
+	lFormManager.applyEventBehavior(self);
 }
 
-PChoiceField.prototype.get = function(key) {
+LChoiceField.prototype.get = function(key) {
 	var self = this;
 
 	if (key == "multiple") {
@@ -308,7 +304,7 @@ PChoiceField.prototype.get = function(key) {
 	return formFieldCommonGet(self, key);
 }
 
-PChoiceField.prototype.set = function(key, value) {
+LChoiceField.prototype.set = function(key, value) {
 	var self = this;
 
 	if (key == "multiple") {
@@ -323,7 +319,7 @@ PChoiceField.prototype.set = function(key, value) {
 	formFieldCommonSet(self, key, value);
 }
 
-function PNumberField(param) {
+function LNumberField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
@@ -338,12 +334,12 @@ function PNumberField(param) {
 		self.set(key, param[key]);
 	}
 
-	var formManager = new FormManager();
-	formManager.initializeAttr(self);
-	formManager.applyEventBehavior(self);
+	var lFormManager = new LFormManager();
+	lFormManager.initializeAttr(self);
+	lFormManager.applyEventBehavior(self);
 }
 
-PNumberField.prototype.get = function(key) {
+LNumberField.prototype.get = function(key) {
 	var self = this;
 	if (key == "prefix") {
 		return $("#" + self.config.id).numberbox("options").prefix;
@@ -364,7 +360,7 @@ PNumberField.prototype.get = function(key) {
 	return formFieldCommonGet(self, key);
 }
 
-PNumberField.prototype.set = function(key, value) {
+LNumberField.prototype.set = function(key, value) {
 	var self = this;
 
 	if (key == "prefix") {
@@ -398,7 +394,7 @@ function addPrefixZero(num) {
 	return num;
 }
 
-function PDateField(param) {
+function LDateField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
@@ -409,10 +405,15 @@ function PDateField(param) {
 	var displayPattern = "";
 	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
-	formTemplateIterator.iterateAnyTemplateColumn(self.get("dataSetId"), result, function(column, result) {
-		if (column.name == self.get("name")) {
-			dbPattern = column.dbPattern;
-			displayPattern = column.displayPattern;
+	formTemplateIterator.iterateAnyTemplateQueryParameter(result, function(queryParameter, result){
+		if (queryParameter.name == self.get("name")) {
+			for (var i = 0; i < queryParameter.parameterAttribute.length; i++) {
+				if (queryParameter.parameterAttribute[i].name == "dbPattern") {
+					dbPattern = queryParameter.parameterAttribute[i].value;
+				} else if (queryParameter.parameterAttribute[i].name == "displayPattern") {
+					displayPattern = queryParameter.parameterAttribute[i].value;
+				}
+			}
 			return true;
 		}
 		return false;
@@ -474,24 +475,24 @@ function PDateField(param) {
 		self.set(key, param[key]);
 	}
 
-	var formManager = new FormManager();
-	formManager.initializeAttr(self);
-	formManager.applyEventBehavior(self);
+	var lFormManager = new LFormManager();
+	lFormManager.initializeAttr(self);
+	lFormManager.applyEventBehavior(self);
 }
 
-PDateField.prototype.get = function(key) {
+LDateField.prototype.get = function(key) {
 	var self = this;
 	
 	return formFieldCommonGet(self, key);
 }
 
-PDateField.prototype.set = function(key, value) {
+LDateField.prototype.set = function(key, value) {
 	var self = this;
 
 	formFieldCommonSet(self, key, value);
 }
 
-function PTextareaField(param) {
+function LTextareaField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
@@ -505,23 +506,23 @@ function PTextareaField(param) {
 		self.set(key, param[key]);
 	}
 	
-	var formManager = new FormManager();
-	formManager.initializeAttr(self);
-	formManager.applyEventBehavior(self);
+	var lFormManager = new LFormManager();
+	lFormManager.initializeAttr(self);
+	lFormManager.applyEventBehavior(self);
 }
 
-PTextareaField.prototype.get = function(key) {
+LTextareaField.prototype.get = function(key) {
 	var self = this;
 	return formFieldCommonGet(self, key);
 }
 
-PTextareaField.prototype.set = function(key, value) {
+LTextareaField.prototype.set = function(key, value) {
 	var self = this;
 
 	formFieldCommonSet(self, key, value);
 }
 
-function PDisplayField(param) {
+function LDisplayField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
@@ -534,17 +535,17 @@ function PDisplayField(param) {
 		self.set(key, param[key]);
 	}
 
-	var formManager = new FormManager();
-	formManager.initializeAttr(self);
-	formManager.applyEventBehavior(self);
+	var lFormManager = new LFormManager();
+	lFormManager.initializeAttr(self);
+	lFormManager.applyEventBehavior(self);
 }
 
-PDisplayField.prototype.get = function(key) {
+LDisplayField.prototype.get = function(key) {
 	var self = this;
 	return formFieldCommonGet(self, key);
 }
 
-PDisplayField.prototype.set = function(key, value) {
+LDisplayField.prototype.set = function(key, value) {
 	var self = this;
 
 	formFieldCommonSet(self, key, value);

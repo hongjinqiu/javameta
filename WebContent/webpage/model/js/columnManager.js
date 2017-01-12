@@ -370,7 +370,7 @@ ColumnManager.prototype.createTriggerColumn = function(columnConfig) {
         		html.push("<span class='floatLeft'>" + valueLi.join(",") + "</span>");
         		var selectorTitle = g_relationBo[selectorName].description;
         		var url = g_relationBo[selectorName].url || "";
-        		url = self.yInst.Lang.sub(url, selectorData);
+        		url = objectReplace(url, selectorData);
         		var jsAction = "triggerShowModalDialog({'title': '" + selectorTitle + "','url': '" + url + "'})";
         		html.push('<a class="etrigger_view selectIndent" href="javascript:void(0);" title="查看" onclick="' + jsAction + '"></a>');
         		return html.join("");

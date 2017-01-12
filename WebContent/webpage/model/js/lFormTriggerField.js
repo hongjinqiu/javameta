@@ -1,4 +1,4 @@
-function PTriggerField(param) {
+function LTriggerField(param) {
 	var self = this;
 	this.config = {};
 	for (var key in param) {
@@ -14,17 +14,17 @@ function PTriggerField(param) {
 		self.set(key, param[key]);
 	}
 
-	var formManager = new FormManager();
-	formManager.initializeAttr(self);
+	var lFormManager = new LFormManager();
+	lFormManager.initializeAttr(self);
 	self.initializeAttr();
 
-	formManager.applyEventBehavior(self);// 添加jsConfig中的事件
+	lFormManager.applyEventBehavior(self);// 添加jsConfig中的事件
 	self.applyEventBehavior();
 	
 	self.applyViewBtnStatus();
 }
 
-PTriggerField.prototype.applyViewBtnStatus = function() {
+LTriggerField.prototype.applyViewBtnStatus = function() {
 	var self = this;
 	var multi = self._getBooleanOrFunctionResult(self.get("multi"));
 	if (!multi) {
@@ -34,7 +34,7 @@ PTriggerField.prototype.applyViewBtnStatus = function() {
 	}
 }
 
-PTriggerField.prototype.initializeAttr = function() {
+LTriggerField.prototype.initializeAttr = function() {
 	var self = this;
 	// 需要配置在extraInfo里面,
 	var selectFunc = function(selectValueLi, formObj){
@@ -51,59 +51,63 @@ PTriggerField.prototype.initializeAttr = function() {
 	var displayField = "";
 	var valueField = "id";
 	var selectorTitle = "";
+	var formTemplateIterator = new FormTemplateIterator();
+	var result = "";
 	
 	self._setDefaultSelectAction();
 	
-	var datasourceIterator = new DatasourceIterator();
-	var result = "";
-	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
-		if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
-			selectFunc = fieldGroup.jsConfig.selectFunc;
-			unSelectFunc = fieldGroup.jsConfig.unSelectFunc;
-			queryFunc = fieldGroup.jsConfig.queryFunc;
-		}
-	});
-	var formFormTemplateIterator = new FormTemplateIterator();
-	var result = "";
-	var dataSetId = self.get("dataSetId");
-	formFormTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function IterateFunc(column, result) {
-		if (column.name == self.get("name")) {
+	formTemplateIterator.iterateAnyTemplateQueryParameter(result, function(queryParameter, result){
+		if (queryParameter.name == self.get("name")) {
+			selectFunc = queryParameter.jsConfig.selectFunc;
+			unSelectFunc = queryParameter.jsConfig.unSelectFunc;
+			queryFunc = queryParameter.jsConfig.queryFunc;
+			
+			// 从selector里面取,
 			selectorName = function() {
-				var relationItem = self._relationFuncTemplate(dataSetId, column);
+				var queryParameterManager = new QueryParameterManager();
+				var formData = queryParameterManager.getQueryFormData();
+				var relationItem = self._relationFuncTemplate(queryParameter, formData);
 				if (relationItem) {
 					return relationItem.relationConfig.selectorName;
 				}
 				return "";
 			}
 			displayField = function() {
-				var relationItem = self._relationFuncTemplate(dataSetId, column);
+				var queryParameterManager = new QueryParameterManager();
+				var formData = queryParameterManager.getQueryFormData();
+				var relationItem = self._relationFuncTemplate(queryParameter, formData);
 				if (relationItem) {
 					return relationItem.relationConfig.displayField;
 				}
 				return "";
 			}
 			multi = function() {
-				var relationItem = self._relationFuncTemplate(dataSetId, column);
+				var queryParameterManager = new QueryParameterManager();
+				var formData = queryParameterManager.getQueryFormData();
+				var relationItem = self._relationFuncTemplate(queryParameter, formData);
 				if (relationItem) {
 					return relationItem.relationConfig.selectionMode == "multi";
 				}
 				return false;
 			}
 			valueField = function() {
-				var relationItem = self._relationFuncTemplate(dataSetId, column);
+				var queryParameterManager = new QueryParameterManager();
+				var formData = queryParameterManager.getQueryFormData();
+				var relationItem = self._relationFuncTemplate(queryParameter, formData);
 				if (relationItem) {
 					return relationItem.relationConfig.valueField;
 				}
 				return "";
 			}
 			selectorTitle = function() {
+				var queryParameterManager = new QueryParameterManager();
+				var formData = queryParameterManager.getQueryFormData();
 				var name = selectorName();
 				if (name) {
 					return g_relationBo[name].description;
 				}
 				return "";
 			}
-			
 			return true;
 		}
 		return false;
@@ -119,39 +123,42 @@ PTriggerField.prototype.initializeAttr = function() {
 	this.set("selectorTitle", selectorTitle);
 }
 
-PTriggerField.prototype._setDefaultSelectAction = function() {
+LTriggerField.prototype._setDefaultSelectAction = function() {
 	var self = this;
-	var datasourceIterator = new DatasourceIterator();
+	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
-	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
-		if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
-			if (!fieldGroup.jsConfig) {
-				fieldGroup.jsConfig = {};
+	formTemplateIterator.iterateAnyTemplateQueryParameter(result, function(queryParameter, result){
+		if (queryParameter.name == self.get("name")) {
+			if (!queryParameter.jsConfig) {
+				queryParameter.jsConfig = {};
 			}
-			if (!fieldGroup.jsConfig.selectFunc) {
-				fieldGroup.jsConfig.selectFunc = function(selectValueLi, formObj) {
+			if (!queryParameter.jsConfig.selectFunc) {
+				queryParameter.jsConfig.selectFunc = function(selectValueLi, formObj) {
 					if (!selectValueLi || selectValueLi.length == 0) {
-						self.get("unSelectFunc")(self);
+						queryParameter.jsConfig.unSelectFunc(formObj);
 					} else {
 						formObj.set("value", selectValueLi.join(","));
 					}
 				}
 			}
-			if (!fieldGroup.jsConfig.unSelectFunc) {
-				fieldGroup.jsConfig.unSelectFunc = function(formObj) {
+			if (!queryParameter.jsConfig.unSelectFunc) {
+				queryParameter.jsConfig.unSelectFunc = function(formObj) {
 					formObj.set("value", "");
 				}
 			}
-			if (!fieldGroup.jsConfig.queryFunc) {
-				fieldGroup.jsConfig.queryFunc = function() {
+			if (!queryParameter.jsConfig.queryFunc) {
+				queryParameter.jsConfig.queryFunc = function() {
 					return {};
 				}
 			}
+			
+			return true;
 		}
+		return false;
 	});
 }
 
-PTriggerField.prototype.applyEventBehavior = function() {
+LTriggerField.prototype.applyEventBehavior = function() {
 	var self = this;
 	self._applyTextFieldEventBehavior();
 	self._applySelectBtnEventBehavior();
@@ -162,17 +169,19 @@ PTriggerField.prototype.applyEventBehavior = function() {
 /**
  * copyDestField的联动赋值,
  */
-PTriggerField.prototype._applyTextFieldEventBehavior = function() {
+LTriggerField.prototype._applyTextFieldEventBehavior = function() {
 	var self = this;
 	var id = self.get("id");
 	$("#" + id).change(function(self){
 		return function(){
-			var formFormTemplateIterator = new FormTemplateIterator();
+			var formTemplateIterator = new FormTemplateIterator();
 			var result = "";
-			var dataSetId = self.get("dataSetId");
-			formFormTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function IterateFunc(column, result) {
-				if (column.name == self.get("name")) {
-					var relationItem = self._relationFuncTemplate(dataSetId, column);
+			formTemplateIterator.iterateAnyTemplateQueryParameter(result, function(queryParameter, result){
+				if (queryParameter.Name == self.get("name")) {
+					var queryParameterManager = new QueryParameterManager();
+					var formData = queryParameterManager.getQueryFormData();
+					
+					var relationItem = self._relationFuncTemplate(queryParameter, formData);
 					if (relationItem) {
 						if (relationItem.copyConfig) {
 							var selectorName = self.get("selectorName")();
@@ -180,10 +189,9 @@ PTriggerField.prototype._applyTextFieldEventBehavior = function() {
 								var selectorDict = g_relationManager.getRelationBo(selectorName, self.get("value"));
 								if (selectorDict) {
 									for (var i = 0; i < relationItem.copyConfig.length; i++) {
-										var copyDestFieldName = relationItem.copyConfig[i].copyDestField;
+										var copyDestField = relationItem.copyConfig[i].copyDestField;
 										var copySrcField = relationItem.copyConfig[i].copySrcField;
-										var fieldDict = self._getFieldDict();
-										if (fieldDict && fieldDict[copyDestFieldName]) {
+										if (g_masterFormFieldDict[copyDestField]) {
 											var valueFieldLi = copySrcField.split(",");
 											var valueLi = [];
 											for (var j = 0; j < valueFieldLi.length; j++) {
@@ -191,16 +199,15 @@ PTriggerField.prototype._applyTextFieldEventBehavior = function() {
 													valueLi.push(selectorDict[valueFieldLi[j]]);
 												}
 											}
-											fieldDict[copyDestFieldName].set("value", valueLi.join(","));
+											g_masterFormFieldDict[copyDestField].set("value", valueLi.join(","));
 										}
 									}
 								}
 							} else {
 								for (var i = 0; i < relationItem.copyConfig.length; i++) {
-									var copyDestFieldName = relationItem.copyConfig[i].copyDestField;
-									var fieldDict = self._getFieldDict();
-									if (fieldDict && fieldDict[copyDestFieldName]) {
-										fieldDict[copyDestFieldName].set("value", "");
+									var copyColumnName = relationItem.copyConfig[i].copyDestField;
+									if (g_masterFormFieldDict[copyColumnName]) {
+										g_masterFormFieldDict[copyColumnName].set("value", "");
 									}
 								}
 							}
@@ -211,11 +218,11 @@ PTriggerField.prototype._applyTextFieldEventBehavior = function() {
 				}
 				return false;
 			});
-		}
+    	}
 	}(self));
 }
 
-PTriggerField.prototype._applySelectBtnEventBehavior = function() {
+LTriggerField.prototype._applySelectBtnEventBehavior = function() {
 	var self = this;
 	var id = self.get("id");
 	$("#" + id + "_select").click(function(self){
@@ -263,7 +270,7 @@ PTriggerField.prototype._applySelectBtnEventBehavior = function() {
 	}(self));
 }
 
-PTriggerField.prototype._objectReplace = function(text, obj) {
+LTriggerField.prototype._objectReplace = function(text, obj) {
 	for (var key in obj) {
 		var regExp = new RegExp("{" + key + "}");
 		regExp.global = true;
@@ -272,7 +279,7 @@ PTriggerField.prototype._objectReplace = function(text, obj) {
 	return text;
 }
 
-PTriggerField.prototype._applyViewBtnEventBehavior = function() {
+LTriggerField.prototype._applyViewBtnEventBehavior = function() {
 	var self = this;
 	var id = self.get("id");
 	var multi = self._getBooleanOrFunctionResult(self.get("multi"));
@@ -303,7 +310,7 @@ PTriggerField.prototype._applyViewBtnEventBehavior = function() {
 	}
 }
 
-PTriggerField.prototype._applyDeleteBtnEventBehavior = function() {
+LTriggerField.prototype._applyDeleteBtnEventBehavior = function() {
 	var self = this;
 	var id = self.get("id");
 	$("#" + id + "_delete").click(function(self){
@@ -316,58 +323,13 @@ PTriggerField.prototype._applyDeleteBtnEventBehavior = function() {
 	}(self));
 }
 
-PTriggerField.prototype._getFieldDict = function() {
-	var self = this;
-	var dataSetId = self.get("dataSetId");
-	var fieldDict = null;
-	if (dataSetId == "A") {
-		fieldDict = g_masterFormFieldDict;
-	} else {
-		if (g_popupFormField) {
-			// 判断弹出框是否存在
-			var isExists = false;
-//			isMatchDetailEditor
-			var formManager = new FormManager();
-			for (var key in g_popupFormField) {
-				var id = g_popupFormField[key].get("id");
-				if ($("#" + id).length > 0 && formManager.isMatchDetailEditor(dataSetId)) {
-					isExists = true;
-				}
-				break;
-			}
-			if (isExists) {
-				fieldDict = g_popupFormField;
-			}
-		}
-	}
-	return fieldDict;
+LTriggerField.prototype._relationFuncTemplate = function(queryParameter, formData) {
+	var commonUtil = new CommonUtil();
+	var bo = {"A": formData};
+	return commonUtil.getRelationItem(queryParameter.relationDS, bo, formData);
 }
 
-PTriggerField.prototype._relationFuncTemplate = function(dataSetId, column) {
-	var self = this;
-	var formManager = new FormManager();
-	var bo = formManager.getBo();
-	if (dataSetId == "A") {
-		var data = bo["A"];
-		
-		var commonUtil = new CommonUtil();
-		return commonUtil.getRelationItem(column.relationDS, bo, data);
-	} else {
-		var fieldDict = self._getFieldDict();
-		
-		var data = {};
-		if (fieldDict) {
-			for (var key in fieldDict) {
-				data[key] = fieldDict[key].get("value");
-			}
-		}
-		
-		var commonUtil = new CommonUtil();
-		return commonUtil.getRelationItem(column.relationDS, bo, data);
-	}
-}
-
-PTriggerField.prototype._getStringOrFunctionResult = function(val){
+LTriggerField.prototype._getStringOrFunctionResult = function(val){
 	if (val) {
 		if (typeof(val) == "function") {
 			return val();
@@ -377,14 +339,14 @@ PTriggerField.prototype._getStringOrFunctionResult = function(val){
 	return "";
 }
 
-PTriggerField.prototype._getBooleanOrFunctionResult = function(val){
+LTriggerField.prototype._getBooleanOrFunctionResult = function(val){
 	if (typeof(val) == "function") {
 		return val();
 	}
 	return val;
 }
 
-PTriggerField.prototype._syncDisplayValue = function() {
+LTriggerField.prototype._syncDisplayValue = function() {
 	var self = this;
 	var newValue = $("#" + self.get("id")).attr("idValue");
 	var selectorName = self._getStringOrFunctionResult(self.get("selectorName"));
@@ -418,7 +380,7 @@ PTriggerField.prototype._syncDisplayValue = function() {
 }
 
 
-PTriggerField.prototype.get = function(key) {
+LTriggerField.prototype.get = function(key) {
 	var self = this;
 	
 	if (key == "value") {
@@ -428,7 +390,7 @@ PTriggerField.prototype.get = function(key) {
 	return formFieldCommonGet(self, key);
 }
 
-PTriggerField.prototype.set = function(key, value) {
+LTriggerField.prototype.set = function(key, value) {
 	var self = this;
 	
 	if (key == "value") {

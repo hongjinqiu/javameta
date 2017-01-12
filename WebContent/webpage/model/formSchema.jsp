@@ -23,7 +23,7 @@
 <script type="text/javascript" src="
 
 /app/comboview?
-js/moduleConfig.js							finish,
+js/moduleConfig.js							finish,直接跳过
 js/common.js								finish,
 js/dataTableExtend.js						finish,但是还是需要大量修改,
 js/dataTableDataSourceExtend.js				finish,但是还是需要结合easyui做大量修改,				
@@ -51,13 +51,10 @@ js/formField.js								finish,
 js/formTriggerField.js						finish,
 js/formManager.js							finish,
 dt.getRecord的相关修改,						finish,
-g_gridPanelDict[dataSet.id].dt				running,--------------------------,
-	running,-------------,
-	再整合一个,整合r-trigger-field到trigger-field中,		多了两个东东,多了选择按钮,查看按钮和删除按钮,
+g_gridPanelDict[dataSet.id].dt				finish,
+	再整合一个,整合r-trigger-field到trigger-field中,		finish,
 	单选时,有查看按钮,多选时,没有查看按钮,
-	_getStringOrFunctionResult,				finish,
-	this.on('valueChange', Y.bind(function(e) {		running,----------------------,
-	
+
 "></script>
  -->
 <script type="text/javascript">
@@ -130,7 +127,24 @@ g_gridPanelDict[dataSet.id].dt				running,--------------------------,
 		    required: true,
 		    showSeconds: true
 		});
+		test();
 	});
+	
+	function test() {
+		var testValue = "testBy";
+		/* 
+		window.s_f = function(testValue) {
+			return function(){
+				console.log("test2_" + testValue);
+			}
+		}(testValue);
+		*/
+		$("#myTestText").change(function() {
+			console.log("test1_" + testValue);
+		});
+	}
+	
+	//window.s_f();
 </script>
 </head>
 
@@ -145,5 +159,7 @@ dd
 <input id="dd" type="text" />
 <br />
 <input id="dt" type="text" name="birthday">
+<br />
+<input id="myTestText" type="text" name="myTestText" />
 </body>
 </html>

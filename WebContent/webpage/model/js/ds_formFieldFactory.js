@@ -125,7 +125,6 @@ FormFieldFactory.prototype._getFieldByAttributeValue = function(id, value, name,
 			name : name,
 			dataSetId: dataSetId,
 			validateInline: true
-//			,multiple: true
 		});
 	} else if (value == "displayfield") {
 		return new PDisplayField({
