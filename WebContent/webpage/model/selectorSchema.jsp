@@ -20,18 +20,18 @@
 <!-- 
 <script type="text/javascript" src="/app/comboview?
 
-js/moduleConfig.js
-js/common.js
-js/dataTableExtend.js
-js/columnManager.js
-js/columnManagerSelector.js
-js/queryParameter.js
-js/listTemplateFactory.js
-js/listTemplateService.js
-Component/listTemplate.js
-js/relationManager.js
-js/selectionManager.js
-Component/selectorTemplate.js
+js/moduleConfig.js							finish,直接跳过
+js/common.js								finish,
+js/dataTableExtend.js						finish,但是还是需要大量修改,
+js/columnManager.js							finish,
+js/columnManagerSelector.js					没用了，干掉,
+js/queryParameter.js						finish,
+js/listTemplateFactory.js					finish,
+js/listTemplateService.js					finish,这个类没用了,方法都转移进了templateService.js
+Component/listTemplate.js					finish,
+js/relationManager.js						finish,
+js/selectionManager.js						finish,
+Component/selectorTemplate.js				finish,
 {{.result.listTemplate.ViewTemplate.SelectorScripts}}
 {{.flash.dateFlag}}">
 
