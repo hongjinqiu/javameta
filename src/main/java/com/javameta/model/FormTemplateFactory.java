@@ -495,6 +495,7 @@ public class FormTemplateFactory {
 		for (Button button: toolbar.getButton()) {
 			Map<String, Object> line = New.hashMap();
 			boolean isShow = parseExpressionBoolean(new JSONObject(), button.getExpression());
+			line.put("name", button.getName());
 			line.put("isShow", isShow);
 			result.add(line);
 		}

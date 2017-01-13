@@ -16,47 +16,31 @@
 <script type="text/javascript">
 	var sysParam = {};
 </script>
-<script type="text/javascript" src="${webRoot}/webpage/${formTemplate.scripts}"></script>
 <script type="text/javascript" src="${webRoot}/webpage/model/js/common.js"></script>
 <script type="text/javascript" src="${webRoot}/webpage/model/js/dataTableExtend.js"></script>
-<!-- 
-<script type="text/javascript" src="
+<script type="text/javascript" src="${webRoot}/webpage/model/js/dataTableDatasourceExtend.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/columnManager.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/columnDatasourceManager.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/ds_formtoolbar.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/datasourceService.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/datasourceFactory.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/ds_formFieldFactory.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/formTemplateFactory.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/defaultAction.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/relationManager.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/templateService.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/columnSequenceService.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/formField.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/formTriggerField.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/formManager.js"></script>
 
-/app/comboview?
-js/moduleConfig.js							finish,直接跳过
-js/common.js								finish,
-js/dataTableExtend.js						finish,但是还是需要大量修改,
-js/dataTableDataSourceExtend.js				finish,但是还是需要结合easyui做大量修改,				
-js/columnManager.js							finish,
-js/columnDataSourceManager.js				finish,
-js/ds_formtoolbar.js						finish,
-js/datasourceService.js						finish,
-js/datasourceFactory.js						finish,
-js/ds_formFieldFactory.js					finish,
-	getRowIndex	[row]	Return the specified row index, the row parameter can be a row record or an id field value.
-	selectRow	index	Select a row, the row index start with 0.
-	selectRecord	idValue	Select a row by passing id value parameter.
-	
-	unselectRow	index	Unselect a row.
-	
-	返回PTextField之类的,那么,能不能返回easyui的实现呢?
-js/formTemplateFactory.js					finish,
-js/defaultAction.js							finish,
-js/relationManager.js						finish,
-js/listTemplateService.js					finish,相应的方法转移到templateService.js里面,这个类没用了,
-js/templateService.js						finish,
-	listTemplateService.js里面的东东是要干掉的,需要把相应的方法和值给弄到,templateService.js里面去,
-js/columnSequenceService.js					finish,
-js/formField.js								finish,
-js/formTriggerField.js						finish,
-js/formManager.js							finish,
-dt.getRecord的相关修改,						finish,
-g_gridPanelDict[dataSet.id].dt				finish,
-	再整合一个,整合r-trigger-field到trigger-field中,		finish,
-	单选时,有查看按钮,多选时,没有查看按钮,
+<c:if test="${not empty formTemplate.scripts}">
+	<c:set value="${fn:split(formTemplate.scripts, ',') }" var="scriptsLi"></c:set>
+	<c:forEach items="${scriptsLi}" var="scriptItem">
+		<script type="text/javascript" src="${webRoot}/webpage/${scriptItem}"></script>
+	</c:forEach>
+</c:if>
 
-"></script>
- -->
 <script type="text/javascript">
 	var g_dataBo = ${dataBoJson};
 	var g_formTemplateJsonData = ${formTemplateJsonData};
@@ -66,89 +50,88 @@ g_gridPanelDict[dataSet.id].dt				finish,
 	<c:if test="${empty datasourceJson}">
 		var g_datasourceJson = null;
 	</c:if>
-	var gatheringFormTemplateJsonData = ${gatheringFormTemplateJsonData};
+
+	if (g_datasourceJson) {
+		var datasourceFactory = new DatasourceFactory();
+		datasourceFactory.enhanceDatasource(g_datasourceJson);
+		if (typeof(modelExtraInfo) != "undefined") {
+			datasourceFactory.extendDatasource(g_datasourceJson, modelExtraInfo);
+		}
+	}
+	if (g_formTemplateJsonData) {
+		var formTemplateFactory = new FormTemplateFactory();
+		if (typeof(modelExtraInfo) != "undefined") {
+			formTemplateFactory.extendFormTemplate(modelExtraInfo);
+		}
+	}
+	<c:if test="${not empty layerBoJson}">
+		var g_layerBo = ${layerBoJson};
+	</c:if>
+	<c:if test="${empty layerBoJson}">
+		var g_layerBo = null;
+	</c:if>
+	<c:if test="${not empty layerBoLiJson}">
+		var g_layerBoLi = ${layerBoLiJson};
+	</c:if>
+	<c:if test="${empty layerBoLiJson}">
+		var g_layerBoLi = null;
+	</c:if>
+	<c:if test="${not empty usedCheckJson}">
+		var g_usedCheck = ${usedCheckJson};
+	</c:if>
+	<c:if test="${empty usedCheckJson}">
+		var g_usedCheck = {};
+	</c:if>
+	<c:if test="${not empty relationBoJson}">
+		var g_relationBo = ${relationBoJson};
+	</c:if>
+	<c:if test="${empty relationBoJson}">
+		var g_relationBo = null;
+	</c:if>
 	
+	var g_relationManager = new RelationManager();
+	
+	var g_masterFormFieldLi = [];
+	var g_masterFormFieldDict = {};
+	var g_gridPanelDict = {};
+	var g_formStatus = "${formStatus}";// 表单状态,view或""
+	var g_copyFlag = "${copyFlag}";// true|false,是否从列表页点击复制按钮进入
+	var g_id = "${id}";
+	
+	var g_yuiCommondLi = [];
+
+	var g_Y = null;
 	
 	var g_popupFormField = {};// 用于表格弹出时,存放弹出框控件数据引用,
 	
-	$.extend($.fn.validatebox.defaults.rules, {
-		alwaysTrue: {
-	        validator: function(value,param){
-	        	console.log("always true");
-	        	console.log(this);
-	        	$(this).validatebox("options").invalidMessage = Math.random() + "<br />aaaa<br />eeee";
-	        	//$(this).validatebox("options").required = true;
-	        	//$(this).validatebox({invalidMessage: Math.random() + ""});
-	            return false;
-	        }
-	    },
-	    alwaysFalse: {
-	        validator: function(value,param){
-	        	console.log("always false");
-	        	console.log(this);
-	        	//$(this).validatebox({invalidMessage: Math.random() + ""});
-	            return false;
-	        }
-	    }
-	});
-	$(document).ready(function(){
-		$("#i_a").validatebox({
-			validType: "alwaysTrue",
-			invalidMessage: "test222"
-		});
-		$('#nn').numberbox({
-		    min:0,
-		    prefix:"$",
-		    precision:"3",
-		    decimalSeparator: ".",
-		    groupSeparator: ",",
-		    suffix: "%"
-		    /* self.set("decimalSeparator", ".");
-		self.set("groupSeparator", "");
-		self.set("suffix", "%"); */
-		});
-		$('#dd').datebox({
-		    required:true,
-		    formatter: function(date) {
-				var y = date.getFullYear();
-				var m = date.getMonth()+1;
-				if (m < 10) {
-					m = "0" + m;
-				}
-				var d = date.getDate();
-				if (d < 10) {
-					d = "0" + d;
-				}
-				return y + "/" + m + "/" + d;
-			}
-		});
-		$('#dt').datetimebox({
-		    value: '3/4/2010 2:3',
-		    required: true,
-		    showSeconds: true
-		});
-		test();
-	});
-	
-	function test() {
-		var testValue = "testBy";
-		/* 
-		window.s_f = function(testValue) {
-			return function(){
-				console.log("test2_" + testValue);
-			}
-		}(testValue);
-		*/
-		$("#myTestText").change(function() {
-			console.log("test1_" + testValue);
-		});
-	}
-	
-	//window.s_f();
 </script>
 </head>
 
 <body>
+<c:forEach items="${formTemplate.toolbarOrDataProviderOrColumnModel}" var="item" varStatus="itemStatus">
+	<c:if test="${item.xmlName == 'toolbar'}">
+		<c:set var="toolbarForJsp" value="${item}" scope="request"></c:set>
+		<c:if test="${empty item.rendererTemplate}">
+			<jsp:include page="/webpage/model/render/toolbar.jsp"></jsp:include>
+		</c:if>
+		<c:if test="${not empty item.rendererTemplate}">
+			<jsp:include page="${item.rendererTemplate}"></jsp:include>
+		</c:if>
+	</c:if>
+	<c:if test="${item.xmlName == 'column-model'}">
+		<c:set var="columnModelForJsp" value="${item}" scope="request"></c:set>
+		<c:if test="${item.dataSetId != 'A'}">
+			<c:if test="${empty item.rendererTemplate}">
+				<jsp:include page="/webpage/model/render/columnModel_list.jsp"></jsp:include>
+			</c:if>
+			<c:if test="${not empty item.rendererTemplate}">
+				<jsp:include page="${item.rendererTemplate}"></jsp:include>
+			</c:if>
+		</c:if>
+	</c:if>
+</c:forEach>
+
+<!-- 
 <div id="testDiv">
 	ddddddddddddddd_wwwwwwwwwww
 	eeeeeea
@@ -163,5 +146,6 @@ g_gridPanelDict[dataSet.id].dt				finish,
 	<br />
 	<input id="myTestText" type="text" name="myTestText" />
 </div>
+ -->
 </body>
 </html>

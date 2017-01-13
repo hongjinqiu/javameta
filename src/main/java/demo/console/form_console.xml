@@ -11,12 +11,16 @@
 	<view-template view="model/formSchema.jsp"/>
 	<!-- <security byUnit="true"/> -->
 	
-	<toolbar name="ComponentToolbar">
+	<toolbar name="ComponentToolbar" rendererTemplate="">
 		<button text="重构模型" mode="fn" handler="doRefretorComponent" iconCls="but_box">
 		</button>
 	</toolbar>
 
 	<column-model name="Component">
+		<toolbar>
+			<button text="重构模型" mode="fn" handler="doRefretorComponent" iconCls="icon-edit">
+		</button>
+		</toolbar>
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
 		<id-column name="id" text="编号" hideable="true" />

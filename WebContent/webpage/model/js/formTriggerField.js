@@ -56,7 +56,7 @@ PTriggerField.prototype.initializeAttr = function() {
 	
 	var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
 		if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
 			selectFunc = fieldGroup.jsConfig.selectFunc;
 			unSelectFunc = fieldGroup.jsConfig.unSelectFunc;
@@ -123,7 +123,7 @@ PTriggerField.prototype._setDefaultSelectAction = function() {
 	var self = this;
 	var datasourceIterator = new DatasourceIterator();
 	var result = "";
-	datasourceIterator.iterateAllField(g_dataSourceJson, result, function(fieldGroup, result){
+	datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
 		if (fieldGroup.id == self.get("name") && fieldGroup.getDataSetId() == self.get("dataSetId")) {
 			if (!fieldGroup.jsConfig) {
 				fieldGroup.jsConfig = {};

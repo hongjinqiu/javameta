@@ -3,6 +3,99 @@ function DataTableManager() {
 	this.dt = null;
 }
 
+DataTableManager.prototype.createDataGridForColumnModel = function(columnModelName) {
+	var columnModel = null;
+	for (var i = 0; i < g_formTemplateJsonData.toolbarOrDataProviderOrColumnModel.length; i++) {
+		if (g_formTemplateJsonData.toolbarOrDataProviderOrColumnModel[i].xmlName == "column-model") {
+			if (g_formTemplateJsonData.toolbarOrDataProviderOrColumnModel[i].name == columnModelName) {
+				columnModel = g_formTemplateJsonData.toolbarOrDataProviderOrColumnModel[i];
+				break;
+			}
+		}
+	}
+	if (columnModel) {
+		var dataTableManager = new DataTableManager();
+		var datasourceModelId = g_formTemplateJsonData.datasourceModelId;
+		var columnModelName = columnModel.name;
+		var isRender = true;
+		var isRenderList = false;
+		var items = g_dataBo[columnModelName] || [];
+		if (!datasourceModelId) {
+			isRenderList = !columnModel.displayMode || columnModel.displayMode == "list";
+			isRender = isRenderList;
+		} else {
+			if (columnModel.dataSetId == "A") {
+				isRenderList = false;
+				items = g_dataBo[columnModelName] || {};
+			} else {
+				isRenderList = !columnModel.displayMode || columnModel.displayMode == "list";
+			}
+		}
+		if (isRender) {
+			if (isRenderList) {
+				var param = {
+					data:items,
+					columnModel: columnModel,
+					columnModelName: columnModelName,
+					render:"#" + columnModelName,
+					url:"",
+					totalResults: g_dataBo.totalResults || 50,
+					pageSize: 10000,
+					paginatorContainer : null,
+					paginatorTemplate : null,
+					columnManager: new ColumnDatasourceManager()
+				};
+				// 表格的编辑控件,需要datasource,
+				if (g_datasourceJson) {
+					param["datasourceJson"] = g_datasourceJson;
+				}
+				dataTableManager.createDataGrid(param);
+				g_gridPanelDict[columnModelName] = dataTableManager;
+			} else {
+				// renderForm,不实现,放到主数据集中处理
+				console.log("detailDataSet which dataSetId is:" + columnModelName + " can't render to form,");
+			}
+		}
+	}
+}
+
+DataTableManager.prototype.createColumnModelToolbar = function(columnModel) {
+	var result = [];
+	if (columnModel.toolbar && columnModel.toolbar.buttonGroupOrButtonOrSplitButton) {
+		for (var i = 0; i < columnModel.toolbar.buttonGroupOrButtonOrSplitButton.length; i++) {
+			var button = columnModel.toolbar.buttonGroupOrButtonOrSplitButton[i];
+			var config = {};
+			if (button.name) {
+				config.id = button.name;
+			}
+			config.text = button.text;
+			config.iconCls = button.iconCls;
+			if (button.mode == "fn") {
+				config.handler = function(button) {
+					return function(){
+						var param = button.name || "";
+						eval(button.handler)(param);
+					}
+				}(button);
+			} else if (button.mode == "url") {
+				config.handler = function(button) {
+					return function(){
+						location.href = button.handler;
+					}
+				}(button);
+			} else if (button.mode == "url^") {
+				config.handler = function(button) {
+					return function(){
+						window.open(button.handler);
+					}
+				}(button);
+			}
+			result.push(config);
+		}
+	}
+	return result;
+}
+
 DataTableManager.prototype.createDataGrid = function(param) {
 	var self = this;
 	this.param = param;
@@ -27,7 +120,11 @@ DataTableManager.prototype.createDataGrid = function(param) {
 			width: "100%"
 			//		,datasource: datasource
 	};
-	// TODO,调用easyui的grid来画一个表格出来,
+	var toolbar = self.createColumnModelToolbar(columnModel);
+	if (toolbar.length > 0) {
+		gridConfig.toolbar = toolbar;
+	}
+	$("#" + param.columnModelName).datagrid(gridConfig);
 }
 
 DataTableManager.prototype.getSelectRecordLi = function() {
