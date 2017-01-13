@@ -33,61 +33,31 @@ ColumnManager.prototype.isZeroShowEmpty = function(zeroShowEmpty, o) {
 }
 
 ColumnManager.prototype.createIdColumn = function(columnModel) {
-	if (columnModel.idColumn.hideable != true) {
-		return {
-			width: columnModel.idColumn.width || "",
-			field: columnModel.idColumn.name,
-			title: columnModel.idColumn.text,
-			colspan: columnModel.idColumn.colSpan || 1,
-			rowspan: columnModel.idColumn.rowSpan || 1
-		};
-	}
-	return null;
+	return {
+		width: columnModel.idColumn.width || "",
+		field: columnModel.idColumn.name,
+		title: columnModel.idColumn.text,
+		colspan: columnModel.idColumn.colSpan || 1,
+		rowspan: columnModel.idColumn.rowSpan || 1,
+		hidden: columnModel.idColumn.hideable
+	};
 }
 
 ColumnManager.prototype.createCheckboxColumn = function(columnModel) {
-	if (columnModel.checkboxColumn.hideable != true) {
-		var key = columnModel.checkboxColumn.name;
-		if (columnModel.selectionMode == "radio") {
-			return {
-				width: "40",
-				field:        key,
-				title:      '选择',
-				colspan: columnModel.checkboxColumn.colSpan || 1,
-				rowspan: columnModel.checkboxColumn.rowSpan || 1,
-				//formatter:      '<input type="radio" name="' + key + '" />'
-				formatter:function(value, row, index) {// value, row, index
-					if (value === false) {
-						return "";
-					}
-					return '<input type="radio" name="' + key + '" />';
-				}
-				//,emptyCellValue: '<input type="checkbox"/>'
-			};
-		} else {
-			return {
-				width: "40",
-				field:        key,
-				title:      '<input type="checkbox" class="protocol-select-all" title="全部选中"/>',
-				colspan: columnModel.checkboxColumn.colSpan || 1,
-				rowspan: columnModel.checkboxColumn.rowSpan || 1,
-				//formatter:      '<input type="checkbox" />'
-				formatter:function(value, row, index) {
-					if (value === false) {
-						return "";
-					}
-					return '<input type="checkbox" />';
-				}
-				//,emptyCellValue: '<input type="checkbox"/>'
-			};
-		}
-	}
-	return null;
+	return {
+		width: columnModel.checkboxColumn.width || "",
+		field: columnModel.checkboxColumn.name,
+		title: columnModel.checkboxColumn.text,
+		colspan: columnModel.checkboxColumn.colSpan || 1,
+		rowspan: columnModel.checkboxColumn.rowSpan || 1,
+		hidden: columnModel.checkboxColumn.hideable,
+		checkbox: true
+	};
 }
 
 ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnModel, columnIndex) {
 	var i = columnIndex;
-	if (columnModel.columnList[i].xmlName == "virtual-column" && columnModel.columnList[i].hideable != true) {
+	if (columnModel.columnList[i].xmlName == "virtual-column") {
 		var virtualColumn = columnModel.columnList[i];
 		return {
 			width: columnModel.columnList[i].width || "",
@@ -95,9 +65,9 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 			title: columnModel.columnList[i].text,
 			colspan: columnModel.columnList[i].colSpan || 1,
 			rowspan: columnModel.columnList[i].rowSpan || 1,
+			hidden: columnModel.columnList[i].hideable,
 			formatter:      function(virtualColumn){
 				return function(o, row, index){
-					
 					var htmlLi = [];
 //					htmlLi.push("<div class='btnWrapper_" + virtualColumn.name + "'>");
 					var buttonBoLi = null;
@@ -107,13 +77,13 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 					for (var j = 0; j < virtualColumn.buttons.button.length; j++) {
 						var btnTemplate = null;
 						if (virtualColumn.buttons.button[j].mode == "fn") {
-							btnTemplate = "<a title='{value}' onclick='doVirtualColumnBtnAction(\"{columnModelName}\", this, {handler})' class='{class}' href='javascript:void(0);' style='display:block;' />";
+							btnTemplate = "<a title='{value}' onclick='doVirtualColumnBtnAction(\"{columnModelName}\", \"{id}\", {handler})' class='{class}' href='javascript:void(0);' style='margin-left:3px;'>{value}</a>";
 						} else if (virtualColumn.buttons.button[j].mode == "url") {
-							btnTemplate = "<a title='{value}' onclick='location.href=\"{href}\"' class='{class}' href='javascript:void(0);' style='display:block;' />";
+							btnTemplate = "<a title='{value}' onclick='location.href=\"{href}\"' class='{class}' href='javascript:void(0);' style='margin-left:3px;'>{value}</a>";
 						} else if (virtualColumn.buttons.button[j].mode == "url!") {
-							btnTemplate = "<a title='{value}' onclick='openTabOrJump(\"{href}\")' class='{class}' href='javascript:void(0);' style='display:block;' />";
+							btnTemplate = "<a title='{value}' onclick='openTabOrJump(\"{href}\")' class='{class}' href='javascript:void(0);' style='margin-left:3px;'>{value}</a>";
 						} else {
-							btnTemplate = "<a title='{value}' onclick='window.open(\"{href}\")' class='{class}' href='javascript:void(0);' style='display:block;' />";
+							btnTemplate = "<a title='{value}' onclick='window.open(\"{href}\")' class='{class}' href='javascript:void(0);' style='margin-left:3px;'>{value}</a>";
 						}
 						if (!buttonBoLi || buttonBoLi[j]["isShow"]) {
 							var id = columnModel.idColumn.name;
@@ -126,11 +96,12 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 									regExp.global = true;
 									handler = handler.replace(regExp, row[key]);
 								}
-								btnTemplate = btnTemplate.replace("{value}", virtualColumn.buttons.button[j].text);
-								btnTemplate = btnTemplate.replace("{handler}", handler);
-								btnTemplate = btnTemplate.replace("{class}", virtualColumn.buttons.button[j].iconCls);
-								btnTemplate = btnTemplate.replace("{href}", handler);
-								btnTemplate = btnTemplate.replace("{columnModelName}", columnModelName);
+								btnTemplate = btnTemplate.replace(/{id}/g, row[id]);
+								btnTemplate = btnTemplate.replace(/{value}/g, virtualColumn.buttons.button[j].text);
+								btnTemplate = btnTemplate.replace(/{handler}/g, handler);
+								btnTemplate = btnTemplate.replace(/{class}/g, virtualColumn.buttons.button[j].iconCls);
+								btnTemplate = btnTemplate.replace(/{href}/g, handler);
+								btnTemplate = btnTemplate.replace(/{columnModelName}/g, columnModelName);
 								htmlLi.push(btnTemplate);
 							}
 						}
@@ -153,6 +124,7 @@ ColumnManager.prototype.createNumberColumn = function(columnConfig, columnModel)
 			title: columnConfig.text,
 			colspan: columnConfig.colSpan || 1,
 			rowspan: columnConfig.rowSpan || 1,
+			hidden: columnConfig.hideable,
 			formatter: function(value, row, index) {
 				if (value == "0") {
 					return "";
@@ -166,7 +138,8 @@ ColumnManager.prototype.createNumberColumn = function(columnConfig, columnModel)
 		field: columnConfig.name,
 		title: columnConfig.text,
 		colspan: columnConfig.colSpan || 1,
-		rowspan: columnConfig.rowSpan || 1
+		rowspan: columnConfig.rowSpan || 1,
+		hidden: columnConfig.hideable
 	};
 }
 
@@ -204,6 +177,7 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 			zeroShowEmpty: columnConfig.zeroShowEmpty,
 			colspan: columnConfig.colSpan || 1,
 			rowspan: columnConfig.rowSpan || 1,
+			hidden: columnConfig.hideable,
 			formatter: function(o, row, index) {
 				if (new ColumnManager().isZeroShowEmpty(columnConfig.zeroShowEmpty, o)) {
 					return "";
@@ -270,6 +244,7 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 			title: columnConfig.text,
 			colspan: columnConfig.colSpan || 1,
 			rowspan: columnConfig.rowSpan || 1,
+			hidden: columnConfig.hideable,
 			formatter: function(o, row, index) {
 				if (o == "0") {
 					return "";
@@ -283,7 +258,8 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 		field: columnConfig.name,
 		title: columnConfig.text,
 		colspan: columnConfig.colSpan || 1,
-		rowspan: columnConfig.rowSpan || 1
+		rowspan: columnConfig.rowSpan || 1,
+		hidden: columnConfig.hideable
 	};
 }
 
@@ -294,6 +270,7 @@ ColumnManager.prototype.createBooleanColumn = function(columnConfig) {
 		title: columnConfig.text,
 		colspan: columnConfig.colSpan || 1,
 		rowspan: columnConfig.rowSpan || 1,
+		hidden: columnConfig.hideable,
 		formatter: function(o, row, index) {
 			if (o + "" == "true") {
 				return "是";
@@ -312,6 +289,7 @@ ColumnManager.prototype.createDictionaryColumn = function(columnConfig) {
 		title: columnConfig.text,
 		colspan: columnConfig.colSpan || 1,
 		rowspan: columnConfig.rowSpan || 1,
+		hidden: columnConfig.hideable,
 		formatter: function(o, row, index) {
 			if (g_layerBo[columnConfig.dictionary] && g_layerBo[columnConfig.dictionary][o]) {
 				return g_layerBo[columnConfig.dictionary][o].name;
@@ -337,6 +315,7 @@ ColumnManager.prototype.createTriggerColumn = function(columnConfig) {
 		title: columnConfig.text,
 		colspan: columnConfig.colSpan || 1,
 		rowspan: columnConfig.rowSpan || 1,
+		hidden: columnConfig.hideable,
 		zeroShowEmpty: columnConfig.zeroShowEmpty,
 		formatter: function(o, row, index) {
 			if (new ColumnManager().isZeroShowEmpty(columnConfig.zeroShowEmpty, o)) {
@@ -391,13 +370,14 @@ ColumnManager.prototype.createTriggerColumn = function(columnConfig) {
 
 ColumnManager.prototype.createColumn = function(columnConfig, columnModel) {
 	var self = this;
-	if (columnConfig.xmlName != "virtual-column" && columnConfig.hideable != true) {
+	if (columnConfig.xmlName != "virtual-column") {
 		if (columnConfig.columnModel && columnConfig.columnModel.columnList && columnConfig.columnModel.columnList.length > 0) {
 			var result = {
 				field: columnConfig.name,
 				title: columnConfig.text,
 				colspan: columnConfig.colSpan || 1,
 				rowspan: columnConfig.rowSpan || 1,
+				hidden: columnConfig.hideable,
 				"children": []
 			};
 			for (var i = 0; i < columnConfig.columnModel.columnList.length; i++) {
@@ -423,7 +403,8 @@ ColumnManager.prototype.createColumn = function(columnConfig, columnModel) {
 		return {
 			width: columnConfig.width || "",
 			field: columnConfig.name,
-			title: columnConfig.text
+			title: columnConfig.text,
+			hidden: columnConfig.hideable
 		};
 	}
 	return null;
@@ -455,7 +436,8 @@ ColumnManager.prototype._getColumnsCommon = function(columnModelName, columnMode
 					//field: column.field,
 					title: column.title, 
 					colspan: column.colSpan || 1,
-					rowspan: column.rowSpan || 1
+					rowspan: column.rowSpan || 1,
+					hidden: column.hideable
 				});
 				
 				columns.push(column1);
@@ -486,7 +468,7 @@ ColumnManager.prototype._getColumnsCommon = function(columnModelName, columnMode
 ColumnManager.prototype.getColumns = function(columnModelName, columnModel) {
 	var self = this;
 	return self._getColumnsCommon(columnModelName, columnModel, function(column){
-		return column.useIn == undefined || column.useIn == "" || column.useIn == "list";
+		return true;
 	});
 }
 

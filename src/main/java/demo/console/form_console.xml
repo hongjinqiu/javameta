@@ -16,7 +16,7 @@
 		</button>
 	</toolbar>
 
-	<column-model name="Component">
+	<column-model name="Component" rendererTemplate="" text="list模型列表">
 		<!-- 
 		<toolbar>
 			<button text="重构模型" mode="fn" handler="doRefretorComponent" iconCls="icon-edit">
@@ -25,9 +25,11 @@
 		 -->
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
-		<id-column name="id" text="编号" hideable="true" />
+		<id-column name="id" text="编号" hideable="false" />
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
+				<button text="访问test" iconCls="img_look" mode="fn" handler="testByMe">
+				</button>
 				<button text="访问" iconCls="img_look" mode="url^" handler="/console/listschema?@name={id}">
 					<expression></expression>
 				</button>
@@ -47,10 +49,10 @@
 		</button>
 	</toolbar>
 
-	<column-model name="Selector">
+	<column-model name="Selector" text="selector模型列表">
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
-		<id-column name="id" text="编号" hideable="true" />
+		<id-column name="id" text="编号" hideable="false" />
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
 				<button text="访问" iconCls="img_look" mode="url^" handler="/console/selectorschema?@name={id}">
@@ -71,10 +73,10 @@
 		</button>
 	</toolbar>
 
-	<column-model name="Form">
+	<column-model name="Form" text="form模型列表">
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
-		<id-column name="id" text="编号" hideable="true" />
+		<id-column name="id" text="编号" hideable="false" />
 
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
@@ -96,10 +98,10 @@
 		</button>
 	</toolbar>
 
-	<column-model name="Datasource">
+	<column-model name="Datasource" text="datasource模型列表" selectionMode="radio">
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
-		<id-column name="id" text="编号" hideable="true" />
+		<id-column name="id" text="编号" hideable="false" />
 
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>

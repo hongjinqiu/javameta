@@ -120,7 +120,6 @@ function showDialog(options){
 		} else {
 			href = href + '?ms_=' + date.getTime();
 		}
-		console.log(options);
 		$("<div id='div_for_easyui_window'><iframe class='iframe_for_easyui_window' frameborder='0' src='"+href+"'></iframe></div>").dialog(options);
 	}
 }

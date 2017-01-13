@@ -98,7 +98,7 @@ DataTableManager.prototype.createColumnModelToolbar = function(columnModel) {
 
 DataTableManager.prototype.createDataGrid = function(param) {
 	var self = this;
-	this.param = param;
+	self.param = param;
 	
 	var data = param.data;
 	var columnModel = param.columnModel;
@@ -115,29 +115,32 @@ DataTableManager.prototype.createDataGrid = function(param) {
 	}
 	var columns = columnManager.getColumns(param.columnModelName, columnModel);
 	var gridConfig = {
-			columns : columns,
-			data : data,
-			//width: "100%"
-			//		,datasource: datasource
+		title: columnModel.text,
+		idField: columnModel.idColumn.name,
+		columns : columns,
+		data : data,
+		checkOnSelect: true,
+		selectOnCheck: true,
+		singleSelect: columnModel.selectionMode == "radio"
+		//width: "100%"
+		//		,datasource: datasource
 	};
 	var toolbar = self.createColumnModelToolbar(columnModel);
 	if (toolbar.length > 0) {
 		gridConfig.toolbar = toolbar;
 	}
 	$("#" + param.columnModelName).datagrid(gridConfig);
+	self.dt = $("#" + param.columnModelName);
 }
 
 DataTableManager.prototype.getSelectRecordLi = function() {
 	return this.dt.datagrid("getSelections");
 }
 
-function doVirtualColumnBtnAction(columnModelName, elem, fn){
+function doVirtualColumnBtnAction(columnModelName, id, fn){
 	var self = g_gridPanelDict[columnModelName];
 	var dt = self.dt;
-	// 需要再加一个参数进来,比如id,让grid来获取,
-	/*
-	var yInst = self.yInst;
-	var o = dt.getRecord(yInst.one(elem));
-	fn(o, columnModelName);
-	*/
+	var index = dt.datagrid("getRowIndex", id);
+	var dataLi = dt.datagrid("getRows");
+	fn(dataLi[index], columnModelName);
 }

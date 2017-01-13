@@ -961,6 +961,9 @@ public class VirtualColumn extends Column implements Serializable {
 
         @XmlElement(required = true)
         protected List<Button> button;
+        
+        @XmlTransient
+        private String xmlName = "buttons";
 
         /**
          * Gets the value of the button property.
@@ -990,6 +993,14 @@ public class VirtualColumn extends Column implements Serializable {
             }
             return this.button;
         }
+
+		public String getXmlName() {
+			return xmlName;
+		}
+
+		public void setXmlName(String xmlName) {
+			this.xmlName = xmlName;
+		}
 
     }
 

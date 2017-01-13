@@ -312,6 +312,7 @@ public class FormTemplateFactory {
 			CheckboxColumn checkboxColumn = columnModel.getCheckboxColumn();
 			JSONObject recordJson = JSONObject.fromObject(record);
 			loopItem.put(checkboxColumn.getName(), parseExpressionBoolean(recordJson, checkboxColumn.getExpression()));
+			loopItem.put(columnModel.getIdColumn().getName(), record.get(columnModel.getIdColumn().getName()));
 			for (Column column : columnLi) {
 				getColumnModelDataForColumnItem(column, bo, record, relationBo, loopItem);
 			}
@@ -674,14 +675,15 @@ public class FormTemplateFactory {
 	 */
 	public void getColumnModelDataForColumnItem(Column column, Map<String, Object> bo, Map<String, Object> record, Map<String, Object> relationBo, Map<String, Object> loopItem) {
 		if (column instanceof VirtualColumn) {
+			String key = ((VirtualColumn) column).getButtons().getXmlName();
 			if (loopItem.get(column.getName()) == null) {
 				Map<String, Object> virtualColumnMap = New.hashMap();
 				List<Object> buttons = New.arrayList();
-				virtualColumnMap.put("buttons", buttons);
+				virtualColumnMap.put(key, buttons);
 				loopItem.put(column.getName(), virtualColumnMap);
 			}
 			Map<String, Object> virtualColumnMap = (Map<String, Object>) loopItem.get(column.getName());
-			List<Object> buttons = (List<Object>) virtualColumnMap.get("buttons");
+			List<Object> buttons = (List<Object>) virtualColumnMap.get(key);
 			VirtualColumn virtualColumn = (VirtualColumn) column;
 			if (virtualColumn.getButtons() != null) {
 				for (Button button : virtualColumn.getButtons().getButton()) {
