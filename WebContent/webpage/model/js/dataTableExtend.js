@@ -117,7 +117,7 @@ DataTableManager.prototype.createDataGrid = function(param) {
 	var gridConfig = {
 			columns : columns,
 			data : data,
-			width: "100%"
+			//width: "100%"
 			//		,datasource: datasource
 	};
 	var toolbar = self.createColumnModelToolbar(columnModel);

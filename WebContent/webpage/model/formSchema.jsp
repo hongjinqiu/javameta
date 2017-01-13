@@ -131,6 +131,19 @@
 	</c:if>
 </c:forEach>
 
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		/* 
+		for (var i = 0; i < g_yuiCommondLi.length; i++) {
+			g_yuiCommondLi[i]();
+		}
+		*/
+		if (typeof(main) !== "undefined") {
+			main();
+		}
+	});
+</script>
 <!-- 
 <div id="testDiv">
 	ddddddddddddddd_wwwwwwwwwww
