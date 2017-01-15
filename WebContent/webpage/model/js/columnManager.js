@@ -96,6 +96,9 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 									regExp.global = true;
 									handler = handler.replace(regExp, row[key]);
 								}
+								if (!handler.startsWith("http")) {
+									handler = webRoot + handler;
+								}
 								btnTemplate = btnTemplate.replace(/{id}/g, row[id]);
 								btnTemplate = btnTemplate.replace(/{value}/g, virtualColumn.buttons.button[j].text);
 								btnTemplate = btnTemplate.replace(/{handler}/g, handler);

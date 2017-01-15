@@ -10,7 +10,7 @@
 	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
 	<description>银行资料列表</description>
 	<scripts>js/ds_listtoolbar.js</scripts>
-	<view-template view="Console/ListSchema.html" />
+	<view-template view="model/listSchema.jsp" />
 
 	<!-- <security byUnit="true" /> -->
 
@@ -25,17 +25,9 @@
 
 
 	<data-provider name="queryDataSetA" size="10">
-		<sql>   
-			SELECT *
-				 	FROM CM_MB_BUYPACKAGE T1
-				 	LEFT JOIN CM_MB_MEMBER T2 ON T2.MB_MEMBER_ID = T1.MEMBER_ID
-				 	LEFT JOIN CM_MB_MEMCARD T3 ON T3.MB_MEMCARD_ID=T2.MB_MEMCARD_ID
-				 	LEFT JOIN cm_customers T5 ON T5.CUSTOMERS_ID=T2.CUSTOMERS_ID
-				 	LEFT JOIN CM_CAR T6 ON T6.CAR_ID=T2.CAR_ID
-				 	LEFT JOIN CM_MB_ACTIVITY_PACKAGE T11 ON T11.MB_ACTIVITY_PACKAGE_ID=T1.ACTIVITY_PACKAGE_ID
-				 	LEFT JOIN HR_EMPLOYEE T12 ON T12.EMPLOYEE_ID=T1.HANDLE_BY
-				 	LEFT JOIN PUB_UNIT T13 ON T13.UNIT_ID=T1.HANDLE_UNIT
-				 	LEFT JOIN CM_MB_MEMCARD_GRADE G ON G.MB_MEMCARD_GRADE_ID = T3.MEMCARD_LEVEL
+		<sql>
+			select * from pub_bank
+			where 1=1
  		</sql>
  		<query-parameters dataSetId="A">
 			<query-parameter name="code" auto="true" text=""></query-parameter>

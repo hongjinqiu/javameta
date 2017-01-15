@@ -21,6 +21,9 @@ import com.javameta.model.FormTemplateEnum;
 import com.javameta.model.FormTemplateFactory;
 import com.javameta.model.datasource.Datasource;
 import com.javameta.model.datasource.DatasourceInfo;
+import com.javameta.model.datasource.Field;
+import com.javameta.model.iterate.DatasourceIterator;
+import com.javameta.model.iterate.IDatasourceFieldIterate;
 import com.javameta.model.template.ColumnModel;
 import com.javameta.model.template.FormTemplate;
 import com.javameta.model.template.FormTemplateInfo;
@@ -198,6 +201,15 @@ public class SchemaController extends ControllerSupport {
 		}
 		
 		return componentItems;
+	}
+	
+	@RequestMapping("/getGenerateTableSql")
+	@ResponseBody
+	public String getGenerateTableSql(HttpServletRequest request) {
+		String datasourceName = request.getParameter("@name");
+		DatasourceFactory datasourceFactory = new DatasourceFactory();
+		Datasource datasource = datasourceFactory.getDatasource(datasourceName);
+		return schemaService.getGenerateTableSql(datasource);
 	}
 	
 	@RequestMapping("/refretor")

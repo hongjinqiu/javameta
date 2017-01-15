@@ -30,8 +30,6 @@
 		<id-column name="id" text="编号" width="100" hideable="false" />
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
-				<button text="访问test" iconCls="img_look" mode="fn" handler="testByMe">
-				</button>
 				<button text="访问" iconCls="img_look" mode="url^" handler="/console/listschema?@name={id}">
 					<expression></expression>
 				</button>
@@ -116,6 +114,8 @@
 				<button text="raw xml" iconCls="img_look" mode="url^" handler="/console/rawxml?@name={id}&amp;type=Datasource">
 				</button>
 				<button text="xml" iconCls="img_look" mode="url^" handler="/console/xml?@name={id}&amp;type=Datasource">
+				</button>
+				<button text="获取建表sql" iconCls="img_look" mode="url^" handler="/schema/getGenerateTableSql?@name={id}">
 				</button>
 			</buttons>
 		</virtual-column>
