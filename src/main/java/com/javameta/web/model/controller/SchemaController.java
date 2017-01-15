@@ -200,6 +200,88 @@ public class SchemaController extends ControllerSupport {
 		return componentItems;
 	}
 	
+	@RequestMapping("/refretor")
+	@ResponseBody
+	public JSONObject refretor(HttpServletRequest request) {
+		String type = request.getParameter("type");
+		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
+		FormTemplate formTemplate = formTemplateFactory.getFormTemplate("Console", FormTemplateEnum.FORM);
+		
+		if (type.equals("Component")) {
+			List<FormTemplateInfo> listTemplateInfoLi = formTemplateFactory.refretorFormTemplateInfo(FormTemplateEnum.LIST);
+			List<Map<String, Object>> items = getSummaryListTemplateInfoLi(listTemplateInfoLi);
+			Map<String, Object> bo = New.hashMap();
+			for (Object object: formTemplate.getToolbarOrDataProviderOrColumnModel()) {
+				if (object instanceof ColumnModel) {
+					ColumnModel columnModel = (ColumnModel)object;
+					if (columnModel.getName().equals("Component")) {
+						Map<String, Object> itemsDict = formTemplateFactory.getColumnModelDataForColumnModel(columnModel, bo, items);
+						items = (List<Map<String, Object>>)itemsDict.get("items");
+						break;
+					}
+				}
+			}
+			JSONObject json = new JSONObject();
+			json.put("data", items);
+			return json;
+		} else if (type.equals("Selector")) {
+			List<FormTemplateInfo> listTemplateInfoLi = formTemplateFactory.refretorFormTemplateInfo(FormTemplateEnum.SELECTOR);
+			List<Map<String, Object>> items = getSummarySelectorTemplateInfoLi(listTemplateInfoLi);
+			Map<String, Object> bo = New.hashMap();
+			for (Object object: formTemplate.getToolbarOrDataProviderOrColumnModel()) {
+				if (object instanceof ColumnModel) {
+					ColumnModel columnModel = (ColumnModel)object;
+					if (columnModel.getName().equals("Selector")) {
+						Map<String, Object> itemsDict = formTemplateFactory.getColumnModelDataForColumnModel(columnModel, bo, items);
+						items = (List<Map<String, Object>>)itemsDict.get("items");
+						break;
+					}
+				}
+			}
+			JSONObject json = new JSONObject();
+			json.put("data", items);
+			return json;
+		} else if (type.equals("Form")) {
+			List<FormTemplateInfo> listTemplateInfoLi = formTemplateFactory.refretorFormTemplateInfo(FormTemplateEnum.FORM);
+			List<Map<String, Object>> items = getSummaryFormTemplateInfoLi(listTemplateInfoLi);
+			Map<String, Object> bo = New.hashMap();
+			for (Object object: formTemplate.getToolbarOrDataProviderOrColumnModel()) {
+				if (object instanceof ColumnModel) {
+					ColumnModel columnModel = (ColumnModel)object;
+					if (columnModel.getName().equals("Form")) {
+						Map<String, Object> itemsDict = formTemplateFactory.getColumnModelDataForColumnModel(columnModel, bo, items);
+						items = (List<Map<String, Object>>)itemsDict.get("items");
+						break;
+					}
+				}
+			}
+			JSONObject json = new JSONObject();
+			json.put("data", items);
+			return json;
+		} else if (type.equals("Datasource")) {
+			DatasourceFactory datasourceFactory = new DatasourceFactory();
+			List<DatasourceInfo> listTemplateInfoLi = datasourceFactory.refretorDatasourceInfo();
+			List<Map<String, Object>> items = getSummaryDatasourceInfoLi(listTemplateInfoLi);
+			Map<String, Object> bo = New.hashMap();
+			for (Object object: formTemplate.getToolbarOrDataProviderOrColumnModel()) {
+				if (object instanceof ColumnModel) {
+					ColumnModel columnModel = (ColumnModel)object;
+					if (columnModel.getName().equals("Datasource")) {
+						Map<String, Object> itemsDict = formTemplateFactory.getColumnModelDataForColumnModel(columnModel, bo, items);
+						items = (List<Map<String, Object>>)itemsDict.get("items");
+						break;
+					}
+				}
+			}
+			JSONObject json = new JSONObject();
+			json.put("data", items);
+			return json;
+		}
+		JSONObject json = new JSONObject();
+		json.put("message", "可能传入了错误的refretorType:" + type);
+		return json;
+	}
+	
 	@RequestMapping("/list")
 	public ModelAndView list(HttpServletRequest request) {
 		Map<String, Object> obj = schemaService.testObject();

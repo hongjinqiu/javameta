@@ -11,7 +11,9 @@
 	<view-template view="model/formSchema.jsp"/>
 	<!-- <security byUnit="true"/> -->
 	
-	<toolbar name="ComponentToolbar" rendererTemplate="">
+	<html-fragment rendererTemplate="/webpage/model/consoleRenderFragment1.jsp"></html-fragment>
+	
+	<toolbar name="ComponentToolbar">
 		<button text="重构模型" mode="fn" handler="doRefretorComponent" iconCls="but_box">
 		</button>
 	</toolbar>
@@ -25,7 +27,7 @@
 		 -->
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
-		<id-column name="id" text="编号" hideable="false" />
+		<id-column name="id" text="编号" width="100" hideable="false" />
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
 				<button text="访问test" iconCls="img_look" mode="fn" handler="testByMe">
@@ -39,10 +41,12 @@
 				</button>
 			</buttons>
 		</virtual-column>
-		<string-column name="name" text="名称"></string-column>
-		<string-column name="module" text="模块"></string-column>
-		<string-column name="path" text="路径"></string-column>
+		<string-column name="name" width="100" text="名称"></string-column>
+		<string-column name="module" width="120" text="模块"></string-column>
+		<string-column name="path" width="600" text="路径"></string-column>
 	</column-model>
+	
+	<html-fragment rendererTemplate="/webpage/model/consoleRenderFragment2.jsp"></html-fragment>
 
 	<toolbar name="SelectorToolbar">
 		<button text="重构模型" mode="fn" handler="doRefretorSelector" iconCls="but_box">
@@ -52,7 +56,7 @@
 	<column-model name="Selector" text="selector模型列表">
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
-		<id-column name="id" text="编号" hideable="false" />
+		<id-column name="id" width="100" text="编号" hideable="false" />
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
 				<button text="访问" iconCls="img_look" mode="url^" handler="/console/selectorschema?@name={id}">
@@ -63,10 +67,12 @@
 				</button>
 			</buttons>
 		</virtual-column>
-		<string-column name="name" text="名称"></string-column>
-		<string-column name="module" text="模块"></string-column>
-		<string-column name="path" text="路径"></string-column>
+		<string-column name="name" width="100" text="名称"></string-column>
+		<string-column name="module" width="120" text="模块"></string-column>
+		<string-column name="path" width="600" text="路径"></string-column>
 	</column-model>
+	
+	<html-fragment rendererTemplate="/webpage/model/consoleRenderFragment3.jsp"></html-fragment>
 
 	<toolbar name="FormToolbar">
 		<button text="重构模型" mode="fn" handler="doRefretorForm" iconCls="but_box">
@@ -76,7 +82,7 @@
 	<column-model name="Form" text="form模型列表">
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
-		<id-column name="id" text="编号" hideable="false" />
+		<id-column name="id" text="编号" hideable="false" width="100" />
 
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
@@ -88,10 +94,12 @@
 				</button>
 			</buttons>
 		</virtual-column>
-		<string-column name="name" text="名称"></string-column>
-		<string-column name="module" text="模块"></string-column>
-		<string-column name="path" text="路径"></string-column>
+		<string-column name="name" width="100" text="名称"></string-column>
+		<string-column name="module" width="120" text="模块"></string-column>
+		<string-column name="path" width="600" text="路径"></string-column>
 	</column-model>
+	
+	<html-fragment rendererTemplate="/webpage/model/consoleRenderFragment4.jsp"></html-fragment>
 
 	<toolbar name="DatasourceToolbar">
 		<button text="重构模型" mode="fn" handler="doRefretorDatasource" iconCls="but_box">
@@ -101,7 +109,7 @@
 	<column-model name="Datasource" text="datasource模型列表" selectionMode="radio">
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
-		<id-column name="id" text="编号" hideable="false" />
+		<id-column name="id" text="编号" hideable="false" width="100" />
 
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
@@ -111,9 +119,11 @@
 				</button>
 			</buttons>
 		</virtual-column>
-		<string-column name="name" text="名称"></string-column>
-		<string-column name="module" text="模块"></string-column>
-		<string-column name="path" text="路径"></string-column>
+		<string-column name="name" width="100" text="名称"></string-column>
+		<string-column name="module" width="120" text="模块"></string-column>
+		<string-column name="path" width="600" text="路径"></string-column>
 	</column-model>
+	
+	<html-fragment rendererTemplate="/webpage/model/consoleRenderFragment5.jsp"></html-fragment>
 
 </form-template>

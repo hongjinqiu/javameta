@@ -15,6 +15,7 @@
 <script type="text/javascript" src="${webRoot}/webpage/js/locale/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript">
 	var sysParam = {};
+	var webRoot = "${webRoot}";
 </script>
 <script type="text/javascript" src="${webRoot}/webpage/model/js/common.js"></script>
 <script type="text/javascript" src="${webRoot}/webpage/model/js/dataTableExtend.js"></script>
@@ -109,6 +110,9 @@
 
 <body>
 <c:forEach items="${formTemplate.toolbarOrDataProviderOrColumnModel}" var="item" varStatus="itemStatus">
+	<c:if test="${item.xmlName == 'html-fragment'}">
+		<jsp:include page="${item.rendererTemplate}"></jsp:include>
+	</c:if>
 	<c:if test="${item.xmlName == 'toolbar'}">
 		<c:set var="toolbarForJsp" value="${item}" scope="request"></c:set>
 		<c:if test="${empty item.rendererTemplate}">

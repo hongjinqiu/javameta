@@ -32,6 +32,7 @@
 				<choice minOccurs="1" maxOccurs="unbounded">
 					<element ref="tns:toolbar" minOccurs="0" />
 					<element ref="tns:data-provider" />
+					<element ref="tns:html-fragment" />
 					<element ref="tns:column-model" maxOccurs="unbounded" />
 				</choice>
 				
@@ -103,6 +104,12 @@
 				<element ref="tns:split-button" />
 			</choice>
 			<attributeGroup ref="tns:toolbar-attribute" />
+		</complexType>
+	</element>
+	
+	<element name="html-fragment">
+		<complexType>
+			<attribute name="rendererTemplate"></attribute>
 		</complexType>
 	</element>
 	

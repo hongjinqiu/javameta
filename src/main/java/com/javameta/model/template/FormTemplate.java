@@ -87,6 +87,7 @@ public class FormTemplate implements Serializable {
     @XmlElements({
         @XmlElement(name = "column-model", type = ColumnModel.class),
         @XmlElement(name = "data-provider", type = DataProvider.class),
+        @XmlElement(name = "html-fragment", type = HtmlFragment.class),
         @XmlElement(name = "toolbar", type = Toolbar.class)
     })
     protected List<Object> toolbarOrDataProviderOrColumnModel;

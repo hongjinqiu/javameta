@@ -254,6 +254,14 @@ public class ObjectFactory implements Serializable {
     public Cookie createCookie() {
         return new Cookie();
     }
+    
+    /**
+     * Create an instance of {@link HtmlFragment }
+     * 
+     */
+    public HtmlFragment createHtmlFragment() {
+        return new HtmlFragment();
+    }
 
     /**
      * Create an instance of {@link Button.ButtonAttribute }

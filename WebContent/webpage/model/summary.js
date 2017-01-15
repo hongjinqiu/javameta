@@ -16,7 +16,17 @@ function doRefretorDatasource() {
 
 function doRefretor(name) {
 	var dtManager = g_gridPanelDict[name];
-	var uri = "/console/refretor?type=" + name;
+	var uri = webRoot + "/schema/refretor.do?type=" + name;
+	ajaxRequest({
+		url: uri
+		,params: {
+		},
+		callback: function(o) {
+			dtManager.dt.datagrid("loadData", o.data);
+		}
+	});
+	
+	/*
 	YUI(g_financeModule).use("finance-module", function(Y){
 		Y.on('io:complete', function(id, o, args) {
 			var id = id; // Transaction ID.
@@ -27,8 +37,17 @@ function doRefretor(name) {
 		dtManager.showLoadingImg();
 		var request = Y.io(uri);
 	});
+	*/
 }
 
+function main() {
+	$('#tt').tabs({
+	    border:false
+	    /*,onSelect:function(title){
+	        alert(title+' is selected');
+	    }*/
+	});
+}
 
 
 
