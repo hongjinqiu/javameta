@@ -398,6 +398,8 @@
 			</sequence>
 			<attribute name="hideable" type="boolean" use="required"></attribute>
 			<attribute name="name" use="required"></attribute>
+			<attribute name="colSpan" type="int" default="1"></attribute>
+			<attribute name="rowSpan" type="int" default="1"></attribute>
 		</complexType>
 	</element>
 	

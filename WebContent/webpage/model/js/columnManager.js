@@ -404,6 +404,8 @@ ColumnManager.prototype.createColumn = function(columnConfig, columnModel) {
 			width: columnConfig.width || "",
 			field: columnConfig.name,
 			title: columnConfig.text,
+			colspan: columnConfig.colSpan || 1,
+			rowspan: columnConfig.rowSpan || 1,
 			hidden: columnConfig.hideable
 		};
 	}
@@ -431,19 +433,12 @@ ColumnManager.prototype._getColumnsCommon = function(columnModelName, columnMode
 				for (var j = 0; j < column.children.length; j++) {
 					columns2.push(column.children[j]);
 				}
-				
-				columns1.push({
-					//field: column.field,
-					title: column.title, 
-					colspan: column.colSpan || 1,
-					rowspan: column.rowSpan || 1,
-					hidden: column.hideable
-				});
-				
-				columns.push(column1);
-				columns.push(column2);
-				columns1 = [];
-				columns2 = [];
+				if (column.colspan == 1) {
+					column.colspan = column.children.length;
+					column.noModifyRowspan = true;
+					column.noModifyColspan = true;
+				}
+				columns1.push(column);
 			} else {
 				columns1.push(column);
 			}
@@ -460,6 +455,11 @@ ColumnManager.prototype._getColumnsCommon = function(columnModelName, columnMode
 		columns.push(columns1);
 	}
 	if (columns2.length > 0) {
+		for (var i = 0; i < columns1.length; i++) {
+			if (!columns1[i].noModifyRowspan && columns1[i].rowspan == 1) {
+				columns1[i].rowspan = 2;
+			}
+		}
 		columns.push(columns2);
 	}
 	return columns;

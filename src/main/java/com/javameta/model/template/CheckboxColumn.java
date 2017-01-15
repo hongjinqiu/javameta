@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attribute name="hideable" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="colSpan" type="{http://www.w3.org/2001/XMLSchema}int" default="1" />
+ *       &lt;attribute name="rowSpan" type="{http://www.w3.org/2001/XMLSchema}int" default="1" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -61,6 +63,10 @@ public class CheckboxColumn implements Serializable {
     @XmlAttribute(required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String name;
+    @XmlAttribute
+    protected Integer colSpan;
+    @XmlAttribute
+    protected Integer rowSpan;
     
     @XmlTransient
     private String xmlName = "checkbox-column";
@@ -168,6 +174,22 @@ public class CheckboxColumn implements Serializable {
 
 	public void setXmlName(String xmlName) {
 		this.xmlName = xmlName;
+	}
+
+	public Integer getColSpan() {
+		return colSpan;
+	}
+
+	public void setColSpan(Integer colSpan) {
+		this.colSpan = colSpan;
+	}
+
+	public Integer getRowSpan() {
+		return rowSpan;
+	}
+
+	public void setRowSpan(Integer rowSpan) {
+		this.rowSpan = rowSpan;
 	}
 
 }
