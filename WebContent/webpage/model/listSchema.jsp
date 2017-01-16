@@ -43,7 +43,8 @@ Component/listTemplate.js				finish,
 
  -->
 <script type="text/javascript">
-
+//g_formTemplateJsonData
+//listTemplate
 </script>
 </head>
 

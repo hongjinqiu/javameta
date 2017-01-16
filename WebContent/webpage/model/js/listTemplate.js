@@ -39,6 +39,22 @@ function createGridWithUrl(url, config) {
 		if (config && config.columnManager) {
 			param.columnManager = config.columnManager;
 		}
+		// TODO loader,
+		/*
+param.loader,
+Defines how to load data from remote server. Return false can abort this action. This function takes following parameters:
+param: the parameter object to pass to remote server.
+success(data): the callback function that will be called when retrieve data successfully.
+error(): the callback function that will be called when failed to retrieve data.
+
+	
+load	param	 Load and show the first page rows. If the 'param' is specified, it will replace with the queryParams property. Usually do a query by passing some parameters, this method can be called to load new data from server.
+$('#dg').datagrid('load',{
+	code: '01',
+	name: 'name01'
+});
+reload	param	Reload the rows. Same as the 'load' method but stay on current page.
+		 */
 		dtInst = dataTableManager.createDataGrid(param);
 		g_gridPanelDict[columnModelName] = dtInst;
 		var queryParameterManager = new QueryParameterManager();

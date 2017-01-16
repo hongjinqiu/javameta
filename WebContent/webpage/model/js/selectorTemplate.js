@@ -1,3 +1,13 @@
+function getFirstColumnModelName() {
+	var formTemplateIterator = new FormTemplateIterator();
+	var firstColumnModelName = "";
+	formTemplateIterator.iterateAnyTemplateColumnModel(result, function(columnModel, result) {
+		firstColumnModelName = columnModel.name;
+		return true;
+	});
+	return firstColumnModelName;
+}
+
 function syncSelection(record) {
 	// 是否添加
 	var id = record["id"];
@@ -147,5 +157,5 @@ function selectorMain() {
 	// 同步g_selectionBo到选择区域,
 	syncCallbackSelection();
 	
-	g_gridPanelDict["columnModel_1"].dt.datagrid("reload");
+	g_gridPanelDict[getFirstColumnModelName()].dt.datagrid("reload");
 }
