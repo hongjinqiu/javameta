@@ -2,9 +2,12 @@ package com.javameta.web.model.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,11 +26,18 @@ import com.javameta.model.FormTemplateEnum;
 import com.javameta.model.FormTemplateFactory;
 import com.javameta.model.datasource.Datasource;
 import com.javameta.model.datasource.DatasourceInfo;
+import com.javameta.model.iterate.FormTemplateIterator;
+import com.javameta.model.iterate.IFormTemplateDataProviderIterate;
+import com.javameta.model.iterate.IFormTemplateQueryParameterIterate;
 import com.javameta.model.template.ColumnModel;
+import com.javameta.model.template.DataProvider;
 import com.javameta.model.template.FormTemplate;
 import com.javameta.model.template.FormTemplateInfo;
 import com.javameta.model.template.Toolbar;
+import com.javameta.model.template.QueryParameters.QueryParameter;
+import com.javameta.util.CommonUtil;
 import com.javameta.util.New;
+import com.javameta.util.ObjectHolder;
 import com.javameta.web.model.service.SchemaService;
 import com.javameta.web.support.ControllerSupport;
 
@@ -309,6 +319,230 @@ public class SchemaController extends ControllerSupport {
 		Map<String, Object> obj = schemaService.testObject();
 		request.setAttribute("name", obj.get("name"));
 		return new ModelAndView("model/list");
+	}
+	
+	@RequestMapping("/listschema")
+	public ModelAndView listschema(HttpServletRequest request, HttpServletResponse response) {
+		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
+		String datasourceName = request.getParameter("@name");
+		FormTemplate formTemplate = formTemplateFactory.getFormTemplate(datasourceName, FormTemplateEnum.LIST);
+		
+//		listSelectorCommon
+		
+		String view = formTemplate.getViewTemplate().getView();
+		if (view.endsWith(".jsp")) {
+			view = view.replace(".jsp", "");
+		}
+		return new ModelAndView(view);
+	}
+	
+//	func (self Console) listSelectorCommon(w http.ResponseWriter, r *http.Request, listTemplate *ListTemplate, isGetBo bool, isFromList bool) map[string]interface{} {
+	private Map<String, Object> listSelectorCommon(HttpServletRequest request, HttpServletResponse response, FormTemplate formTemplate, boolean isGetBo, boolean isFromList) {
+		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
+		List<Map<String, Object>> toolbarBo = formTemplateFactory.getFirstToolbarBoForFormTemplate(formTemplate);
+		Map<String, String> paramMap = New.hashMap();
+		
+		Map<String, String> defaultBo = formTemplateFactory.getQueryDefaultValue(formTemplate);
+		paramMap.putAll(defaultBo);
+		
+		getCookieDataAndParamMap(request, response, formTemplate, isFromList, paramMap);
+		int pageNo = 1;
+		int pageSize = 10;
+		DataProvider dataProvider = formTemplateFactory.getFirstDataProviderForFormTemplate(formTemplate);
+		if (dataProvider.getSize() != null) {
+			pageSize = dataProvider.getSize();
+		}
+		String pageNoText = request.getParameter("pageNo");
+		if (StringUtils.isNotEmpty(pageNoText)) {
+			if (Integer.parseInt(pageNoText) > 1) {
+				pageNo = Integer.parseInt(pageNoText);
+			}
+		}
+		String pageSizeText = request.getParameter("pageSize");
+		if (StringUtils.isNotEmpty(pageSizeText)) {
+			if (Integer.parseInt(pageSizeText) > 10) {
+				pageSize = Integer.parseInt(pageSizeText);
+			}
+		}
+		Map<String, Object> dataBo = New.hashMap();
+		dataBo.put("totalResults", 0);
+		dataBo.put("items", new ArrayList<Map<String, Object>>());
+		
+		Map<String, Object> relationBo = New.hashMap();
+		Map<String, Object> usedCheckBo = New.hashMap();
+		if (isGetBo) {
+			dataBo = formTemplateFactory.getFirstBoForFormTemplate(formTemplate, paramMap, pageNo, pageSize);
+			relationBo = (Map<String, Object>)dataBo.get("relationBo");
+			
+			// usedCheck的修改,
+			if (StringUtils.isNotEmpty(formTemplate.getDatasourceModelId())) {
+				DatasourceFactory datasourceFactory = new DatasourceFactory();
+				Datasource datasource = datasourceFactory.getDatasource(formTemplate.getDatasourceModelId());
+				List<Map<String, Object>> items = (List<Map<String, Object>>)dataBo.get("items");
+				// TODO
+//				UsedCheck
+			}
+		}
+		dataBo.put("usedCheckBo", usedCheckBo);
+		
+		String dataBoString = JSONObject.fromObject(dataBo).toString();
+		dataBoString = CommonUtil.filterJsonEmptyAttr(dataBoString);
+		
+		String relationBoString = JSONObject.fromObject(relationBo).toString();
+		relationBoString = CommonUtil.filterJsonEmptyAttr(relationBoString);
+		
+		String listTemplateString = JSONObject.fromObject(formTemplate).toString();
+		listTemplateString = CommonUtil.filterJsonEmptyAttr(listTemplateString);
+		
+		String usedCheckBoString = JSONObject.fromObject(usedCheckBo).toString();
+		usedCheckBoString = CommonUtil.filterJsonEmptyAttr(usedCheckBoString);
+		
+		List<List<Map<String, Object>>> queryParameterRenderLi = getQueryParameterRenderLi(formTemplate);
+//		showParameterLi := []QueryParameter{}
+		List<QueryParameter> showParameterLi = New.arrayList();
+		List<QueryParameter> hiddenParameterLi = formTemplateFactory.getFirstHiddenShowParameterLiForFormTemplate(formTemplate);
+		Map<String, Object> layerBo = formTemplateFactory.getDictionaryForFormTemplate(formTemplate);
+		
+		Map<String, Object> iLayerBo = (Map<String, Object>)layerBo.get("dictionaryBo");
+		String layerBoJson = JSONObject.fromObject(iLayerBo).toString();
+		layerBoJson = CommonUtil.filterJsonEmptyAttr(layerBoJson);
+		
+		Map<String, Object> iLayerBoLi = (Map<String, Object>)layerBo.get("dictionaryBoLi");
+		String layerBoLiJson = JSONObject.fromObject(iLayerBoLi).toString();
+		layerBoLiJson = CommonUtil.filterJsonEmptyAttr(layerBoLiJson);
+		
+		Map<String, Object> result = New.hashMap();
+		/*
+result := map[string]interface{}{
+	"pageSize":               pageSize,
+	"listTemplate":           listTemplate,
+	"toolbarBo":              toolbarBo,
+	"showParameterLi":        showParameterLi,
+	"hiddenParameterLi":      hiddenParameterLi,
+	"queryParameterRenderLi": queryParameterRenderLi,
+	"dataBo":                 dataBo,
+	//		"columns":       columns,
+	"dataBoText":       string(dataBoByte),
+	"dataBoJson":       template.JS(string(dataBoByte)),
+	"relationBoJson":   template.JS(string(relationBoByte)),
+	"listTemplateJson": template.JS(string(listTemplateByte)),
+	"layerBoJson":      template.JS(layerBoJson),
+	"layerBoLiJson":    template.JS(layerBoLiJson),
+	"defaultBoJson":    template.JS(string(defaultBoByte)),
+	"formDataJson":     template.JS(string(formDataByte)),
+	"usedCheckJson":    template.JS(string(usedCheckByte)),
+	"sysParamJson":     template.JS(string(sysParamJson)),
+	//		"columnsJson":   string(columnsByte),
+}
+return result
+		 */
+		return result;
+	}
+	
+	/**
+	 * 每行6个元素,按行分隔
+	 * @param formTemplate
+	 * @return
+	 */
+	private List<List<Map<String, Object>>> getQueryParameterRenderLi(FormTemplate formTemplate) {
+		final int lineColSpan = 6;
+		final List<List<Map<String, Object>>> container = New.arrayList();
+		final ObjectHolder<List<Map<String, Object>>> containerItem = new ObjectHolder<List<Map<String, Object>>>();
+		containerItem.obj = New.arrayList();
+		final ObjectHolder<Integer> lineColSpanSum = new ObjectHolder<Integer>(0);
+		FormTemplateIterator.iterateFormTemplateDataProvider(formTemplate, new IFormTemplateDataProviderIterate() {
+			@Override
+			public void iterate(DataProvider dataProvider) {
+				FormTemplateIterator.iterateFormTemplateQueryParameter(dataProvider, new IFormTemplateQueryParameterIterate() {
+					@Override
+					public void iterate(DataProvider dataProvider, QueryParameter queryParameter) {
+						if (!queryParameter.getEditor().equals("hiddenfield")) {
+							int columnColSpan = 2;
+							if (queryParameter.getColSpan() != null && queryParameter.getColSpan() > 2) {
+								columnColSpan = queryParameter.getColSpan();
+							}
+							Map<String, Object> item = New.hashMap();
+							item.put("label", queryParameter.getText());
+							item.put("name", queryParameter.getName());
+							containerItem.obj.add(item);
+							lineColSpanSum.obj += columnColSpan;
+							if (lineColSpanSum.obj >= lineColSpan) {
+								container.add(containerItem.obj);
+								containerItem.obj = New.arrayList();
+								lineColSpanSum.obj = lineColSpanSum.obj - lineColSpan;
+							}
+						}
+					}
+				});
+			}
+		});
+		if (0 < lineColSpanSum.obj && lineColSpanSum.obj < lineColSpan) {
+			container.add(containerItem.obj);
+		}
+		
+		return container;
+	}
+	
+	private Map<String, String> getCookieDataAndParamMap(HttpServletRequest request, HttpServletResponse response, FormTemplate formTemplate, boolean isFromList, Map<String, String> paramMap) {
+		boolean isHasCookie = false;
+		String cookieFormValue = request.getParameter("cookie");
+		if (StringUtils.isNotEmpty(cookieFormValue) && !cookieFormValue.equals("false")) {
+			isHasCookie = true;
+		}
+		boolean isConfigCookie = false;
+		if (StringUtils.isNotEmpty(formTemplate.getCookie().getName())) {
+			isConfigCookie = true;
+		}
+		Map<String, String> cookieData = New.hashMap();
+		
+		if (isFromList && isHasCookie && isConfigCookie) {
+			cookieData = getCookieKeyValueMap(request, formTemplate.getCookie().getName());
+			paramMap.putAll(cookieData);
+		}
+		Map<String, String> formQueryData = New.hashMap();
+		for (Enumeration enumeration = request.getParameterNames(); enumeration.hasMoreElements(); ) {
+			String key = (String)enumeration.nextElement();
+			String value = StringUtils.join(request.getParameterValues(key), ",");
+			paramMap.put(key, value);
+			formQueryData.put(key, value);
+		}
+		if (isFromList && isConfigCookie && !isHasCookie) {
+			Cookie cookie = new Cookie(formTemplate.getCookie().getName(), "");
+			cookie.setMaxAge(3600);
+			//设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问
+			cookie.setPath("/");
+			response.addCookie(cookie);
+		} else if (isFromList && isConfigCookie && isHasCookie) {
+			Map<String, String> cookieFormQueryData = New.hashMap();
+			cookieFormQueryData.putAll(cookieData);
+			cookieFormQueryData.putAll(formQueryData);
+			
+			JSONObject object = JSONObject.fromObject(cookieFormQueryData);
+			String value = object.toString().replace("\"", "&quote");
+			Cookie cookie = new Cookie(formTemplate.getCookie().getName(), value);
+			cookie.setMaxAge(3600);
+			//设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问
+			cookie.setPath("/");
+			response.addCookie(cookie);
+		}
+		cookieData = getCookieKeyValueMap(request, formTemplate.getCookie().getName());
+		
+		return cookieData;
+	}
+	
+	private Map<String, String> getCookieKeyValueMap(HttpServletRequest request, String cookieName) {
+		Map<String, String> cookieData = New.hashMap();
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie: cookies) {
+				if (cookie.getName().equals(cookieName)) {
+					 String value = cookie.getValue().replace("&quote", "\"");
+					JSONObject object = JSONObject.fromObject(value);
+					cookieData.putAll(object);
+				}
+			}
+		}
+		return cookieData;
 	}
 	
 	@RequestMapping("/testDB")

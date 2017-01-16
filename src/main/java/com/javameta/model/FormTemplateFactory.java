@@ -487,6 +487,20 @@ public class FormTemplateFactory {
 	}
 	
 	/**
+	 * 列表页通常只有一个dataProvider
+	 * @param formTemplate
+	 * @return
+	 */
+	public DataProvider getFirstDataProviderForFormTemplate(FormTemplate formTemplate) {
+		for (Object object: formTemplate.getToolbarOrDataProviderOrColumnModel()) {
+			if (object instanceof DataProvider) {
+				return (DataProvider)object;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * 返回每个按钮的显示或隐藏,[{isShow: true|false}, {isShow: true|false}, {isShow: true|false}, ...]
 	 * @param toolbar
 	 * @return

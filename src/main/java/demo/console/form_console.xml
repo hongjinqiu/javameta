@@ -30,7 +30,7 @@
 		<id-column name="id" text="编号" width="100" hideable="false" />
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
-				<button text="访问" iconCls="img_look" mode="url^" handler="/console/listschema?@name={id}">
+				<button text="访问" iconCls="img_look" mode="url^" handler="/console/listschema.do?@name={id}">
 					<expression></expression>
 				</button>
 				<button text="raw xml" iconCls="img_look" mode="url^" handler="/console/rawxml?@name={id}&amp;type=Component">
