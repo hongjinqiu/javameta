@@ -1,10 +1,12 @@
 package com.javameta.web.model.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
@@ -21,9 +23,6 @@ import com.javameta.model.FormTemplateEnum;
 import com.javameta.model.FormTemplateFactory;
 import com.javameta.model.datasource.Datasource;
 import com.javameta.model.datasource.DatasourceInfo;
-import com.javameta.model.datasource.Field;
-import com.javameta.model.iterate.DatasourceIterator;
-import com.javameta.model.iterate.IDatasourceFieldIterate;
 import com.javameta.model.template.ColumnModel;
 import com.javameta.model.template.FormTemplate;
 import com.javameta.model.template.FormTemplateInfo;
@@ -205,11 +204,22 @@ public class SchemaController extends ControllerSupport {
 	
 	@RequestMapping("/getGenerateTableSql")
 	@ResponseBody
-	public String getGenerateTableSql(HttpServletRequest request) {
+	public void getGenerateTableSql(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.addHeader("Content-Type", "text/html;charset=UTF-8");
 		String datasourceName = request.getParameter("@name");
 		DatasourceFactory datasourceFactory = new DatasourceFactory();
 		Datasource datasource = datasourceFactory.getDatasource(datasourceName);
-		return schemaService.getGenerateTableSql(datasource);
+		String content = schemaService.getGenerateTableSql(datasource);
+		
+		content += "<br /><br /><br />";
+		
+		String insertContent = schemaService.getGenerateInsertSql(datasource, 25);
+		content += insertContent;
+		
+		content = content.replace("\n", "<br />");
+		content = content.replace(";", ";<br />");
+		
+		response.getOutputStream().write(content.getBytes());
 	}
 	
 	@RequestMapping("/refretor")

@@ -109,13 +109,13 @@
 		</checkbox-column>
 		<id-column name="id" text="编号" hideable="false" width="100" />
 
-		<virtual-column name="FUN_C" text="操作" width="120">
+		<virtual-column name="FUN_C" text="操作" width="150">
 			<buttons>
 				<button text="raw xml" iconCls="img_look" mode="url^" handler="/console/rawxml?@name={id}&amp;type=Datasource">
 				</button>
 				<button text="xml" iconCls="img_look" mode="url^" handler="/console/xml?@name={id}&amp;type=Datasource">
 				</button>
-				<button text="获取建表sql" iconCls="img_look" mode="url^" handler="/schema/getGenerateTableSql?@name={id}">
+				<button text="获取建表sql" iconCls="img_look" mode="url^" handler="/schema/getGenerateTableSql.do?@name={id}">
 				</button>
 			</buttons>
 		</virtual-column>

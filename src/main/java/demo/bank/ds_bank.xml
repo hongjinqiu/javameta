@@ -6,7 +6,7 @@
 	<id>Bank</id>
 	<displayName>银行资料</displayName>
 	<inUsedDenyEdit>false</inUsedDenyEdit>
-	<tableName></tableName>
+	<tableName>PUB_BANK</tableName>
 	<masterData>
 		<id>A</id>
 		<displayName>主数据集</displayName>
