@@ -92,26 +92,47 @@ public class UsedCheck {
 		List<Field> fieldLi = diffDataRow.getFieldLi();
 		Map<String, Value> destData = diffDataRow.getDestData();
 		Map<String, Value> srcData = diffDataRow.getSrcData();
-		String fieldId = getDataSetFieldId(datasource, fieldLi.get(0));
+		String primaryKeyFieldId = getDataSetFieldId(datasource, fieldLi.get(0));
 		if (destData == null && srcData != null) {// 删除的分录
-			Map<String, Object> beReferenceQuery = New.hashMap();
-			beReferenceQuery.put("be_ref_datasource_id", datasource.getId());
-			beReferenceQuery.put("be_ref_dataset_id", fieldLi.get(0).getDataSetId());
-			beReferenceQuery.put("be_ref_field_id", fieldId);
-			beReferenceQuery.put("be_ref_field_id_value", srcData.get(fieldId).getObject());
-			
-			StringBuilder sb = new StringBuilder();
-			sb.append(" select count(1) from PUB_REFERENCE_LOG ");
-			sb.append(" where 1=1 ");
-			sb.append(" and be_ref_datasource_id=:be_ref_datasource_id ");
-			sb.append(" and be_ref_dataset_id=:be_ref_dataset_id ");
-			sb.append(" and be_ref_field_id=:be_ref_field_id ");
-			sb.append(" and be_ref_field_id_value=:be_ref_field_id_value ");
-			sb.append(" limit 1 ");
-			
-			int count = this.formTemplateDao.getNamedParameterJdbcTemplate().queryForInt(sb.toString(), beReferenceQuery);
-			
-			return count > 0;
+			if (fieldLi.get(0).isMasterField()) {
+				Map<String, Object> beReferenceQuery = New.hashMap();
+				beReferenceQuery.put("be_ref_datasource_id", datasource.getId());
+				beReferenceQuery.put("be_ref_dataset_id", fieldLi.get(0).getDataSetId());
+				beReferenceQuery.put("be_ref_field_id", primaryKeyFieldId);
+				beReferenceQuery.put("be_ref_field_id_value", srcData.get(primaryKeyFieldId).getObject());
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append(" select count(1) from PUB_REFERENCE_LOG ");
+				sb.append(" where 1=1 ");
+				sb.append(" and be_ref_datasource_id=:be_ref_datasource_id ");
+				sb.append(" and be_ref_dataset_id=:be_ref_dataset_id ");
+				sb.append(" and be_ref_field_id=:be_ref_field_id ");
+				sb.append(" and be_ref_field_id_value=:be_ref_field_id_value ");
+				sb.append(" limit 1 ");
+				
+				int count = this.formTemplateDao.getNamedParameterJdbcTemplate().queryForInt(sb.toString(), beReferenceQuery);
+				
+				return count > 0;
+			} else {
+				Map<String, Object> beReferenceQuery = New.hashMap();
+				beReferenceQuery.put("be_ref_datasource_id", datasource.getId());
+				beReferenceQuery.put("be_ref_dataset_id_1", fieldLi.get(0).getDataSetId());
+				beReferenceQuery.put("be_ref_field_id_1", primaryKeyFieldId);
+				beReferenceQuery.put("be_ref_field_id_value_1", srcData.get(primaryKeyFieldId).getObject());
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append(" select count(1) from PUB_REFERENCE_LOG ");
+				sb.append(" where 1=1 ");
+				sb.append(" and be_ref_datasource_id=:be_ref_datasource_id ");
+				sb.append(" and be_ref_dataset_id_1=:be_ref_dataset_id_1 ");
+				sb.append(" and be_ref_field_id_1=:be_ref_field_id_1 ");
+				sb.append(" and be_ref_field_id_value_1=:be_ref_field_id_value_1 ");
+				sb.append(" limit 1 ");
+				
+				int count = this.formTemplateDao.getNamedParameterJdbcTemplate().queryForInt(sb.toString(), beReferenceQuery);
+				
+				return count > 0;
+			}
 		}
 		return false;
 	}
@@ -148,6 +169,132 @@ public class UsedCheck {
 			}
 		}
 	}
+
+	public void update(List<Field> fieldLi, ValueBusinessObject bo, Map<String, Value> destData, Map<String, Value> srcData) {
+		if (destData != null && srcData == null) {
+			insert(fieldLi, bo, destData);
+		} else if (destData == null && srcData != null) {
+			delete(fieldLi, srcData);
+		} else if (destData != null && srcData != null) {
+			DatasourceFactory datasourceFactory = new DatasourceFactory();
+			// 分析字段,如果字段都相等,不过帐,
+			if (datasourceFactory.isDataDifferent(fieldLi, destData, srcData)) {
+				delete(fieldLi, srcData);
+				insert(fieldLi, bo, destData);
+			}
+		}
+	}
+
+	/**
+	 * 如果是主数据集,不会连分录一起删掉
+	 * 主数据集字段不能直接用主数据集["ds", "A", "id", id]来直接删除,
+	 * 因为会连同分录的一起被删,而分录差异行数据做了different的判断,未修改的分录不会再补上被用记录,就漏掉了
+	 * @param fieldLi
+	 * @param data
+	 */
+	public void delete(List<Field> fieldLi, Map<String, Value> data) {
+		if (fieldLi.get(0).isMasterField()) {
+			for (Field field: fieldLi) {
+				if (field.isRelationField()) {
+					String srcDatasourceId = field.getDatasourceId();
+					String srcDataSetId = field.getDataSetId();
+					String srcFieldName = field.getId();
+					int fieldValue = data.get(srcFieldName).getInt();
+					
+					StringBuilder sb = new StringBuilder();
+					sb.append(" delete from PUB_REFERENCE_LOG ");
+					sb.append(" where 1=1 ");
+					sb.append(" and ref_datasource_id=:ref_datasource_id ");
+					sb.append(" and ref_dataset_id_1=:ref_dataset_id_1 ");
+					sb.append(" and ref_field_id_1=:ref_field_id_1 ");
+					sb.append(" and ref_field_id_value_1=:ref_field_id_value_1 ");
+					
+					Map<String, Object> paramMap = New.hashMap();
+					paramMap.put("ref_datasource_id", srcDatasourceId);
+					paramMap.put("ref_dataset_id_1", srcDataSetId);
+					paramMap.put("ref_field_id_1", srcFieldName);
+					paramMap.put("ref_field_id_value_1", fieldValue);
+					
+					this.formTemplateDao.getNamedParameterJdbcTemplate().update(sb.toString(), paramMap);
+				}
+			}
+		} else {
+			String srcDatasourceId = fieldLi.get(0).getDatasourceId();
+			String srcDataSetId = fieldLi.get(0).getDataSetId();
+			String srcFieldName = "id";
+			int fieldValue = data.get(srcFieldName).getInt();
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append(" delete from PUB_REFERENCE_LOG ");
+			sb.append(" where 1=1 ");
+			sb.append(" and ref_datasource_id=:ref_datasource_id ");
+			sb.append(" and ref_dataset_id_1=:ref_dataset_id_1 ");
+			sb.append(" and ref_field_id_1=:ref_field_id_1 ");
+			sb.append(" and ref_field_id_value_1=:ref_field_id_value_1 ");
+			
+			Map<String, Object> paramMap = New.hashMap();
+			paramMap.put("ref_datasource_id", srcDatasourceId);
+			paramMap.put("ref_dataset_id_1", srcDataSetId);
+			paramMap.put("ref_field_id_1", srcFieldName);
+			paramMap.put("ref_field_id_value_1", fieldValue);
+			
+			this.formTemplateDao.getNamedParameterJdbcTemplate().update(sb.toString(), paramMap);
+		}
+	}
+
+	/**
+	 * 如果是主数据集,则会连同分录一起删除
+	 * @param fieldLi
+	 * @param data
+	 */
+	public void deleteAll(List<Field> fieldLi, Map<String, Value> data) {
+		if (fieldLi.get(0).isMasterField()) {
+			String srcDatasourceId = fieldLi.get(0).getDatasourceId();
+			String srcDataSetId = fieldLi.get(0).getDataSetId();
+			String srcFieldName = "id";
+			int fieldValue = data.get(srcFieldName).getInt();
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append(" delete from PUB_REFERENCE_LOG ");
+			sb.append(" where 1=1 ");
+			sb.append(" and ref_datasource_id=:ref_datasource_id ");
+			sb.append(" and ref_dataset_id=:ref_dataset_id ");
+			sb.append(" and ref_field_id=:ref_field_id ");
+			sb.append(" and ref_field_id_value=:ref_field_id_value ");
+			
+			Map<String, Object> paramMap = New.hashMap();
+			paramMap.put("ref_datasource_id", srcDatasourceId);
+			paramMap.put("ref_dataset_id", srcDataSetId);
+			paramMap.put("ref_field_id", srcFieldName);
+			paramMap.put("ref_field_id_value", fieldValue);
+			
+			this.formTemplateDao.getNamedParameterJdbcTemplate().update(sb.toString(), paramMap);
+		} else {
+			String srcDatasourceId = fieldLi.get(0).getDatasourceId();
+			String srcDataSetId = fieldLi.get(0).getDataSetId();
+			String srcFieldName = "id";
+			int fieldValue = data.get(srcFieldName).getInt();
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append(" delete from PUB_REFERENCE_LOG ");
+			sb.append(" where 1=1 ");
+			sb.append(" and ref_datasource_id=:ref_datasource_id ");
+			sb.append(" and ref_dataset_id_1=:ref_dataset_id_1 ");
+			sb.append(" and ref_field_id_1=:ref_field_id_1 ");
+			sb.append(" and ref_field_id_value_1=:ref_field_id_value_1 ");
+			
+			Map<String, Object> paramMap = New.hashMap();
+			paramMap.put("ref_datasource_id", srcDatasourceId);
+			paramMap.put("ref_dataset_id_1", srcDataSetId);
+			paramMap.put("ref_field_id_1", srcFieldName);
+			paramMap.put("ref_field_id_value_1", fieldValue);
+			
+			this.formTemplateDao.getNamedParameterJdbcTemplate().update(sb.toString(), paramMap);
+		}
+	}
+	
+//	func (o UsedCheck) GetFormUsedCheck(sessionId int, dataSource DataSource, bo map[string]interface{}) map[string]interface{} {
+	
 	
 	/**
 	 * 引用方需要写多个字段,某个字段引用时,也保存这个字段所在数据源主数据集引用,这个字段所在分录数据集引用,
