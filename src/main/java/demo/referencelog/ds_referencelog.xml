@@ -23,20 +23,56 @@
 		</fixField>
 		<bizField>
 			<field id="" extends="ref_datasource_id">
+				<displayName>关联方数据源ID</displayName>
 			</field>
 			<field id="" extends="ref_dataset_id">
+				<displayName>关联方主数据集ID</displayName>
 			</field>
 			<field id="" extends="ref_field_id">
+				<displayName>关联方主数据集主键ID</displayName>
 			</field>
 			<field id="" extends="ref_field_id_value">
+				<displayName>关联方主数据集主键ID值</displayName>
 			</field>
+			<field id="ref_dataset_id_1" extends="ref_dataset_id">
+				<displayName>关联方关联字段所在数据集ID</displayName>
+			</field>
+			<field id="ref_field_id_1" extends="ref_field_id">
+				<displayName>关联方关联字段所在数据集主键ID</displayName>
+			</field>
+			<field id="ref_field_id_value_1" extends="ref_field_id_value">
+				<displayName>关联方关联字段所在数据集主键ID值</displayName>
+			</field>
+			<field id="ref_dataset_id_2" extends="ref_dataset_id">
+				<displayName>关联方关联字段所在数据集ID</displayName>
+			</field>
+			<field id="ref_field_id_2" extends="ref_field_id">
+				<displayName>关联方关联字段ID</displayName>
+			</field>
+			<field id="ref_field_id_value_2" extends="ref_field_id_value">
+				<displayName>关联方关联字段ID值</displayName>
+			</field>
+			
 			<field id="" extends="be_ref_datasource_id">
+				<displayName>被关联方数据源ID</displayName>
 			</field>
 			<field id="" extends="be_ref_dataset_id">
+				<displayName>被关联方主数据集ID</displayName>
 			</field>
 			<field id="" extends="be_ref_field_id">
+				<displayName>被关联方主数据集主键ID</displayName>
 			</field>
 			<field id="" extends="be_ref_field_id_value">
+				<displayName>被关联方主数据集主键ID值</displayName>
+			</field>
+			<field id="be_ref_dataset_id_1" extends="be_ref_dataset_id">
+				<displayName>被关联方关联字段所主数据集ID</displayName>
+			</field>
+			<field id="be_ref_field_id_1" extends="be_ref_field_id">
+				<displayName>被关联方关联字段所在数据集主键ID</displayName>
+			</field>
+			<field id="be_ref_field_id_value_1" extends="be_ref_field_id_value">
+				<displayName>被关联方关联字段所在主数据集主键ID值</displayName>
 			</field>
 		</bizField>
 	</masterData>

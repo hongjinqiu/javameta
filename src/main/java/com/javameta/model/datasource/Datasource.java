@@ -19,6 +19,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang3.StringUtils;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -73,6 +75,17 @@ public class Datasource implements Serializable {
     @XmlElement(required = true)
     protected MasterData masterData;
     protected List<DetailData> detailData;
+    
+    /**
+     * 取表名
+     * @return
+     */
+    public String getCalcTableName() {
+    	if (StringUtils.isNotEmpty(tableName)) {
+    		return tableName;
+    	}
+    	return getId();
+    }
 
     /**
      * Gets the value of the id property.

@@ -67,7 +67,7 @@
 	<field id="CREATE_TIME" extends="ROOT_FIELD">
 		<!-- <fieldName>createTime</fieldName> -->
 		<displayName>创建时间</displayName>
-		<fieldType>LONG</fieldType>
+		<fieldType>TIMESTAMP</fieldType>
 		<fieldLength>14</fieldLength>
 		<fixReadOnly>true</fixReadOnly>
 		<allowCopy>false</allowCopy>
@@ -136,7 +136,7 @@
 	<field id="MODIFY_TIME" extends="ROOT_FIELD">
 		<!-- <fieldName>modifyTime</fieldName> -->
 		<displayName>最后修改时间</displayName>
-		<fieldType>LONG</fieldType>
+		<fieldType>TIMESTAMP</fieldType>
 		<fieldLength>14</fieldLength>
 		<fixReadOnly>true</fixReadOnly>
 		<allowCopy>false</allowCopy>

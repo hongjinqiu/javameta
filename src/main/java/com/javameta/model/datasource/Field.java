@@ -130,6 +130,13 @@ public class Field implements Serializable {
     private String dataSetId;
     @XmlTransient
     private String datasourceId;
+    
+    public String getCalcFieldName() {
+    	if (StringUtils.isNotEmpty(fieldName)) {
+    		return fieldName;
+    	}
+    	return getId();
+    }
 
     public Boolean isMasterField() {
     	if (dataSetId != null) {

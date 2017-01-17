@@ -423,7 +423,7 @@ public class DatasourceFactory {
 		});
 	}
 
-	private com.javameta.model.datasource.Field.RelationDS.RelationItem parseRelationExpr(com.javameta.model.datasource.Field field, ValueBusinessObject valueBo,
+	public com.javameta.model.datasource.Field.RelationDS.RelationItem parseRelationExpr(com.javameta.model.datasource.Field field, ValueBusinessObject valueBo,
 			Map<String, Value> data) {
 		for (com.javameta.model.datasource.Field.RelationDS.RelationItem relationItem : field.getRelationDS().getRelationItem()) {
 			String mode = relationItem.getRelationExpr().getMode();
@@ -595,6 +595,22 @@ public class DatasourceFactory {
 				FieldExtendUtil.extendFieldPoolField(field, pFields.getField());
 			}
 		});
+	}
+	
+	public String getDetailTableName(String datasourceId, String detailSetId) {
+		Datasource datasource = getDatasource(datasourceId);
+		for (DetailData detailData: datasource.getDetailData()) {
+			if (detailData.getId().equals(detailSetId)) {
+				if (StringUtils.isNotEmpty(detailData.getTableName())) {
+					return detailData.getTableName();
+				}
+				if (StringUtils.isNotEmpty(datasource.getTableName())) {
+					return datasource.getTableName() + "_" + detailData.getId();
+				}
+				return datasource.getId() + "_" + detailData.getId();
+			}
+		}
+		return null;
 	}
 
 	private static void unMarshalTest() throws Exception {
