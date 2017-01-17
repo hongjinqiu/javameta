@@ -79,7 +79,8 @@
 					</simpleType>
 				</element>
 				<element name="displayName" type="string" default="分录数据集" />
-				<!-- <element name="parentId" type="string" default="A" /> -->
+				<element name="tableName" type="string" default="" />
+				<element name="parentFieldId" type="string" default="" />
 				<element name="allowEmpty" type="boolean" default="true" minOccurs="0" maxOccurs="1" />
 				<!-- <element name="allowEmptyRow" type="boolean" default="false" /> -->
 				<element name="allowCopy" type="boolean" default="true" />

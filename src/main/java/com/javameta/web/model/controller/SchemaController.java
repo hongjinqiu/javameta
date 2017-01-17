@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +25,7 @@ import com.javameta.model.FormTemplateEnum;
 import com.javameta.model.FormTemplateFactory;
 import com.javameta.model.datasource.Datasource;
 import com.javameta.model.datasource.DatasourceInfo;
+import com.javameta.model.handler.UsedCheck;
 import com.javameta.model.iterate.FormTemplateIterator;
 import com.javameta.model.iterate.IFormTemplateDataProviderIterate;
 import com.javameta.model.iterate.IFormTemplateQueryParameterIterate;
@@ -33,8 +33,8 @@ import com.javameta.model.template.ColumnModel;
 import com.javameta.model.template.DataProvider;
 import com.javameta.model.template.FormTemplate;
 import com.javameta.model.template.FormTemplateInfo;
-import com.javameta.model.template.Toolbar;
 import com.javameta.model.template.QueryParameters.QueryParameter;
+import com.javameta.model.template.Toolbar;
 import com.javameta.util.CommonUtil;
 import com.javameta.util.New;
 import com.javameta.util.ObjectHolder;
@@ -48,6 +48,8 @@ public class SchemaController extends ControllerSupport {
 	private static final long serialVersionUID = 1L;
 	@Autowired
 	private SchemaService schemaService;
+	@Autowired
+	private UsedCheck usedCheck;
 	
 	/**
 	 * 模型控制台
@@ -344,8 +346,13 @@ public class SchemaController extends ControllerSupport {
 		
 		Map<String, String> defaultBo = formTemplateFactory.getQueryDefaultValue(formTemplate);
 		paramMap.putAll(defaultBo);
+		String defaultBoJson = JSONObject.fromObject(defaultBo).toString();
+		defaultBoJson = CommonUtil.filterJsonEmptyAttr(defaultBoJson);
 		
 		getCookieDataAndParamMap(request, response, formTemplate, isFromList, paramMap);
+		String formDataJson = JSONObject.fromObject(paramMap).toString();
+		formDataJson = CommonUtil.filterJsonEmptyAttr(formDataJson);
+		
 		int pageNo = 1;
 		int pageSize = 10;
 		DataProvider dataProvider = formTemplateFactory.getFirstDataProviderForFormTemplate(formTemplate);
@@ -385,17 +392,17 @@ public class SchemaController extends ControllerSupport {
 		}
 		dataBo.put("usedCheckBo", usedCheckBo);
 		
-		String dataBoString = JSONObject.fromObject(dataBo).toString();
-		dataBoString = CommonUtil.filterJsonEmptyAttr(dataBoString);
+		String dataBoJson = JSONObject.fromObject(dataBo).toString();
+		dataBoJson = CommonUtil.filterJsonEmptyAttr(dataBoJson);
 		
-		String relationBoString = JSONObject.fromObject(relationBo).toString();
-		relationBoString = CommonUtil.filterJsonEmptyAttr(relationBoString);
+		String relationBoJson = JSONObject.fromObject(relationBo).toString();
+		relationBoJson = CommonUtil.filterJsonEmptyAttr(relationBoJson);
 		
-		String listTemplateString = JSONObject.fromObject(formTemplate).toString();
-		listTemplateString = CommonUtil.filterJsonEmptyAttr(listTemplateString);
+		String listTemplateJson = JSONObject.fromObject(formTemplate).toString();
+		listTemplateJson = CommonUtil.filterJsonEmptyAttr(listTemplateJson);
 		
-		String usedCheckBoString = JSONObject.fromObject(usedCheckBo).toString();
-		usedCheckBoString = CommonUtil.filterJsonEmptyAttr(usedCheckBoString);
+		String usedCheckBoJson = JSONObject.fromObject(usedCheckBo).toString();
+		usedCheckBoJson = CommonUtil.filterJsonEmptyAttr(usedCheckBoJson);
 		
 		List<List<Map<String, Object>>> queryParameterRenderLi = getQueryParameterRenderLi(formTemplate);
 //		showParameterLi := []QueryParameter{}
@@ -412,30 +419,22 @@ public class SchemaController extends ControllerSupport {
 		layerBoLiJson = CommonUtil.filterJsonEmptyAttr(layerBoLiJson);
 		
 		Map<String, Object> result = New.hashMap();
-		/*
-result := map[string]interface{}{
-	"pageSize":               pageSize,
-	"listTemplate":           listTemplate,
-	"toolbarBo":              toolbarBo,
-	"showParameterLi":        showParameterLi,
-	"hiddenParameterLi":      hiddenParameterLi,
-	"queryParameterRenderLi": queryParameterRenderLi,
-	"dataBo":                 dataBo,
-	//		"columns":       columns,
-	"dataBoText":       string(dataBoByte),
-	"dataBoJson":       template.JS(string(dataBoByte)),
-	"relationBoJson":   template.JS(string(relationBoByte)),
-	"listTemplateJson": template.JS(string(listTemplateByte)),
-	"layerBoJson":      template.JS(layerBoJson),
-	"layerBoLiJson":    template.JS(layerBoLiJson),
-	"defaultBoJson":    template.JS(string(defaultBoByte)),
-	"formDataJson":     template.JS(string(formDataByte)),
-	"usedCheckJson":    template.JS(string(usedCheckByte)),
-	"sysParamJson":     template.JS(string(sysParamJson)),
-	//		"columnsJson":   string(columnsByte),
-}
-return result
-		 */
+		result.put("pageSize", pageSize);
+		result.put("listTemplate", formTemplate);
+		result.put("toolbarBo", toolbarBo);
+		result.put("showParameterLi", showParameterLi);
+		result.put("hiddenParameterLi", hiddenParameterLi);
+		result.put("queryParameterRenderLi", queryParameterRenderLi);
+		result.put("dataBo", dataBo);
+		result.put("dataBoText", dataBoJson);
+		result.put("dataBoJson", dataBoJson);
+		result.put("relationBoJson", relationBoJson);
+		result.put("listTemplateJson", listTemplateJson);
+		result.put("layerBoJson", layerBoJson);
+		result.put("layerBoLiJson", layerBoLiJson);
+		result.put("defaultBoJson", defaultBoJson);
+		result.put("formDataJson", formDataJson);
+		result.put("usedCheckJson", usedCheckBoJson);
 		return result;
 	}
 	
@@ -589,5 +588,13 @@ return result
 
 	public void setSchemaService(SchemaService schemaService) {
 		this.schemaService = schemaService;
+	}
+
+	public UsedCheck getUsedCheck() {
+		return usedCheck;
+	}
+
+	public void setUsedCheck(UsedCheck usedCheck) {
+		this.usedCheck = usedCheck;
 	}
 }

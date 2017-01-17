@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;/simpleType>
  *         &lt;/element>
  *         &lt;element name="displayName" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="tableName" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="parentFieldId" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="allowEmpty" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="allowCopy" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *         &lt;element ref="{https://github.com/hongjinqiu/javameta/datasource}fixField"/>
@@ -52,6 +54,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "id",
     "displayName",
+    "tableName",
+    "parentFieldId",
     "allowEmpty",
     "allowCopy",
     "fixField",
@@ -65,6 +69,10 @@ public class DetailData implements Serializable {
     protected String id;
     @XmlElement(required = true, defaultValue = "\u5206\u5f55\u6570\u636e\u96c6")
     protected String displayName;
+    @XmlElement(required = true, defaultValue = "")
+    protected String tableName;
+    @XmlElement(required = true, defaultValue = "")
+    protected String parentFieldId;
     @XmlElement(defaultValue = "true")
     protected Boolean allowEmpty;
     @XmlElement(defaultValue = "true")
@@ -120,6 +128,54 @@ public class DetailData implements Serializable {
      */
     public void setDisplayName(String value) {
         this.displayName = value;
+    }
+    
+    /**
+     * Gets the value of the tableName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTableName() {
+        return tableName;
+    }
+
+    /**
+     * Sets the value of the tableName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTableName(String value) {
+        this.tableName = value;
+    }
+
+    /**
+     * Gets the value of the parentFieldId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getParentFieldId() {
+        return parentFieldId;
+    }
+
+    /**
+     * Sets the value of the parentFieldId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setParentFieldId(String value) {
+        this.parentFieldId = value;
     }
 
     /**

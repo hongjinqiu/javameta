@@ -1320,6 +1320,46 @@
 		<allowEmpty>true</allowEmpty>
 		<fieldLength>50</fieldLength>
 	</field>
+	<field id="ref_datasource_id" extends="STRING_FIELD">
+		<displayName>关联方DatasourceId</displayName>
+		<allowEmpty>true</allowEmpty>
+		<fieldLength>100</fieldLength>
+	</field>
+	<field id="ref_dataset_id" extends="STRING_FIELD">
+		<displayName>关联方DatasetId</displayName>
+		<allowEmpty>true</allowEmpty>
+		<fieldLength>50</fieldLength>
+	</field>
+	<field id="ref_field_id" extends="STRING_FIELD">
+		<displayName>关联方Field Id</displayName>
+		<allowEmpty>true</allowEmpty>
+		<fieldLength>50</fieldLength>
+	</field>
+	<field id="ref_field_id_value" extends="INT_FIELD">
+		<displayName>关联方Field value</displayName>
+		<allowEmpty>true</allowEmpty>
+		<fieldLength>11</fieldLength>
+	</field>
+	<field id="be_ref_datasource_id" extends="STRING_FIELD">
+		<displayName>被关联方DatasourceId</displayName>
+		<allowEmpty>true</allowEmpty>
+		<fieldLength>100</fieldLength>
+	</field>
+	<field id="be_ref_dataset_id" extends="STRING_FIELD">
+		<displayName>被关联方DatasetId</displayName>
+		<allowEmpty>true</allowEmpty>
+		<fieldLength>50</fieldLength>
+	</field>
+	<field id="be_ref_field_id" extends="STRING_FIELD">
+		<displayName>被关联方Field Id</displayName>
+		<allowEmpty>true</allowEmpty>
+		<fieldLength>50</fieldLength>
+	</field>
+	<field id="be_ref_field_id_value" extends="INT_FIELD">
+		<displayName>被关联方Field value</displayName>
+		<allowEmpty>true</allowEmpty>
+		<fieldLength>11</fieldLength>
+	</field>
 	<field id="referenceDataSourceModelId" extends="NAME_FIELD">
 		<displayName>引用方名称</displayName>
 		<allowEmpty>false</allowEmpty>

@@ -91,6 +91,8 @@
 		<id>B</id>
 		<displayName>收款费用信息</displayName>
 		<!-- <allowEmptyRow>false</allowEmptyRow> -->
+		<tableName></tableName>
+		<parentFieldId>gatheringbill_id</parentFieldId>
 		<allowCopy>true</allowCopy>
 		<!-- <readonly>false</readonly> -->
 		<fixField>
@@ -114,12 +116,16 @@
 			</field>
 			<field id="" extends="amtFee">
 			</field>
+			<field id="gatheringbill_id" extends="PRIMARY_KEY">
+			</field>
 		</bizField>
 	</detailData>
 	<detailData>
 		<id>C</id>
 		<displayName>test</displayName>
 		<!-- <allowEmptyRow>false</allowEmptyRow> -->
+		<tableName></tableName>
+		<parentFieldId>gatheringbill_id</parentFieldId>
 		<allowCopy>true</allowCopy>
 		<!-- <readonly>false</readonly> -->
 		<fixField>
@@ -135,6 +141,8 @@
 		<bizField>
 			<field id="" extends="NAME_FIELD">
 				<displayName>姓名测试</displayName>
+			</field>
+			<field id="gatheringbill_id" extends="PRIMARY_KEY">
 			</field>
 		</bizField>
 	</detailData>

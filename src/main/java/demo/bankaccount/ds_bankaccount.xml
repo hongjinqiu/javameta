@@ -49,6 +49,8 @@
 	<detailData>
 		<id>B</id>
 		<displayName>账户币别</displayName>
+		<tableName></tableName>
+		<parentFieldId>bankaccount_id</parentFieldId>
 		<allowEmpty>true</allowEmpty>
 		<allowCopy>true</allowCopy>
 		<fixField>
@@ -75,6 +77,8 @@
 			<field id="" extends="amtLimits">
 			</field>
 			<field id="" extends="limitsControl">
+			</field>
+			<field id="bankaccount_id" extends="PRIMARY_KEY">
 			</field>
 		</bizField>
 	</detailData>
