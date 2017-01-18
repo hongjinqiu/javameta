@@ -26,7 +26,7 @@
 <script type="text/javascript" src="${webRoot}/webpage/js/queryParameter.js"></script>
 <script type="text/javascript" src="${webRoot}/webpage/js/relationManager.js"></script>
 <script type="text/javascript" src="${webRoot}/webpage/js/listTemplateFactory.js"></script>
-<script type="text/javascript" src="${webRoot}/webpage/js/listTemplateService.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/js/templateService.js"></script>
 <script type="text/javascript" src="${webRoot}/webpage/js/listTemplate.js"></script>
 
 <c:if test="${not empty formTemplate.scripts}">
@@ -35,34 +35,10 @@
 		<script type="text/javascript" src="${webRoot}/webpage/${scriptItem}"></script>
 	</c:forEach>
 </c:if>
-<!-- 
-<script type="text/javascript" src="/app/comboview?
-
-js/moduleConfig.js						finish,直接跳过
-js/common.js							finish,
-js/dataTableExtend.js					finish,
-js/columnManager.js						finish,
-lformcommon.js							finish,
-lFormField.js							finish,
-lFormTriggerField.js					finish,
-js/queryParameter.js					finish,
-js/relationManager.js					finish,
-js/listTemplateFactory.js				finish,
-js/listTemplateService.js				finish,这个类没用了,方法都转移进了templateService.js
-Component/listTemplate.js				finish,
-
-
-
-
-"></script>
-
-
-<script type="text/javascript" src="/app/FormJS?{{.flash.dateFlag}}"></script>	formField.js l开头
-
- -->
 <script type="text/javascript">
 //g_formTemplateJsonData
 //listTemplate
+
 </script>
 </head>
 

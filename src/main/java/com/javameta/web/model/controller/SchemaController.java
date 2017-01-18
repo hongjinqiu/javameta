@@ -329,7 +329,27 @@ public class SchemaController extends ControllerSupport {
 		String datasourceName = request.getParameter("@name");
 		FormTemplate formTemplate = formTemplateFactory.getFormTemplate(datasourceName, FormTemplateEnum.LIST);
 		
-//		listSelectorCommon
+		boolean isGetBo = true;
+		boolean isFromList = true;
+		Map<String, Object> result = listSelectorCommon(request, response, formTemplate, isGetBo, isFromList);
+		
+		String format = request.getParameter("format");
+		if (StringUtils.isNotEmpty(format) && format.equalsIgnoreCase("json")) {
+			String dataBoText = (String)result.get("dataBoText");
+			request.setAttribute("json", dataBoText);
+			return new ModelAndView("model/json");
+		}
+		
+		/*
+		tmplResult := map[string]interface{}{
+			"result": result,
+		}
+		result["ListPageContent"] = template.HTML(self.getListPageContent(tmplResult))	// 没用,不用管,
+		result["ListQueryParameterContent"] = template.HTML(self.getListQueryParameterContent(tmplResult))	// 直接页面上处理即可,
+		 */
+		for (String key: result.keySet()) {
+			request.setAttribute(key, result.get(key));
+		}
 		
 		String view = formTemplate.getViewTemplate().getView();
 		if (view.endsWith(".jsp")) {
@@ -338,7 +358,6 @@ public class SchemaController extends ControllerSupport {
 		return new ModelAndView(view);
 	}
 	
-//	func (self Console) listSelectorCommon(w http.ResponseWriter, r *http.Request, listTemplate *ListTemplate, isGetBo bool, isFromList bool) map[string]interface{} {
 	private Map<String, Object> listSelectorCommon(HttpServletRequest request, HttpServletResponse response, FormTemplate formTemplate, boolean isGetBo, boolean isFromList) {
 		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
 		List<Map<String, Object>> toolbarBo = formTemplateFactory.getFirstToolbarBoForFormTemplate(formTemplate);
@@ -386,8 +405,10 @@ public class SchemaController extends ControllerSupport {
 				DatasourceFactory datasourceFactory = new DatasourceFactory();
 				Datasource datasource = datasourceFactory.getDatasource(formTemplate.getDatasourceModelId());
 				List<Map<String, Object>> items = (List<Map<String, Object>>)dataBo.get("items");
-				// TODO
-//				UsedCheck
+				if (StringUtils.isNotEmpty(formTemplate.getColumnModel().get(0).getDataSetId())) {
+					UsedCheck usedCheck = new UsedCheck();
+					usedCheckBo = usedCheck.getListUsedCheck(datasource, items, formTemplate.getColumnModel().get(0).getDataSetId());
+				}
 			}
 		}
 		dataBo.put("usedCheckBo", usedCheckBo);
