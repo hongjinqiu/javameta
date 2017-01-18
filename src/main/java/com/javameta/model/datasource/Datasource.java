@@ -86,6 +86,22 @@ public class Datasource implements Serializable {
     	}
     	return getId();
     }
+    
+    /**
+     * 取表名
+     * @return
+     */
+    public String getCalcDetailTableName(String dataSetId) {
+    	for (DetailData detailData: getDetailData()) {
+			if (detailData.getId().equals(dataSetId)) {
+				if (StringUtils.isNotEmpty(detailData.getTableName())) {
+					return detailData.getTableName();
+				}
+				return getCalcTableName() + "_" + detailData.getId();
+			}
+		}
+		return null;
+    }
 
     /**
      * Gets the value of the id property.

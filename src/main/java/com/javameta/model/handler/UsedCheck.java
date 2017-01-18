@@ -2,6 +2,7 @@ package com.javameta.model.handler;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ import com.javameta.model.datasource.Datasource;
 import com.javameta.model.datasource.DetailData;
 import com.javameta.model.datasource.Field;
 import com.javameta.model.datasource.Field.RelationDS.RelationItem;
+import com.javameta.model.iterate.DatasourceIterator;
+import com.javameta.model.iterate.IDatasourceFieldDataIterate;
 import com.javameta.util.New;
 import com.javameta.value.Value;
 
@@ -352,8 +355,133 @@ public class UsedCheck {
 		
 		return sourceRefMap;
 	}
+
+	/**
+	 * 
+	 * @param datasource
+	 * @param bo
+	 * @return {
+	 * 	"A": {
+	 * 		1: true
+	 * 	},
+	 * 	"B": {
+	 * 		1: true,
+	 * 		2: false,
+	 * 		3: true
+	 * 	}
+	 * }
+	 */
+	public Map<String, Object> getFormUsedCheck(final Datasource datasource, ValueBusinessObject bo) {
+		final Map<String, Object> result = New.hashMap();
+		
+		DatasourceIterator.iterateFieldValueBo(datasource, bo, new IDatasourceFieldDataIterate() {
+			@Override
+			public void iterate(Field field, Map<String, Value> data, int rowIndex) {
+				if (field.getId().equals("id")) {
+					StringBuilder sb = new StringBuilder();
+					Map<String, Object> referenceQuery = New.hashMap();
+					if (field.isMasterField()) {
+						referenceQuery.put("be_ref_datasource_id", datasource.getId());
+						referenceQuery.put("be_ref_dataset_id", field.getDataSetId());
+						referenceQuery.put("be_ref_field_id", field.getId());
+						referenceQuery.put("be_ref_field_id_value", data.get(field.getId()).getInt());
+						
+						sb.append(" select count(1) from PUB_REFERENCE_LOG ");
+						sb.append(" where 1=1 ");
+						sb.append(" and be_ref_datasource_id=:be_ref_datasource_id ");
+						sb.append(" and be_ref_dataset_id=:be_ref_dataset_id ");
+						sb.append(" and be_ref_field_id=:be_ref_field_id ");
+						sb.append(" and be_ref_field_id_value=:be_ref_field_id_value ");
+						sb.append(" limit 1 ");
+					} else {
+						referenceQuery.put("be_ref_datasource_id", datasource.getId());
+						referenceQuery.put("be_ref_dataset_id_1", field.getDataSetId());
+						referenceQuery.put("be_ref_field_id_1", field.getId());
+						referenceQuery.put("be_ref_field_id_value_1", data.get(field.getId()).getInt());
+						
+						sb.append(" select count(1) from PUB_REFERENCE_LOG ");
+						sb.append(" where 1=1 ");
+						sb.append(" and be_ref_datasource_id=:be_ref_datasource_id ");
+						sb.append(" and be_ref_dataset_id_1=:be_ref_dataset_id_1 ");
+						sb.append(" and be_ref_field_id_1=:be_ref_field_id_1 ");
+						sb.append(" and be_ref_field_id_value_1=:be_ref_field_id_value_1 ");
+						sb.append(" limit 1 ");
+					}
+					int count = getFormTemplateDao().getNamedParameterJdbcTemplate().queryForInt(sb.toString(), referenceQuery);
+					boolean isUsed = count > 0;
+					if (result.get(field.getDataSetId()) == null) {
+						result.put(field.getDataSetId(), new HashMap<String, Object>());
+					}
+					Map<String, Object> dataSetUsedMap = (Map<String, Object>)result.get(field.getDataSetId());
+					dataSetUsedMap.put(data.get(field.getId()).getString(), isUsed);
+				}
+			}
+		});
+		
+		return result;
+	}
 	
-//	func (o UsedCheck) GetBeReferenceLi(db *mgo.Database, fieldGroup FieldGroup, relationItem RelationItem, data *map[string]interface{}) []interface{} {
+	/**
+	 * 
+	 * @param datasource
+	 * @param items
+	 * @param dataSetId
+	 * @return {
+	 * 	"A": {
+	 * 		1: true
+	 * 	},
+	 * 	"B": {
+	 * 		1: true,
+	 * 		2: false,
+	 * 		3: true
+	 * 	}
+	 * }
+	 */
+	public Map<String, Object> getListUsedCheck(Datasource datasource, List<Map<String, Object>> items, String dataSetId) {
+		Map<String, Object> result = New.hashMap();
+		
+		for (Map<String, Object> item: items) {
+			StringBuilder sb = new StringBuilder();
+			Map<String, Object> referenceQuery = New.hashMap();
+			if (dataSetId.equals("A")) {
+				referenceQuery.put("be_ref_datasource_id", datasource.getId());
+				referenceQuery.put("be_ref_dataset_id", dataSetId);
+				referenceQuery.put("be_ref_field_id", "id");
+				referenceQuery.put("be_ref_field_id_value", item.get("id"));
+				
+				sb.append(" select count(1) from PUB_REFERENCE_LOG ");
+				sb.append(" where 1=1 ");
+				sb.append(" and be_ref_datasource_id=:be_ref_datasource_id ");
+				sb.append(" and be_ref_dataset_id=:be_ref_dataset_id ");
+				sb.append(" and be_ref_field_id=:be_ref_field_id ");
+				sb.append(" and be_ref_field_id_value=:be_ref_field_id_value ");
+				sb.append(" limit 1 ");
+			} else {
+				referenceQuery.put("be_ref_datasource_id", datasource.getId());
+				referenceQuery.put("be_ref_dataset_id_1", dataSetId);
+				referenceQuery.put("be_ref_field_id_1", "id");
+				referenceQuery.put("be_ref_field_id_value_1", item.get("id"));
+				
+				sb.append(" select count(1) from PUB_REFERENCE_LOG ");
+				sb.append(" where 1=1 ");
+				sb.append(" and be_ref_datasource_id=:be_ref_datasource_id ");
+				sb.append(" and be_ref_dataset_id_1=:be_ref_dataset_id_1 ");
+				sb.append(" and be_ref_field_id_1=:be_ref_field_id_1 ");
+				sb.append(" and be_ref_field_id_value_1=:be_ref_field_id_value_1 ");
+				sb.append(" limit 1 ");
+			}
+			int count = getFormTemplateDao().getNamedParameterJdbcTemplate().queryForInt(sb.toString(), referenceQuery);
+			boolean isUsed = count > 0;
+			if (result.get(dataSetId) == null) {
+				result.put(dataSetId, new HashMap<String, Object>());
+			}
+			Map<String, Object> dataSetUsedMap = (Map<String, Object>)result.get(dataSetId);
+			dataSetUsedMap.put(item.get("id").toString(), isUsed);
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * 被引用方需要写多个字段,保存这个字段所在数据源主数据集引用,这个字段所在分录数据集引用,
 		`be_ref_datasource_id` varchar(100) DEFAULT NULL COMMENT '被关联方数据源ID',
@@ -381,14 +509,14 @@ public class UsedCheck {
 		}
 		
 		DatasourceFactory datasourceFactory = new DatasourceFactory();
-		String detailTableName = datasourceFactory.getDetailTableName(relationItem.getRelationModelId(), relationItem.getRelationDataSetId());
+		Datasource datasource = datasourceFactory.getDatasource(relationItem.getRelationModelId());
+		String detailTableName = datasource.getCalcDetailTableName(relationItem.getRelationDataSetId());
 		StringBuilder sb = new StringBuilder();
 		sb.append(" select * from " + detailTableName + " ");
 		sb.append(" where 1=1 ");
 		sb.append(" and id=? ");
 		
 		Map<String, Object> refData = this.formTemplateDao.getJdbcTemplate().queryForMap(sb.toString(), relationId);
-		Datasource datasource = datasourceFactory.getDatasource(relationItem.getRelationModelId());
 		Object masterDataId = 0;
 		for (DetailData detailData: datasource.getDetailData()) {
 			if (detailData.getId().equals(relationItem.getRelationDataSetId())) {

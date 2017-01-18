@@ -597,22 +597,6 @@ public class DatasourceFactory {
 		});
 	}
 	
-	public String getDetailTableName(String datasourceId, String detailSetId) {
-		Datasource datasource = getDatasource(datasourceId);
-		for (DetailData detailData: datasource.getDetailData()) {
-			if (detailData.getId().equals(detailSetId)) {
-				if (StringUtils.isNotEmpty(detailData.getTableName())) {
-					return detailData.getTableName();
-				}
-				if (StringUtils.isNotEmpty(datasource.getTableName())) {
-					return datasource.getTableName() + "_" + detailData.getId();
-				}
-				return datasource.getId() + "_" + detailData.getId();
-			}
-		}
-		return null;
-	}
-
 	private static void unMarshalTest() throws Exception {
 		JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
 		Unmarshaller u = context.createUnmarshaller();
