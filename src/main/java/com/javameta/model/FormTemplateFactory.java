@@ -229,7 +229,7 @@ public class FormTemplateFactory {
 			}
 		}
 		bodySql = " ( " + bodySql + " ) s ";
-		bodySql = " where 1=1 ";
+		bodySql += " where 1=1 ";
 		if (formTemplate.getSecurity() != null) {
 			FormTemplateDao formTemplateDao = (FormTemplateDao) ApplicationContextUtil.getApplicationContext().getBean("formTemplateDao");
 			String securitySql = formTemplateDao.getSecurity(formTemplate.getSecurity());
@@ -279,7 +279,7 @@ public class FormTemplateFactory {
 		int offset = (pageNo - 1) * pageSize;
 		String orderBy = "";
 		if (StringUtils.isNotEmpty(columnModel.getSqlOrderBy())) {
-				orderBy = " " + columnModel.getSqlOrderBy() + " ";
+				orderBy = " order by " + columnModel.getSqlOrderBy() + " ";
 		}
 		String selectSql = "select " + StringUtils.join(columnNameLi.toArray(), ",") + " from " + bodySql + orderBy + " limit " + offset + "," + pageSize;
 		List<Map<String, Object>> items = formTemplateDao.getNamedParameterJdbcTemplate().queryForList(selectSql, nameParameterMap);
@@ -937,6 +937,9 @@ public class FormTemplateFactory {
 	}
 
 	public void recursionGetColumnItem(ColumnModel columnModel, List<Column> columnLi) {
+		if (columnModel.getIdColumn() != null) {
+			columnLi.add(columnModel.getIdColumn());
+		}
 		for (Column column : columnModel.getColumnList()) {
 			columnLi.add(column);
 			// 只有StringColumn,AutoColumn有ColumnModel

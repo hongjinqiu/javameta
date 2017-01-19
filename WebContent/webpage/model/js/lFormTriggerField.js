@@ -2,12 +2,12 @@ function LTriggerField(param) {
 	var self = this;
 	this.config = {};
 	for (var key in param) {
-		config[key] = param;
+		self.config[key] = param;
 	}
-	$("#" + config.id).textbox({
+	$("#" + self.config.id).textbox({
 		readonly: true
 	});
-	$("#" + config.id).validatebox({
+	$("#" + self.config.id).validatebox({
 		validType:"validateTriggerField"
 	});
 	for ( var key in param) {

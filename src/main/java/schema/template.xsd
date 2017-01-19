@@ -1036,6 +1036,7 @@
 			<attribute name="formColumns" type="int" default="4"></attribute>
 			<attribute name="enableEnterParam" type="boolean"></attribute>
 			<attribute name="dataSetId"></attribute>
+			<attribute name="rendererTemplate"></attribute>
 		</complexType>
 	</element>
 
@@ -1111,5 +1112,6 @@
 				<documentation>数据源字段映射,通常用于关联字段copyField的自动生成</documentation>
 			</annotation>
 		</attribute>
+		<attribute name="rendererTemplate"></attribute>
 	</attributeGroup>
 </schema>

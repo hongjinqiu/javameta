@@ -35,6 +35,7 @@ import com.javameta.model.template.FormTemplate;
 import com.javameta.model.template.FormTemplateInfo;
 import com.javameta.model.template.QueryParameters.QueryParameter;
 import com.javameta.model.template.Toolbar;
+import com.javameta.util.ApplicationContextUtil;
 import com.javameta.util.CommonUtil;
 import com.javameta.util.New;
 import com.javameta.util.ObjectHolder;
@@ -50,7 +51,7 @@ public class SchemaController extends ControllerSupport {
 	private SchemaService schemaService;
 	@Autowired
 	private UsedCheck usedCheck;
-	
+
 	/**
 	 * 模型控制台
 	 * @param request
@@ -60,7 +61,7 @@ public class SchemaController extends ControllerSupport {
 	public ModelAndView summary(HttpServletRequest request) {
 		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
 		FormTemplate formTemplate = formTemplateFactory.getFormTemplate("Console", FormTemplateEnum.FORM);
-		
+
 		Map<String, Object> toolbarBo = New.hashMap();
 		Map<String, Object> dataBo = New.hashMap();
 		{
@@ -80,51 +81,55 @@ public class SchemaController extends ControllerSupport {
 			List<DatasourceInfo> datasourceInfoLi = datasourceFactory.getDatasourceInfoLi();
 			dataBo.put("Datasource", getSummaryDatasourceInfoLi(datasourceInfoLi));
 		}
-		for (Object item: formTemplate.getToolbarOrDataProviderOrColumnModel()) {
+		for (Object item : formTemplate.getToolbarOrDataProviderOrColumnModel()) {
 			if (item instanceof ColumnModel) {
-				ColumnModel columnModel = (ColumnModel)item;
+				ColumnModel columnModel = (ColumnModel) item;
 				if (dataBo.get(columnModel.getName()) == null) {
 					dataBo.put(columnModel.getName(), new ArrayList<Map<String, Object>>());
 				}
-				List<Map<String, Object>> items = (List<Map<String, Object>>)dataBo.get(columnModel.getName());
+				List<Map<String, Object>> items = (List<Map<String, Object>>) dataBo.get(columnModel.getName());
 				Map<String, Object> bo = New.hashMap();
 				Map<String, Object> itemsDict = formTemplateFactory.getColumnModelDataForColumnModel(columnModel, bo, items);
-				items = (List<Map<String, Object>>)itemsDict.get("items");
+				items = (List<Map<String, Object>>) itemsDict.get("items");
 				dataBo.put(columnModel.getName(), items);
 			} else if (item instanceof Toolbar) {
-				Toolbar toolbar = (Toolbar)item;
+				Toolbar toolbar = (Toolbar) item;
 				toolbarBo.put(toolbar.getName(), formTemplateFactory.getToolbarBo(toolbar));
 			}
 		}
-		
-		JSONObject formTemplateJsonData = JSONObject.fromObject(formTemplate);
-		JSONObject dataBoJson = JSONObject.fromObject(dataBo);
-		
+
+		String formTemplateJsonData = JSONObject.fromObject(formTemplate).toString();
+		formTemplateJsonData = CommonUtil.filterJsonEmptyAttr(formTemplateJsonData);
+		String dataBoJson = JSONObject.fromObject(dataBo).toString();
+		dataBoJson = CommonUtil.filterJsonEmptyAttr(dataBoJson);
+
 		request.setAttribute("formTemplate", formTemplate);
 		request.setAttribute("toolbarBo", toolbarBo);
 		request.setAttribute("dataBo", dataBo);
-		request.setAttribute("formTemplateJsonData", formTemplateJsonData.toString());
-		request.setAttribute("dataBoJson", dataBoJson.toString());
-		
+		request.setAttribute("formTemplateJsonData", formTemplateJsonData);
+		request.setAttribute("dataBoJson", dataBoJson);
+
 		{
 			FormTemplate gatheringFormTemplate = formTemplateFactory.getFormTemplate("GatheringBillForm", FormTemplateEnum.FORM);
-			JSONObject gatheringFormTemplateJsonData = JSONObject.fromObject(gatheringFormTemplate);
-			request.setAttribute("gatheringFormTemplateJsonData", gatheringFormTemplateJsonData.toString());
+			String gatheringFormTemplateJsonData = JSONObject.fromObject(gatheringFormTemplate).toString();
+			gatheringFormTemplateJsonData = CommonUtil.filterJsonEmptyAttr(gatheringFormTemplateJsonData);
+			request.setAttribute("gatheringFormTemplateJsonData", gatheringFormTemplateJsonData);
 		}
 		{
 			DatasourceFactory datasourceFactory = new DatasourceFactory();
 			Datasource gathering = datasourceFactory.getDatasource("GatheringBill");
-			JSONObject datasourceJson = JSONObject.fromObject(gathering);
-			request.setAttribute("datasourceJson", datasourceJson.toString());
+			String datasourceJson = JSONObject.fromObject(gathering).toString();
+			datasourceJson = CommonUtil.filterJsonEmptyAttr(datasourceJson);
+			request.setAttribute("datasourceJson", datasourceJson);
 		}
-		
+
 		String view = formTemplate.getViewTemplate().getView();
 		if (view.endsWith(".jsp")) {
 			view = view.replace(".jsp", "");
 		}
 		return new ModelAndView(view);
 	}
-	
+
 	/**
 	 * 列表模型数据获取
 	 * @param listTemplateInfoLi
@@ -132,9 +137,10 @@ public class SchemaController extends ControllerSupport {
 	 */
 	private List<Map<String, Object>> getSummaryListTemplateInfoLi(List<FormTemplateInfo> listTemplateInfoLi) {
 		List<Map<String, Object>> componentItems = New.arrayList();
-		for (FormTemplateInfo formTemplateInfo: listTemplateInfoLi) {
+		for (FormTemplateInfo formTemplateInfo : listTemplateInfoLi) {
 			String module = "组件模型";
-			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDatasourceModelId()) && StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
+			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDatasourceModelId())
+					&& StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
 				module = "数据源模型适配";
 			}
 			Map<String, Object> componentItem = New.hashMap();
@@ -144,10 +150,10 @@ public class SchemaController extends ControllerSupport {
 			componentItem.put("path", formTemplateInfo.getPath());
 			componentItems.add(componentItem);
 		}
-		
+
 		return componentItems;
 	}
-	
+
 	/**
 	 * 选择器模型数据获取
 	 * @param listTemplateInfoLi
@@ -155,9 +161,10 @@ public class SchemaController extends ControllerSupport {
 	 */
 	private List<Map<String, Object>> getSummarySelectorTemplateInfoLi(List<FormTemplateInfo> listTemplateInfoLi) {
 		List<Map<String, Object>> componentItems = New.arrayList();
-		for (FormTemplateInfo formTemplateInfo: listTemplateInfoLi) {
+		for (FormTemplateInfo formTemplateInfo : listTemplateInfoLi) {
 			String module = "组件模型选择器";
-			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDatasourceModelId()) && StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
+			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDatasourceModelId())
+					&& StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
 				module = "数据源模型选择器适配";
 			}
 			Map<String, Object> componentItem = New.hashMap();
@@ -167,10 +174,10 @@ public class SchemaController extends ControllerSupport {
 			componentItem.put("path", formTemplateInfo.getPath());
 			componentItems.add(componentItem);
 		}
-		
+
 		return componentItems;
 	}
-	
+
 	/**
 	 * 表单模型数据获取
 	 * @param listTemplateInfoLi
@@ -178,9 +185,10 @@ public class SchemaController extends ControllerSupport {
 	 */
 	private List<Map<String, Object>> getSummaryFormTemplateInfoLi(List<FormTemplateInfo> listTemplateInfoLi) {
 		List<Map<String, Object>> componentItems = New.arrayList();
-		for (FormTemplateInfo formTemplateInfo: listTemplateInfoLi) {
+		for (FormTemplateInfo formTemplateInfo : listTemplateInfoLi) {
 			String module = "form模型";
-			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDatasourceModelId()) && StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
+			if (StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getDatasourceModelId())
+					&& StringUtils.isNotEmpty(formTemplateInfo.getFormTemplate().getAdapter().getName())) {
 				module = "数据源模型适配";
 			}
 			Map<String, Object> componentItem = New.hashMap();
@@ -190,10 +198,10 @@ public class SchemaController extends ControllerSupport {
 			componentItem.put("path", formTemplateInfo.getPath());
 			componentItems.add(componentItem);
 		}
-		
+
 		return componentItems;
 	}
-	
+
 	/**
 	 * 数据源模型数据获取
 	 * @param listTemplateInfoLi
@@ -202,7 +210,7 @@ public class SchemaController extends ControllerSupport {
 	private List<Map<String, Object>> getSummaryDatasourceInfoLi(List<DatasourceInfo> datasourceInfoLi) {
 		List<Map<String, Object>> componentItems = New.arrayList();
 		String module = "数据源模型";
-		for (DatasourceInfo item: datasourceInfoLi) {
+		for (DatasourceInfo item : datasourceInfoLi) {
 			Map<String, Object> componentItem = New.hashMap();
 			componentItem.put("id", item.getDatasource().getId());
 			componentItem.put("name", item.getDatasource().getDisplayName());
@@ -210,10 +218,10 @@ public class SchemaController extends ControllerSupport {
 			componentItem.put("path", item.getPath());
 			componentItems.add(componentItem);
 		}
-		
+
 		return componentItems;
 	}
-	
+
 	@RequestMapping("/getGenerateTableSql")
 	@ResponseBody
 	public void getGenerateTableSql(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -222,35 +230,35 @@ public class SchemaController extends ControllerSupport {
 		DatasourceFactory datasourceFactory = new DatasourceFactory();
 		Datasource datasource = datasourceFactory.getDatasource(datasourceName);
 		String content = schemaService.getGenerateTableSql(datasource);
-		
+
 		content += "<br /><br /><br />";
-		
+
 		String insertContent = schemaService.getGenerateInsertSql(datasource, 25);
 		content += insertContent;
-		
+
 		content = content.replace("\n", "<br />");
 		content = content.replace(";", ";<br />");
-		
+
 		response.getOutputStream().write(content.getBytes());
 	}
-	
+
 	@RequestMapping("/refretor")
 	@ResponseBody
 	public JSONObject refretor(HttpServletRequest request) {
 		String type = request.getParameter("type");
 		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
 		FormTemplate formTemplate = formTemplateFactory.getFormTemplate("Console", FormTemplateEnum.FORM);
-		
+
 		if (type.equals("Component")) {
 			List<FormTemplateInfo> listTemplateInfoLi = formTemplateFactory.refretorFormTemplateInfo(FormTemplateEnum.LIST);
 			List<Map<String, Object>> items = getSummaryListTemplateInfoLi(listTemplateInfoLi);
 			Map<String, Object> bo = New.hashMap();
-			for (Object object: formTemplate.getToolbarOrDataProviderOrColumnModel()) {
+			for (Object object : formTemplate.getToolbarOrDataProviderOrColumnModel()) {
 				if (object instanceof ColumnModel) {
-					ColumnModel columnModel = (ColumnModel)object;
+					ColumnModel columnModel = (ColumnModel) object;
 					if (columnModel.getName().equals("Component")) {
 						Map<String, Object> itemsDict = formTemplateFactory.getColumnModelDataForColumnModel(columnModel, bo, items);
-						items = (List<Map<String, Object>>)itemsDict.get("items");
+						items = (List<Map<String, Object>>) itemsDict.get("items");
 						break;
 					}
 				}
@@ -262,12 +270,12 @@ public class SchemaController extends ControllerSupport {
 			List<FormTemplateInfo> listTemplateInfoLi = formTemplateFactory.refretorFormTemplateInfo(FormTemplateEnum.SELECTOR);
 			List<Map<String, Object>> items = getSummarySelectorTemplateInfoLi(listTemplateInfoLi);
 			Map<String, Object> bo = New.hashMap();
-			for (Object object: formTemplate.getToolbarOrDataProviderOrColumnModel()) {
+			for (Object object : formTemplate.getToolbarOrDataProviderOrColumnModel()) {
 				if (object instanceof ColumnModel) {
-					ColumnModel columnModel = (ColumnModel)object;
+					ColumnModel columnModel = (ColumnModel) object;
 					if (columnModel.getName().equals("Selector")) {
 						Map<String, Object> itemsDict = formTemplateFactory.getColumnModelDataForColumnModel(columnModel, bo, items);
-						items = (List<Map<String, Object>>)itemsDict.get("items");
+						items = (List<Map<String, Object>>) itemsDict.get("items");
 						break;
 					}
 				}
@@ -279,12 +287,12 @@ public class SchemaController extends ControllerSupport {
 			List<FormTemplateInfo> listTemplateInfoLi = formTemplateFactory.refretorFormTemplateInfo(FormTemplateEnum.FORM);
 			List<Map<String, Object>> items = getSummaryFormTemplateInfoLi(listTemplateInfoLi);
 			Map<String, Object> bo = New.hashMap();
-			for (Object object: formTemplate.getToolbarOrDataProviderOrColumnModel()) {
+			for (Object object : formTemplate.getToolbarOrDataProviderOrColumnModel()) {
 				if (object instanceof ColumnModel) {
-					ColumnModel columnModel = (ColumnModel)object;
+					ColumnModel columnModel = (ColumnModel) object;
 					if (columnModel.getName().equals("Form")) {
 						Map<String, Object> itemsDict = formTemplateFactory.getColumnModelDataForColumnModel(columnModel, bo, items);
-						items = (List<Map<String, Object>>)itemsDict.get("items");
+						items = (List<Map<String, Object>>) itemsDict.get("items");
 						break;
 					}
 				}
@@ -297,12 +305,12 @@ public class SchemaController extends ControllerSupport {
 			List<DatasourceInfo> listTemplateInfoLi = datasourceFactory.refretorDatasourceInfo();
 			List<Map<String, Object>> items = getSummaryDatasourceInfoLi(listTemplateInfoLi);
 			Map<String, Object> bo = New.hashMap();
-			for (Object object: formTemplate.getToolbarOrDataProviderOrColumnModel()) {
+			for (Object object : formTemplate.getToolbarOrDataProviderOrColumnModel()) {
 				if (object instanceof ColumnModel) {
-					ColumnModel columnModel = (ColumnModel)object;
+					ColumnModel columnModel = (ColumnModel) object;
 					if (columnModel.getName().equals("Datasource")) {
 						Map<String, Object> itemsDict = formTemplateFactory.getColumnModelDataForColumnModel(columnModel, bo, items);
-						items = (List<Map<String, Object>>)itemsDict.get("items");
+						items = (List<Map<String, Object>>) itemsDict.get("items");
 						break;
 					}
 				}
@@ -315,31 +323,31 @@ public class SchemaController extends ControllerSupport {
 		json.put("message", "可能传入了错误的refretorType:" + type);
 		return json;
 	}
-	
+
 	@RequestMapping("/list")
 	public ModelAndView list(HttpServletRequest request) {
 		Map<String, Object> obj = schemaService.testObject();
 		request.setAttribute("name", obj.get("name"));
 		return new ModelAndView("model/list");
 	}
-	
+
 	@RequestMapping("/listschema")
 	public ModelAndView listschema(HttpServletRequest request, HttpServletResponse response) {
 		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
 		String datasourceName = request.getParameter("@name");
 		FormTemplate formTemplate = formTemplateFactory.getFormTemplate(datasourceName, FormTemplateEnum.LIST);
-		
+
 		boolean isGetBo = true;
 		boolean isFromList = true;
 		Map<String, Object> result = listSelectorCommon(request, response, formTemplate, isGetBo, isFromList);
-		
+
 		String format = request.getParameter("format");
 		if (StringUtils.isNotEmpty(format) && format.equalsIgnoreCase("json")) {
-			String dataBoText = (String)result.get("dataBoText");
+			String dataBoText = (String) result.get("dataBoText");
 			request.setAttribute("json", dataBoText);
 			return new ModelAndView("model/json");
 		}
-		
+
 		/*
 		tmplResult := map[string]interface{}{
 			"result": result,
@@ -347,23 +355,23 @@ public class SchemaController extends ControllerSupport {
 		result["ListPageContent"] = template.HTML(self.getListPageContent(tmplResult))	// 没用,不用管,
 		result["ListQueryParameterContent"] = template.HTML(self.getListQueryParameterContent(tmplResult))	// 直接页面上处理即可,
 		 */
-		for (String key: result.keySet()) {
+		for (String key : result.keySet()) {
 			request.setAttribute(key, result.get(key));
 		}
-		
+
 		String view = formTemplate.getViewTemplate().getView();
 		if (view.endsWith(".jsp")) {
 			view = view.replace(".jsp", "");
 		}
 		return new ModelAndView(view);
 	}
-	
+
 	@RequestMapping("/selectorschema")
 	public ModelAndView selectorSchema(HttpServletRequest request, HttpServletResponse response) {
 		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
 		String datasourceName = request.getParameter("@name");
 		FormTemplate formTemplate = formTemplateFactory.getFormTemplate(datasourceName, FormTemplateEnum.SELECTOR);
-		
+
 		this.setSelectionMode(request, formTemplate);
 		this.setDisplayField(request, formTemplate);
 
@@ -377,13 +385,13 @@ public class SchemaController extends ControllerSupport {
 		Map<String, Object> selectionBo = New.hashMap();
 		selectionBo.put("url", formTemplateFactory.getViewUrl(formTemplate));
 		selectionBo.put("Description", formTemplate.getDescription());
-		
+
 		String ids = request.getParameter("@id");
 		if (StringUtils.isNotEmpty(ids)) {
 			List<Map<String, Object>> relationLi = New.arrayList();
 			String[] strIdLi = ids.split(",");
 			String selectorId = formTemplate.getId();
-			for (String item: strIdLi) {
+			for (String item : strIdLi) {
 				if (StringUtils.isNotEmpty(item)) {
 					Map<String, Object> itemDict = New.hashMap();
 					itemDict.put("relationId", item);
@@ -393,30 +401,30 @@ public class SchemaController extends ControllerSupport {
 			}
 			Map<String, Object> relationBo = formTemplateFactory.getRelationBo(relationLi);
 			if (relationBo.get(selectorId) != null) {
-				selectionBo = (Map<String, Object>)relationBo.get(selectorId);
+				selectionBo = (Map<String, Object>) relationBo.get(selectorId);
 			}
 		}
 		String selectionBoJson = JSONObject.fromObject(selectionBo).toString();
 		selectionBoJson = CommonUtil.filterJsonEmptyAttr(selectionBoJson);
 		result.put("selectionBoJson", selectionBoJson);
-		
+
 		if (StringUtils.isNotEmpty(format) && format.equalsIgnoreCase("json")) {
-			String dataBoText = (String)result.get("dataBoText");
+			String dataBoText = (String) result.get("dataBoText");
 			request.setAttribute("json", dataBoText);
 			return new ModelAndView("model/json");
 		}
-		
-		for (String key: result.keySet()) {
+
+		for (String key : result.keySet()) {
 			request.setAttribute(key, result.get(key));
 		}
-		
+
 		String view = formTemplate.getViewTemplate().getView();
 		if (view.endsWith(".jsp")) {
 			view = view.replace(".jsp", "");
 		}
 		return new ModelAndView(view);
 	}
-	
+
 	private void setSelectionMode(HttpServletRequest request, FormTemplate formTemplate) {
 		String multi = request.getParameter("@multi");
 		if (StringUtils.isNotEmpty(multi)) {
@@ -427,7 +435,7 @@ public class SchemaController extends ControllerSupport {
 			}
 		}
 	}
-	
+
 	private void setDisplayField(HttpServletRequest request, FormTemplate formTemplate) {
 		String displayField = request.getParameter("@displayField");
 		if (StringUtils.isNotEmpty(displayField)) {
@@ -436,28 +444,28 @@ public class SchemaController extends ControllerSupport {
 			} else {
 				String[] strFieldLi = displayField.split(",");
 				List<String> fieldLi = New.arrayList();
-				for (String item: strFieldLi) {
-					fieldLi.add("{"+item+"}");
+				for (String item : strFieldLi) {
+					fieldLi.add("{" + item + "}");
 				}
 				formTemplate.getColumnModel().get(0).setSelectionTemplate(StringUtils.join(fieldLi.toArray(), ","));
 			}
 		}
 	}
-	
+
 	private Map<String, Object> listSelectorCommon(HttpServletRequest request, HttpServletResponse response, FormTemplate formTemplate, boolean isGetBo, boolean isFromList) {
 		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
 		List<Map<String, Object>> toolbarBo = formTemplateFactory.getFirstToolbarBoForFormTemplate(formTemplate);
 		Map<String, String> paramMap = New.hashMap();
-		
+
 		Map<String, String> defaultBo = formTemplateFactory.getQueryDefaultValue(formTemplate);
 		paramMap.putAll(defaultBo);
 		String defaultBoJson = JSONObject.fromObject(defaultBo).toString();
 		defaultBoJson = CommonUtil.filterJsonEmptyAttr(defaultBoJson);
-		
+
 		getCookieDataAndParamMap(request, response, formTemplate, isFromList, paramMap);
 		String formDataJson = JSONObject.fromObject(paramMap).toString();
 		formDataJson = CommonUtil.filterJsonEmptyAttr(formDataJson);
-		
+
 		int pageNo = 1;
 		int pageSize = 10;
 		DataProvider dataProvider = formTemplateFactory.getFirstDataProviderForFormTemplate(formTemplate);
@@ -479,55 +487,56 @@ public class SchemaController extends ControllerSupport {
 		Map<String, Object> dataBo = New.hashMap();
 		dataBo.put("totalResults", 0);
 		dataBo.put("items", new ArrayList<Map<String, Object>>());
-		
+
 		Map<String, Object> relationBo = New.hashMap();
 		Map<String, Object> usedCheckBo = New.hashMap();
 		if (isGetBo) {
 			dataBo = formTemplateFactory.getFirstBoForFormTemplate(formTemplate, paramMap, pageNo, pageSize);
-			relationBo = (Map<String, Object>)dataBo.get("relationBo");
-			
+			relationBo = (Map<String, Object>) dataBo.get("relationBo");
+
 			// usedCheck的修改,
 			if (StringUtils.isNotEmpty(formTemplate.getDatasourceModelId())) {
 				DatasourceFactory datasourceFactory = new DatasourceFactory();
 				Datasource datasource = datasourceFactory.getDatasource(formTemplate.getDatasourceModelId());
-				List<Map<String, Object>> items = (List<Map<String, Object>>)dataBo.get("items");
+				List<Map<String, Object>> items = (List<Map<String, Object>>) dataBo.get("items");
 				if (StringUtils.isNotEmpty(formTemplate.getColumnModel().get(0).getDataSetId())) {
-					UsedCheck usedCheck = new UsedCheck();
+					UsedCheck usedCheck = (UsedCheck) ApplicationContextUtil.getApplicationContext().getBean("usedCheck");
 					usedCheckBo = usedCheck.getListUsedCheck(datasource, items, formTemplate.getColumnModel().get(0).getDataSetId());
 				}
 			}
 		}
 		dataBo.put("usedCheckBo", usedCheckBo);
-		
+
 		String dataBoJson = JSONObject.fromObject(dataBo).toString();
 		dataBoJson = CommonUtil.filterJsonEmptyAttr(dataBoJson);
-		
+
 		String relationBoJson = JSONObject.fromObject(relationBo).toString();
 		relationBoJson = CommonUtil.filterJsonEmptyAttr(relationBoJson);
-		
+
 		String listTemplateJson = JSONObject.fromObject(formTemplate).toString();
 		listTemplateJson = CommonUtil.filterJsonEmptyAttr(listTemplateJson);
-		
+
 		String usedCheckBoJson = JSONObject.fromObject(usedCheckBo).toString();
 		usedCheckBoJson = CommonUtil.filterJsonEmptyAttr(usedCheckBoJson);
-		
+
 		List<List<Map<String, Object>>> queryParameterRenderLi = getQueryParameterRenderLi(formTemplate);
-//		showParameterLi := []QueryParameter{}
+		//		showParameterLi := []QueryParameter{}
 		List<QueryParameter> showParameterLi = New.arrayList();
 		List<QueryParameter> hiddenParameterLi = formTemplateFactory.getFirstHiddenShowParameterLiForFormTemplate(formTemplate);
 		Map<String, Object> layerBo = formTemplateFactory.getDictionaryForFormTemplate(formTemplate);
-		
-		Map<String, Object> iLayerBo = (Map<String, Object>)layerBo.get("dictionaryBo");
+
+		Map<String, Object> iLayerBo = (Map<String, Object>) layerBo.get("dictionaryBo");
 		String layerBoJson = JSONObject.fromObject(iLayerBo).toString();
 		layerBoJson = CommonUtil.filterJsonEmptyAttr(layerBoJson);
-		
-		Map<String, Object> iLayerBoLi = (Map<String, Object>)layerBo.get("dictionaryBoLi");
+
+		Map<String, Object> iLayerBoLi = (Map<String, Object>) layerBo.get("dictionaryBoLi");
 		String layerBoLiJson = JSONObject.fromObject(iLayerBoLi).toString();
 		layerBoLiJson = CommonUtil.filterJsonEmptyAttr(layerBoLiJson);
-		
+
 		Map<String, Object> result = New.hashMap();
 		result.put("pageSize", pageSize);
 		result.put("listTemplate", formTemplate);
+		result.put("formTemplate", formTemplate);
 		result.put("toolbarBo", toolbarBo);
 		result.put("showParameterLi", showParameterLi);
 		result.put("hiddenParameterLi", hiddenParameterLi);
@@ -544,7 +553,7 @@ public class SchemaController extends ControllerSupport {
 		result.put("usedCheckJson", usedCheckBoJson);
 		return result;
 	}
-	
+
 	/**
 	 * 每行6个元素,按行分隔
 	 * @param formTemplate
@@ -570,6 +579,8 @@ public class SchemaController extends ControllerSupport {
 							Map<String, Object> item = New.hashMap();
 							item.put("label", queryParameter.getText());
 							item.put("name", queryParameter.getName());
+							item.put("queryParameter", queryParameter);
+							item.put("nameColSpan", columnColSpan - 1);
 							containerItem.obj.add(item);
 							lineColSpanSum.obj += columnColSpan;
 							if (lineColSpanSum.obj >= lineColSpan) {
@@ -585,11 +596,12 @@ public class SchemaController extends ControllerSupport {
 		if (0 < lineColSpanSum.obj && lineColSpanSum.obj < lineColSpan) {
 			container.add(containerItem.obj);
 		}
-		
+
 		return container;
 	}
-	
-	private Map<String, String> getCookieDataAndParamMap(HttpServletRequest request, HttpServletResponse response, FormTemplate formTemplate, boolean isFromList, Map<String, String> paramMap) {
+
+	private Map<String, String> getCookieDataAndParamMap(HttpServletRequest request, HttpServletResponse response, FormTemplate formTemplate, boolean isFromList,
+			Map<String, String> paramMap) {
 		boolean isHasCookie = false;
 		String cookieFormValue = request.getParameter("cookie");
 		if (StringUtils.isNotEmpty(cookieFormValue) && !cookieFormValue.equals("false")) {
@@ -600,14 +612,14 @@ public class SchemaController extends ControllerSupport {
 			isConfigCookie = true;
 		}
 		Map<String, String> cookieData = New.hashMap();
-		
+
 		if (isFromList && isHasCookie && isConfigCookie) {
 			cookieData = getCookieKeyValueMap(request, formTemplate.getCookie().getName());
 			paramMap.putAll(cookieData);
 		}
 		Map<String, String> formQueryData = New.hashMap();
-		for (Enumeration enumeration = request.getParameterNames(); enumeration.hasMoreElements(); ) {
-			String key = (String)enumeration.nextElement();
+		for (Enumeration enumeration = request.getParameterNames(); enumeration.hasMoreElements();) {
+			String key = (String) enumeration.nextElement();
 			String value = StringUtils.join(request.getParameterValues(key), ",");
 			paramMap.put(key, value);
 			formQueryData.put(key, value);
@@ -622,7 +634,7 @@ public class SchemaController extends ControllerSupport {
 			Map<String, String> cookieFormQueryData = New.hashMap();
 			cookieFormQueryData.putAll(cookieData);
 			cookieFormQueryData.putAll(formQueryData);
-			
+
 			JSONObject object = JSONObject.fromObject(cookieFormQueryData);
 			String value = object.toString().replace("\"", "&quote");
 			Cookie cookie = new Cookie(formTemplate.getCookie().getName(), value);
@@ -632,40 +644,42 @@ public class SchemaController extends ControllerSupport {
 			response.addCookie(cookie);
 		}
 		cookieData = getCookieKeyValueMap(request, formTemplate.getCookie().getName());
-		
+
 		return cookieData;
 	}
-	
+
 	private Map<String, String> getCookieKeyValueMap(HttpServletRequest request, String cookieName) {
 		Map<String, String> cookieData = New.hashMap();
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
-			for (Cookie cookie: cookies) {
+			for (Cookie cookie : cookies) {
 				if (cookie.getName().equals(cookieName)) {
-					 String value = cookie.getValue().replace("&quote", "\"");
-					JSONObject object = JSONObject.fromObject(value);
-					cookieData.putAll(object);
+					String value = cookie.getValue().replace("&quote", "\"");
+					if (StringUtils.isNotEmpty(value)) {
+						JSONObject object = JSONObject.fromObject(value);
+						cookieData.putAll(object);
+					}
 				}
 			}
 		}
 		return cookieData;
 	}
-	
+
 	@RequestMapping("/testDB")
 	@ResponseBody
 	public String testDB(HttpServletRequest request) {
 		Map<String, Object> obj = schemaService.testObject();
 		if (obj != null) {
-//			SerializationUtils.clone(this)-实现深拷贝
-//			SerializationUtils.clone(this);
-//			return ObjectUtils.toString(obj, "");
+			//			SerializationUtils.clone(this)-实现深拷贝
+			//			SerializationUtils.clone(this);
+			//			return ObjectUtils.toString(obj, "");
 			System.out.println(obj.get("name"));
-//			return obj.toString();
+			//			return obj.toString();
 			return obj.get("name").toString();
 		}
 		return "gogogogog";
 	}
-	
+
 	@RequestMapping("/ajaxJson")
 	@ResponseBody
 	public JSONObject ajaxJson(HttpServletRequest request) {
@@ -674,14 +688,14 @@ public class SchemaController extends ControllerSupport {
 		json.put("name", obj);
 		return json;
 	}
-	
+
 	@RequestMapping("/testInsert1")
 	@ResponseBody
 	public String testInsert1(HttpServletRequest request) {
 		schemaService.testInsert1();
 		return "testInsert1";
 	}
-	
+
 	@RequestMapping("/testInsert2")
 	@ResponseBody
 	public String testInsert2(HttpServletRequest request) {

@@ -112,6 +112,7 @@ import com.javameta.util.New;
  *       &lt;attribute name="formColumns" type="{http://www.w3.org/2001/XMLSchema}int" default="4" />
  *       &lt;attribute name="enableEnterParam" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *       &lt;attribute name="dataSetId" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="rendererTemplate" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -139,6 +140,10 @@ public class QueryParameters implements Serializable {
     @XmlAttribute
     @XmlSchemaType(name = "anySimpleType")
     protected String dataSetId;
+    
+    @XmlAttribute
+    @XmlSchemaType(name = "anySimpleType")
+    protected String rendererTemplate;
     
     public List<QueryParameter> getQueryParameter() {
     	List<QueryParameter> list = New.arrayList();
@@ -258,6 +263,30 @@ public class QueryParameters implements Serializable {
     public void setDataSetId(String value) {
         this.dataSetId = value;
     }
+    
+    /**
+     * Gets the value of the rendererTemplate property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getRendererTemplate() {
+        return rendererTemplate;
+    }
+
+    /**
+     * Sets the value of the rendererTemplate property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRendererTemplate(String value) {
+        this.rendererTemplate = value;
+    }
 
 
     /**
@@ -319,6 +348,9 @@ public class QueryParameters implements Serializable {
         protected Boolean readOnly;
         @XmlAttribute
         protected String dsFieldMap;
+        @XmlAttribute
+        @XmlSchemaType(name = "anySimpleType")
+        protected String rendererTemplate;
 
         /**
          * Gets the value of the name property.
@@ -723,6 +755,30 @@ public class QueryParameters implements Serializable {
         public void setDsFieldMap(String value) {
             this.dsFieldMap = value;
         }
+        
+        /**
+         * Gets the value of the rendererTemplate property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getRendererTemplate() {
+            return rendererTemplate;
+        }
+
+        /**
+         * Sets the value of the rendererTemplate property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setRendererTemplate(String value) {
+            this.rendererTemplate = value;
+        }
 
     }
 
@@ -846,6 +902,9 @@ public class QueryParameters implements Serializable {
         protected Boolean readOnly;
         @XmlAttribute
         protected String dsFieldMap;
+        @XmlAttribute
+        @XmlSchemaType(name = "anySimpleType")
+        protected String rendererTemplate;
         
         public String getDbQueryName() {
         	if (StringUtils.isNotEmpty(columnName)) {
@@ -1334,7 +1393,30 @@ public class QueryParameters implements Serializable {
         public void setDsFieldMap(String value) {
             this.dsFieldMap = value;
         }
+        
+        /**
+         * Gets the value of the rendererTemplate property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getRendererTemplate() {
+            return rendererTemplate;
+        }
 
+        /**
+         * Sets the value of the rendererTemplate property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setRendererTemplate(String value) {
+            this.rendererTemplate = value;
+        }
 
         /**
          * <p>Java class for anonymous complex type.

@@ -17,47 +17,56 @@ validType:['email','length[0,20]']
 	t.validatebox("isValid")
  */
 
-function commonValidate(value, param) {
+function commonValidate(fieldElem, value, param) {
 	var lFormManager = new LFormManager();
-	var name = $(this).attr("name");
+	var name = $(fieldElem).attr("name");
 	var formObj = g_masterFormFieldDict[name];
 	return lFormManager.queryParameterFieldValidator(value, formObj);
 }
 
 function validateTextField(value, param) {
-	return commonValidate(value, param);
+	var self = this;
+	return commonValidate(self, value, param);
 }
 
 function validateHiddenField(value, param) {
-	return commonValidate(value, param);
+	var self = this;
+	return commonValidate(self, value, param);
 }
 
 function validateSelectField(value, param) {
-	return commonValidate(value, param);
+	var self = this;
+	return commonValidate(self, value, param);
 }
 
 function validateChoiceField(value, param) {
-	return commonValidate(value, param);
+	var self = this;
+	return commonValidate(self, value, param);
 }
 
 function validateNumberField(value, param) {
-	return commonValidate(value, param);
+	var self = this;
+	return commonValidate(self, value, param);
 }
 
 function validateDateField(value, param) {
-	return commonValidate(value, param);
+	var self = this;
+	return commonValidate(self, value, param);
 }
 
 function validateTextareaField(value, param) {
-	return commonValidate(value, param);
+	var self = this;
+	return commonValidate(self, value, param);
 }
 
 function validateTriggerField(value, param) {
-	return commonValidate(value, param);
+	var self = this;
+	return commonValidate(self, value, param);
 }
 
 function validateDisplayField(value, param) {
-	return commonValidate(value, param);
+	var self = this;
+	return commonValidate(self, value, param);
 }
 
 $.extend($.fn.validatebox.defaults.rules, {
@@ -162,12 +171,12 @@ function LTextField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
-		config[key] = param[key];
+		self.config[key] = param[key];
 	}
 
-	$("#" + config.id).textbox({});
+	$("#" + self.config.id).textbox({});
 
-	$("#" + config.id).validatebox({
+	$("#" + self.config.id).validatebox({
 		validType : "validateTextField"
 	});
 
@@ -195,10 +204,10 @@ function LHiddenField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
-		config[key] = param[key];
+		self.config[key] = param[key];
 	}
 	
-	$("#" + config.id).validatebox({
+	$("#" + self.config.id).validatebox({
 		validType : "validateHiddenField"
 	});
 
@@ -226,15 +235,15 @@ function LSelectField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
-		config[key] = param[key];
+		self.config[key] = param[key];
 	}
 
-	$("#" + config.id).combobox({
+	$("#" + self.config.id).combobox({
 		valueField : 'value',
 		textField : 'label',
 		multiple : param["multiple"] || false
 	});
-	$("#" + config.id).validatebox({
+	$("#" + self.config.id).validatebox({
 		validType : "validateSelectField"
 	});
 	
@@ -266,15 +275,15 @@ function LChoiceField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
-		config[key] = param[key];
+		self.config[key] = param[key];
 	}
 
-	$("#" + config.id).combobox({
+	$("#" + self.config.id).combobox({
 		valueField : 'value',
 		textField : 'label',
 		multiple : param["multiple"] || false
 	});
-	$("#" + config.id).validatebox({
+	$("#" + self.config.id).validatebox({
 		validType : "validateChoiceField"
 	});
 
@@ -323,11 +332,11 @@ function LNumberField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
-		config[key] = param[key];
+		self.config[key] = param[key];
 	}
 
-	$("#" + config.id).numberbox({});
-	$("#" + config.id).validatebox({
+	$("#" + self.config.id).numberbox({});
+	$("#" + self.config.id).validatebox({
 		validType : "validateNumberField"
 	});
 	for ( var key in param) {
@@ -398,7 +407,7 @@ function LDateField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
-		config[key] = param[key];
+		self.config[key] = param[key];
 	}
 
 	var dbPattern = "";
@@ -422,7 +431,7 @@ function LDateField(param) {
 	this.set("displayPattern", displayPattern);
 
 	if (dbPattern == "yyyyMMdd") {
-		$("#" + config.id).datebox({
+		$("#" + self.config.id).datebox({
 			formatter: function(date) {
 				var y = date.getFullYear();
 				var m = date.getMonth()+1;
@@ -440,7 +449,7 @@ function LDateField(param) {
 			}
 		});
 	} else if (dbPattern == "yyyyMMddHHmmss") {
-		$("#" + config.id).datetimebox({
+		$("#" + self.config.id).datetimebox({
 		    showSeconds: false,
 		    formatter: function(date) {
 				var y = date.getFullYear();
@@ -462,12 +471,12 @@ function LDateField(param) {
 			}
 		});
 	} else if (dbPattern == "HHmmss") {
-		$("#" + config.id).timespinner({
+		$("#" + self.config.id).timespinner({
 		    showSeconds: false
 		});
 	}
 	
-	$("#" + config.id).validatebox({
+	$("#" + self.config.id).validatebox({
 		validType : "validateDateField"
 	});
 
@@ -496,10 +505,10 @@ function LTextareaField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
-		config[key] = param[key];
+		self.config[key] = param[key];
 	}
 	
-	$("#" + config.id).validatebox({
+	$("#" + self.config.id).validatebox({
 		validType : "validateTextareaField"
 	});
 	for ( var key in param) {
@@ -526,9 +535,9 @@ function LDisplayField(param) {
 	var self = this;
 	this.config = {};
 	for ( var key in param) {
-		config[key] = param[key];
+		self.config[key] = param[key];
 	}
-	$("#" + config.id).validatebox({
+	$("#" + self.config.id).validatebox({
 		validType : "validateDisplayField"
 	});
 	for ( var key in param) {

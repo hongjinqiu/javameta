@@ -121,7 +121,7 @@ QueryParameterManager.prototype.findQueryParameterAttr = function(queryParameter
 	return null;
 }
 
-QueryParameterManager.prototype.getQueryField = function(name) {
+QueryParameterManager.prototype.getQueryField = function(id, name) {
 	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
 	var field = null;
@@ -130,48 +130,56 @@ QueryParameterManager.prototype.getQueryField = function(name) {
 			var readOnly = queryParameter.readOnly === "true";
 			if (queryParameter.editor == "hiddenfield") {
 				field = new LHiddenField({
+					id: id,
 					name : name,
 					validateInline: true,
 					readonly: readOnly
 				});
 			} else if (queryParameter.editor == "textfield") {
 				field = new LTextField({
+					id: id,
 					name : name,
 					validateInline: true,
 					readonly: readOnly
 				});
 			} else if (queryParameter.editor == "textareafield") {
 				field = new LTextareaField({
+					id: id,
 					name : name,
 					validateInline: true,
 					readonly: readOnly
 				});
 			} else if (queryParameter.editor == "numberfield") {
 				field = new LNumberField({
+					id: id,
 					name : name,
 					validateInline: true,
 					readonly: readOnly
 				});
 			} else if (queryParameter.editor == "datefield") {
 				field = new LDateField({
+					id: id,
 					name : name,
 					validateInline: true,
 					readonly: readOnly
 				});
 			} else if (queryParameter.editor == "combofield") {
 				field = new LSelectField({
+					id: id,
 					name : name,
 					validateInline: true,
 					readonly: readOnly
 				});
 			} else if (queryParameter.editor == "displayfield") {
 				field = new LDisplayField({
+					id: id,
 					name : name,
 					validateInline: true,
 					readonly: readOnly
 				});
 			} else if (queryParameter.editor == "checkboxfield") {
 				field = new LChoiceField({
+					id: id,
 					name : name,
 					validateInline: true,
 					multiple: true,
@@ -179,12 +187,14 @@ QueryParameterManager.prototype.getQueryField = function(name) {
 				});
 			} else if (queryParameter.editor == "radiofield") {
 				field = new LChoiceField({
+					id: id,
 					name : name,
 					validateInline: true,
 					readonly: readOnly
 				});
 			} else if (queryParameter.editor == "triggerfield") {
 				field = new LTriggerField({
+					id: id,
 					name : name,
 					validateInline: true,
 					readonly: readOnly

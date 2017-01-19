@@ -9,7 +9,7 @@
 
 	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
 	<description>银行资料列表</description>
-	<scripts>js/ds_listtoolbar.js</scripts>
+	<scripts>model/js/ds_listtoolbar.js</scripts>
 	<view-template view="model/listSchema.jsp" />
 
 	<!-- <security byUnit="true" /> -->
@@ -30,11 +30,13 @@
 			where 1=1
  		</sql>
  		<query-parameters dataSetId="A">
-			<query-parameter name="code" auto="true" text=""></query-parameter>
+			<query-parameter name="code" auto="true" text="">
+			</query-parameter>
 			<query-parameter name="name" auto="true" text=""></query-parameter>
 			<query-parameter name="bankShort" auto="true" text=""></query-parameter>
 			<query-parameter name="linkman" auto="true" text=""></query-parameter>
 			<query-parameter name="linkPhone" auto="true" text=""></query-parameter>
+			<query-parameter name="linkPhone2" columnName="linkPhone" editor="hiddenfield" restriction="like" text="hiddenPhone"></query-parameter>
 		</query-parameters>
 	</data-provider>
 

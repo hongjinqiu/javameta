@@ -54,6 +54,7 @@
 	      <property name="minPoolSize" value="1" />
 	      <property name="maxIdleTime" value="60" />
 	      <property name="maxIdleTimeExcessConnections" value="60" />
+	      <property name="debugUnreturnedConnectionStackTraces" value="false" />
 	      
 	      <!-- <property name="AcquireIncrement" value="3" />                         -->
 	      <!-- <property name="AcquireRetryAttempts" value="30" />                    -->

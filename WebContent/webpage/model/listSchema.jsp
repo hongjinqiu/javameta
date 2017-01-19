@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>数据源模型控制台</title>
+<title>${formTemplate.description}</title>
 <link rel="stylesheet" type="text/css" href="${webRoot}/webpage/css/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="${webRoot}/webpage/css/themes/icon.css">
 <script type="text/javascript" src="${webRoot}/webpage/js/jquery.min.js"></script>
@@ -17,17 +17,17 @@
 	var sysParam = {};
 	var webRoot = "${webRoot}";
 </script>
-<script type="text/javascript" src="${webRoot}/webpage/js/common.js"></script>
-<script type="text/javascript" src="${webRoot}/webpage/js/dataTableExtend.js"></script>
-<script type="text/javascript" src="${webRoot}/webpage/js/columnManager.js"></script>
-<script type="text/javascript" src="${webRoot}/webpage/js/lformcommon.js"></script>
-<script type="text/javascript" src="${webRoot}/webpage/js/lFormField.js"></script>
-<script type="text/javascript" src="${webRoot}/webpage/js/lFormTriggerField.js"></script>
-<script type="text/javascript" src="${webRoot}/webpage/js/queryParameter.js"></script>
-<script type="text/javascript" src="${webRoot}/webpage/js/relationManager.js"></script>
-<script type="text/javascript" src="${webRoot}/webpage/js/listTemplateFactory.js"></script>
-<script type="text/javascript" src="${webRoot}/webpage/js/templateService.js"></script>
-<script type="text/javascript" src="${webRoot}/webpage/js/listTemplate.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/common.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/dataTableExtend.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/columnManager.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/lformcommon.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/lFormField.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/lFormTriggerField.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/queryParameter.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/relationManager.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/listTemplateFactory.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/templateService.js"></script>
+<script type="text/javascript" src="${webRoot}/webpage/model/js/listTemplate.js"></script>
 
 <c:if test="${not empty formTemplate.scripts}">
 	<c:set value="${fn:split(formTemplate.scripts, ',') }" var="scriptsLi"></c:set>
@@ -38,11 +38,83 @@
 <script type="text/javascript">
 //g_formTemplateJsonData
 //listTemplate
+var g_yuiCommondLi = [];
 
+var g_dataBo = ${dataBoJson};
+var listTemplate = ${listTemplateJson};
+var g_formTemplateJsonData = listTemplate;
+
+var DATA_PROVIDER_SIZE = "${pageSize}" || 10;
+DATA_PROVIDER_SIZE = parseInt(DATA_PROVIDER_SIZE);
+
+var g_gridPanelDict = {};
+
+if (listTemplate) {
+	var listTemplateFactory = new ListTemplateFactory();
+	if (typeof(listTemplateExtraInfo) != "undefined") {
+		listTemplateFactory.extendListTemplate(listTemplate, listTemplateExtraInfo);
+	}
+}
+<c:if test="${not empty layerBoJson}">
+var g_layerBo = ${layerBoJson};
+</c:if>
+<c:if test="${empty layerBoJson}">
+var g_layerBo = null;
+</c:if>
+
+<c:if test="${not empty layerBoLiJson}">
+var g_layerBoLi = ${layerBoLiJson};
+</c:if>
+<c:if test="${empty layerBoLiJson}">
+var g_layerBoLi = null;
+</c:if>
+
+<c:if test="${not empty usedCheckJson}">
+var g_usedCheck = ${usedCheckJson};
+</c:if>
+<c:if test="${empty usedCheckJson}">
+var g_usedCheck = {};
+</c:if>
+
+<c:if test="${not empty relationBoJson}">
+var g_relationBo = ${relationBoJson};
+</c:if>
+<c:if test="${empty relationBoJson}">
+var g_relationBo = {};
+</c:if>
+
+<c:if test="${not empty defaultBoJson}">
+var g_defaultBo = ${defaultBoJson};
+</c:if>
+<c:if test="${empty defaultBoJson}">
+var g_defaultBo = null;
+</c:if>
+
+<c:if test="${not empty formDataJson}">
+var g_formDataJson = ${formDataJson};
+</c:if>
+<c:if test="${empty formDataJson}">
+var g_formDataJson = null;
+</c:if>
+
+var g_relationManager = new RelationManager();
+var g_masterFormFieldDict = {};
 </script>
 </head>
 
 <body>
+<c:forEach items="${formTemplate.toolbarOrDataProviderOrColumnModel}" var="item" varStatus="itemStatus">
+	<c:if test="${item.xmlName == 'data-provider'}">
+		<c:if test="${not empty item.queryParameters}">
+			<c:if test="${empty item.queryParameters.rendererTemplate}">
+				<jsp:include page="/webpage/model/render/queryParameters.jsp"></jsp:include>
+			</c:if>
+			<c:if test="${not empty item.queryParameters.rendererTemplate}">
+				<jsp:include page="${item.queryParameters.rendererTemplate}"></jsp:include>
+			</c:if>
+		</c:if>
+	</c:if>
+</c:forEach>
 
 </body>
 </html>
