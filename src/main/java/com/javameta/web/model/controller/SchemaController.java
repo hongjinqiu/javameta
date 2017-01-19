@@ -358,6 +358,92 @@ public class SchemaController extends ControllerSupport {
 		return new ModelAndView(view);
 	}
 	
+	@RequestMapping("/selectorschema")
+	public ModelAndView selectorSchema(HttpServletRequest request, HttpServletResponse response) {
+		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
+		String datasourceName = request.getParameter("@name");
+		FormTemplate formTemplate = formTemplateFactory.getFormTemplate(datasourceName, FormTemplateEnum.SELECTOR);
+		
+		this.setSelectionMode(request, formTemplate);
+		this.setDisplayField(request, formTemplate);
+
+		boolean isGetBo = false;
+		String format = request.getParameter("format");
+		if (StringUtils.isNotEmpty(format)) {
+			isGetBo = true;
+		}
+		boolean isFromList = false;
+		Map<String, Object> result = listSelectorCommon(request, response, formTemplate, isGetBo, isFromList);
+		Map<String, Object> selectionBo = New.hashMap();
+		selectionBo.put("url", formTemplateFactory.getViewUrl(formTemplate));
+		selectionBo.put("Description", formTemplate.getDescription());
+		
+		String ids = request.getParameter("@id");
+		if (StringUtils.isNotEmpty(ids)) {
+			List<Map<String, Object>> relationLi = New.arrayList();
+			String[] strIdLi = ids.split(",");
+			String selectorId = formTemplate.getId();
+			for (String item: strIdLi) {
+				if (StringUtils.isNotEmpty(item)) {
+					Map<String, Object> itemDict = New.hashMap();
+					itemDict.put("relationId", item);
+					itemDict.put("selectorId", selectorId);
+					relationLi.add(itemDict);
+				}
+			}
+			Map<String, Object> relationBo = formTemplateFactory.getRelationBo(relationLi);
+			if (relationBo.get(selectorId) != null) {
+				selectionBo = (Map<String, Object>)relationBo.get(selectorId);
+			}
+		}
+		String selectionBoJson = JSONObject.fromObject(selectionBo).toString();
+		selectionBoJson = CommonUtil.filterJsonEmptyAttr(selectionBoJson);
+		result.put("selectionBoJson", selectionBoJson);
+		
+		if (StringUtils.isNotEmpty(format) && format.equalsIgnoreCase("json")) {
+			String dataBoText = (String)result.get("dataBoText");
+			request.setAttribute("json", dataBoText);
+			return new ModelAndView("model/json");
+		}
+		
+		for (String key: result.keySet()) {
+			request.setAttribute(key, result.get(key));
+		}
+		
+		String view = formTemplate.getViewTemplate().getView();
+		if (view.endsWith(".jsp")) {
+			view = view.replace(".jsp", "");
+		}
+		return new ModelAndView(view);
+	}
+	
+	private void setSelectionMode(HttpServletRequest request, FormTemplate formTemplate) {
+		String multi = request.getParameter("@multi");
+		if (StringUtils.isNotEmpty(multi)) {
+			if (multi.equals("true")) {
+				formTemplate.getColumnModel().get(0).setSelectionMode("checkbox");
+			} else {
+				formTemplate.getColumnModel().get(0).setSelectionMode("radio");
+			}
+		}
+	}
+	
+	private void setDisplayField(HttpServletRequest request, FormTemplate formTemplate) {
+		String displayField = request.getParameter("@displayField");
+		if (StringUtils.isNotEmpty(displayField)) {
+			if (displayField.indexOf("{") > 0) {
+				formTemplate.getColumnModel().get(0).setSelectionTemplate(displayField);
+			} else {
+				String[] strFieldLi = displayField.split(",");
+				List<String> fieldLi = New.arrayList();
+				for (String item: strFieldLi) {
+					fieldLi.add("{"+item+"}");
+				}
+				formTemplate.getColumnModel().get(0).setSelectionTemplate(StringUtils.join(fieldLi.toArray(), ","));
+			}
+		}
+	}
+	
 	private Map<String, Object> listSelectorCommon(HttpServletRequest request, HttpServletResponse response, FormTemplate formTemplate, boolean isGetBo, boolean isFromList) {
 		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
 		List<Map<String, Object>> toolbarBo = formTemplateFactory.getFirstToolbarBoForFormTemplate(formTemplate);
