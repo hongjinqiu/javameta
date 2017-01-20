@@ -49,7 +49,7 @@ public class QueryParameterBuilder {
 			}
 		}
 		
-		return null;
+		return "";
 	}
 	
 	private Map<String, IRestriction> stringCmpMap() {

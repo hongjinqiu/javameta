@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.JAXBContext;
@@ -39,6 +40,7 @@ import com.javameta.model.template.FormTemplate;
 import com.javameta.model.template.FormTemplateInfo;
 import com.javameta.model.template.QueryParameters;
 import com.javameta.model.template.QueryParameters.QueryParameter;
+import com.javameta.model.template.QueryParameters.QueryParameter.ParameterAttribute;
 import com.javameta.model.template.RelationDS;
 import com.javameta.model.template.RelationDS.RelationItem;
 import com.javameta.model.template.StringColumn;
@@ -585,17 +587,17 @@ public class FormTemplateFactory {
 	 * @return {
 	 * 		dictionaryBo: {
 	 * 			D_YESNO: {
-	 * 				0:{itemcode:0, itemname:否, diclist_id:1},
-	 * 				1:{itemcode:1, itemname:是, diclist_id:1}
+	 * 				0:{code:0, name:否, diclist_id:1},
+	 * 				1:{code:1, name:是, diclist_id:1}
 	 * 			},
 	 * 			D_BILLSTATUS: {
-	 * 				0:{itemcode:0, itemname:否, diclist_id:1},
-	 * 				1:{itemcode:1, itemname:是, diclist_id:1}
+	 * 				0:{code:0, name:否, diclist_id:1},
+	 * 				1:{code:1, name:是, diclist_id:1}
 	 * 			}
 	 * 		},
 	 * 		dictionaryBoLi: {
-	 * 			D_YESNO: [{itemcode:0, itemname:否, diclist_id:1}, {itemcode:1, itemname:是, diclist_id:1}, ...],
-	 * 			D_BILLSTATUS: [{itemcode:0, itemname:否, diclist_id:1}, {itemcode:1, itemname:是, diclist_id:1}, ...]
+	 * 			D_YESNO: [{code:0, name:否, diclist_id:1}, {code:1, name:是, diclist_id:1}, ...],
+	 * 			D_BILLSTATUS: [{code:0, name:否, diclist_id:1}, {code:1, name:是, diclist_id:1}, ...]
 	 * 		}
 	 * }
 	 */
@@ -603,6 +605,7 @@ public class FormTemplateFactory {
 		final Map<String, Object> dictionaryBo = New.hashMap();
 		final Map<String, Object> dictionaryBoLi = New.hashMap();
 		final DictionaryFactory dictionaryFactory = new DictionaryFactory();
+		final Set<String> dictionaryLi = New.hashSet();
 		FormTemplateIterator.iterateFormTemplateColumnModel(formTemplate, new IFormTemplateColumnModelIterate() {
 			@Override
 			public void iterate(ColumnModel columnModel) {
@@ -611,18 +614,39 @@ public class FormTemplateFactory {
 				for (Column column: columnLi) {
 					if (column instanceof DictionaryColumn) {
 						DictionaryColumn dictionaryColumn = (DictionaryColumn)column;
-						List<Map<String, Object>> dictionaryItems = dictionaryFactory.getDictionary(dictionaryColumn.getDictionary());
-						Map<String, Object> dictMap = New.hashMap();
-						for (Map<String, Object> dictionaryItem: dictionaryItems) {
-							String code = (String)dictionaryItem.get("ITEMCODE");
-							dictMap.put(code, dictionaryItem);
-						}
-						dictionaryBo.put(dictionaryColumn.getDictionary(), dictMap);
-						dictionaryBoLi.put(dictionaryColumn.getDictionary(), dictionaryItems);
+						dictionaryLi.add(dictionaryColumn.getDictionary());
 					}
 				}
 			}
 		});
+		FormTemplateIterator.iterateFormTemplateDataProvider(formTemplate, new IFormTemplateDataProviderIterate() {
+			@Override
+			public void iterate(DataProvider dataProvider) {
+				FormTemplateIterator.iterateFormTemplateQueryParameter(dataProvider, new IFormTemplateQueryParameterIterate() {
+					@Override
+					public void iterate(DataProvider dataProvider, QueryParameter queryParameter) {
+						List<ParameterAttribute> parameterAttributeLi = queryParameter.getParameterAttribute();
+						if (parameterAttributeLi != null && parameterAttributeLi.size() > 0) {
+							for (ParameterAttribute parameterAttribute: parameterAttributeLi) {
+								if (parameterAttribute.getName().equals("dictionary")) {
+									dictionaryLi.add(parameterAttribute.getValue());
+								}
+							}
+						}
+					}
+				});
+			}
+		});
+		for (String dictionary: dictionaryLi) {
+			List<Map<String, Object>> dictionaryItems = dictionaryFactory.getDictionary(dictionary);
+			Map<String, Object> dictMap = New.hashMap();
+			for (Map<String, Object> dictionaryItem: dictionaryItems) {
+				String code = (String)dictionaryItem.get("code");
+				dictMap.put(code, dictionaryItem);
+			}
+			dictionaryBo.put(dictionary, dictMap);
+			dictionaryBoLi.put(dictionary, dictionaryItems);
+		}
 		
 		Map<String, Object> result = New.hashMap();
 		result.put("dictionaryBo", dictionaryBo);

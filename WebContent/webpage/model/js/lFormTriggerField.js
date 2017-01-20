@@ -2,18 +2,22 @@ function LTriggerField(param) {
 	var self = this;
 	this.config = {};
 	for (var key in param) {
-		self.config[key] = param;
+		self.config[key] = param[key];
 	}
-	$("#" + self.config.id).textbox({
+	var easyUiConfig = {
 		readonly: true
-	});
+	};
+	if (param["cls"]) {
+		easyUiConfig["cls"] = param["cls"];
+	}
+	$("#" + self.config.id).textbox(easyUiConfig);
 	$("#" + self.config.id).validatebox({
 		validType:"validateTriggerField"
 	});
 	for ( var key in param) {
 		self.set(key, param[key]);
 	}
-
+	
 	var lFormManager = new LFormManager();
 	lFormManager.initializeAttr(self);
 	self.initializeAttr();

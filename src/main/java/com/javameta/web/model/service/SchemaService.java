@@ -31,8 +31,8 @@ public class SchemaService extends ServiceSupport {
 	CREATE TABLE `pub_diccomm` (
 	`DICCOMM_ID` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '内容序列ID',
 	`DICLIST_ID` decimal(8,0) NOT NULL COMMENT '字典清单ID',
-	`ITEMCODE` varchar(200) NOT NULL COMMENT '数据项代码',
-	`ITEMNAME` varchar(200) NOT NULL COMMENT '数据项名称',
+	`code` varchar(200) NOT NULL COMMENT '数据项代码',
+	`name` varchar(200) NOT NULL COMMENT '数据项名称',
 	`ITEMNAJP` varchar(200) DEFAULT NULL COMMENT '数据项简拼',
 	`ITEMNAQP` varchar(1000) DEFAULT NULL COMMENT '数据项全拼',
 	`DISPORDER` decimal(8,0) NOT NULL COMMENT '显示顺序',

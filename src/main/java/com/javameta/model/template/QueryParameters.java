@@ -906,6 +906,39 @@ public class QueryParameters implements Serializable {
         @XmlSchemaType(name = "anySimpleType")
         protected String rendererTemplate;
         
+        public String getFieldCls() {
+        	if (parameterAttribute != null) {
+        		for (QueryParameters.QueryParameter.ParameterAttribute item: parameterAttribute) {
+        			if (item.getName().equals("fieldCls")) {
+        				return item.getValue();
+        			}
+        		}
+        	}
+        	return "";
+        }
+        
+        public String getStyle() {
+        	if (parameterAttribute != null) {
+        		for (QueryParameters.QueryParameter.ParameterAttribute item: parameterAttribute) {
+        			if (item.getName().equals("style")) {
+        				return item.getValue();
+        			}
+        		}
+        	}
+        	return "";
+        }
+        
+        public String getDbPattern() {
+        	if (parameterAttribute != null) {
+        		for (QueryParameters.QueryParameter.ParameterAttribute item: parameterAttribute) {
+        			if (item.getName().equals("dbPattern")) {
+        				return item.getValue();
+        			}
+        		}
+        	}
+        	return "";
+        }
+        
         public String getDbQueryName() {
         	if (StringUtils.isNotEmpty(columnName)) {
         		return columnName;

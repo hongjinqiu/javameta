@@ -26,6 +26,11 @@ function commonValidate(fieldElem, value, param) {
 
 function validateTextField(value, param) {
 	var self = this;
+	if (true) {
+		console.log("validate");
+		$(self).validatebox("options").invalidMessage = "2测试3";
+		return false;
+	}
 	return commonValidate(self, value, param);
 }
 
@@ -66,6 +71,10 @@ function validateTriggerField(value, param) {
 
 function validateDisplayField(value, param) {
 	var self = this;
+	if (true) {
+		$(self).validatebox("options").invalidMessage = "2测试display";
+		return false;
+	}
 	return commonValidate(self, value, param);
 }
 
@@ -174,7 +183,11 @@ function LTextField(param) {
 		self.config[key] = param[key];
 	}
 
-	$("#" + self.config.id).textbox({});
+	var easyUiConfig = {};
+	if (param["cls"]) {
+		easyUiConfig["cls"] = param["cls"];
+	}
+	$("#" + self.config.id).textbox(easyUiConfig);
 
 	$("#" + self.config.id).validatebox({
 		validType : "validateTextField"
@@ -197,6 +210,11 @@ LTextField.prototype.get = function(key) {
 LTextField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "value") {
+		$("#" + self.config.id).textbox("setValue", value);
+		return;
+	}
+	
 	formFieldCommonSet(self, key, value);
 }
 
@@ -237,12 +255,18 @@ function LSelectField(param) {
 	for ( var key in param) {
 		self.config[key] = param[key];
 	}
-
-	$("#" + self.config.id).combobox({
+	
+	var easyUiConfig = {
 		valueField : 'value',
 		textField : 'label',
+		limitToList: true,
 		multiple : param["multiple"] || false
-	});
+	};
+	if (param["cls"]) {
+		easyUiConfig["cls"] = param["cls"];
+	}
+
+	$("#" + self.config.id).combobox(easyUiConfig);
 	$("#" + self.config.id).validatebox({
 		validType : "validateSelectField"
 	});
@@ -262,11 +286,25 @@ function LSelectField(param) {
 
 LSelectField.prototype.get = function(key) {
 	var self = this;
+	
+	if (key == "choices") {
+		return $("#" + self.get("id")).combobox("getData");
+	}
+	
 	return formFieldCommonGet(self, key);
 }
 
 LSelectField.prototype.set = function(key, value) {
 	var self = this;
+	
+	if (key == "choices") {
+		$("#" + self.get("id")).combobox("loadData", value);
+		return;
+	}
+	if (key == "value") {
+		$("#" + self.config.id).combobox("setValue", value);
+		return;
+	}
 
 	formFieldCommonSet(self, key, value);
 }
@@ -277,12 +315,18 @@ function LChoiceField(param) {
 	for ( var key in param) {
 		self.config[key] = param[key];
 	}
-
-	$("#" + self.config.id).combobox({
+	
+	var easyUiConfig = {
 		valueField : 'value',
 		textField : 'label',
+		limitToList: true,
 		multiple : param["multiple"] || false
-	});
+	};
+	if (param["cls"]) {
+		easyUiConfig["cls"] = param["cls"];
+	}
+
+	$("#" + self.config.id).combobox(easyUiConfig);
 	$("#" + self.config.id).validatebox({
 		validType : "validateChoiceField"
 	});
@@ -324,6 +368,10 @@ LChoiceField.prototype.set = function(key, value) {
 		$("#" + self.get("id")).combobox("loadData", value);
 		return;
 	}
+	if (key == "value") {
+		$("#" + self.config.id).combobox("setValue", value);
+		return;
+	}
 
 	formFieldCommonSet(self, key, value);
 }
@@ -334,8 +382,13 @@ function LNumberField(param) {
 	for ( var key in param) {
 		self.config[key] = param[key];
 	}
+	
+	var easyUiConfig = {};
+	if (param["cls"]) {
+		easyUiConfig["cls"] = param["cls"];
+	}
 
-	$("#" + self.config.id).numberbox({});
+	$("#" + self.config.id).numberbox(easyUiConfig);
 	$("#" + self.config.id).validatebox({
 		validType : "validateNumberField"
 	});
@@ -392,6 +445,10 @@ LNumberField.prototype.set = function(key, value) {
 		$("#" + self.config.id).numberbox("options").suffix = value;
 		return;
 	}
+	if (key == "value") {
+		$("#" + self.config.id).numberbox("setValue", value);
+		return;
+	}
 
 	formFieldCommonSet(self, key, value);
 }
@@ -432,6 +489,7 @@ function LDateField(param) {
 
 	if (dbPattern == "yyyyMMdd") {
 		$("#" + self.config.id).datebox({
+			cls: param["cls"] || "",
 			formatter: function(date) {
 				var y = date.getFullYear();
 				var m = date.getMonth()+1;
@@ -450,6 +508,7 @@ function LDateField(param) {
 		});
 	} else if (dbPattern == "yyyyMMddHHmmss") {
 		$("#" + self.config.id).datetimebox({
+			cls: param["cls"] || "",
 		    showSeconds: false,
 		    formatter: function(date) {
 				var y = date.getFullYear();
@@ -460,8 +519,9 @@ function LDateField(param) {
 				var yyyyMMdd = "";
 				if (displayPattern.indexOf("-") > -1) {
 					yyyyMMdd = y + "-" + m + "-" + d;
+				} else {
+					yyyyMMdd = y + "/" + m + "/" + d;
 				}
-				yyyyMMdd = y + "/" + m + "/" + d;
 				var hour = date.getHours();
 				hour = addPrefixZero(hour);
 				var minute = date.getMinutes();
@@ -472,6 +532,7 @@ function LDateField(param) {
 		});
 	} else if (dbPattern == "HHmmss") {
 		$("#" + self.config.id).timespinner({
+			cls: param["cls"] || "",
 		    showSeconds: false
 		});
 	}
@@ -492,13 +553,86 @@ function LDateField(param) {
 LDateField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "value") {
+		var value = $("#" + self.config.id).val();
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			if (value.length == 16) {
+				value = value + ":00";
+			}
+		} else if (dbPattern == "HHmmss") {
+			if (value.length == 5) {
+				value = value + ":00";
+			}
+		}
+		return value;
+	}
+	
 	return formFieldCommonGet(self, key);
 }
 
 LDateField.prototype.set = function(key, value) {
 	var self = this;
+	
+	if (key == "value") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			$("#" + self.config.id).datebox("setValue", self.getFormatValue(value));
+			return;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			$("#" + self.config.id).datetimebox("setValue", self.getFormatValue(value));
+			return;
+		} else if (dbPattern == "HHmmss") {
+			$("#" + self.config.id).timespinner("setValue", self.getFormatValue(value));
+			return;
+		}
+	}
 
 	formFieldCommonSet(self, key, value);
+}
+
+LDateField.prototype.getFormatValue = function(value) {
+	var self = this;
+	if (!value) {
+		return "";
+	}
+	value = value.replace(/[ :\/-]/g, "");
+	var displayPattern = self.get("displayPattern");
+	var dbPattern = self.get("dbPattern");
+	if (dbPattern == "yyyyMMdd") {
+		if (displayPattern.indexOf("-") > -1) {
+			if (value.length >= 6) {
+				return value.substring(0, 4) + "-" + value.substring(4, 6) + "-" + value.substring(6, 8);
+			}
+		} else {
+			if (value.length >= 6) {
+				return value.substring(0, 4) + "/" + value.substring(4, 6) + "/" + value.substring(6, 8);
+			}
+		}
+	} else if (dbPattern == "yyyyMMddHHmmss") {
+		if (displayPattern.indexOf("-") > -1) {
+			if (value.length >= 14) {
+				return value.substring(0, 4) + "-" + value.substring(4, 6) + "-" + value.substring(6, 8) + " " + value.substring(8, 10) + ":" + value.substring(10, 12) + ":" + value.substring(12, 14);
+			} else if (value.length >= 12) {
+				return value.substring(0, 4) + "-" + value.substring(4, 6) + "-" + value.substring(6, 8) + " " + value.substring(8, 10) + ":" + value.substring(10, 12) + ":00";
+			}
+		} else {
+			if (value.length >= 14) {
+				return value.substring(0, 4) + "/" + value.substring(4, 6) + "/" + value.substring(6, 8) + " " + value.substring(8, 10) + ":" + value.substring(10, 12) + ":" + value.substring(12, 14);
+			} else if (value.length >= 12) {
+				return value.substring(0, 4) + "/" + value.substring(4, 6) + "/" + value.substring(6, 8) + " " + value.substring(8, 10) + ":" + value.substring(10, 12) + ":00";
+			}
+		}
+	} else if (dbPattern == "HHmmss") {
+		if (value.length >= 6) {
+			return value.substring(0, 2) + ":" + value.substring(2, 4) + ":" + value.substring(4, 6);
+		} else if (value.length >= 4) {
+			return value.substring(0, 2) + ":" + value.substring(2, 4) + ":00";
+		}
+	}
+	return "";
 }
 
 function LTextareaField(param) {
@@ -551,11 +685,25 @@ function LDisplayField(param) {
 
 LDisplayField.prototype.get = function(key) {
 	var self = this;
+	
+	if (key == "value") {
+		return $("#" + self.config.id).html();
+	}
 	return formFieldCommonGet(self, key);
 }
 
 LDisplayField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "value") {
+		if (self.get("zeroShowEmpty")) {
+			if (value === 0 || value === "0") {
+				value = "";
+			}
+		}
+
+		$("#" + self.config.id).html(value);
+		return;
+	}
 	formFieldCommonSet(self, key, value);
 }

@@ -37,6 +37,41 @@
 			<query-parameter name="linkman" auto="true" text=""></query-parameter>
 			<query-parameter name="linkPhone" auto="true" text=""></query-parameter>
 			<query-parameter name="linkPhone2" columnName="linkPhone" editor="hiddenfield" restriction="like" text="hiddenPhone"></query-parameter>
+			<query-parameter name="linkPhone3" columnName="linkPhone" editor="textfield" restriction="like" text="linkPhone3">
+				<parameter-attribute name="fieldCls" value="linkePhone3"/>
+			</query-parameter>
+			<query-parameter name="combofield4" columnName="linkPhone" editor="combofield" restriction="in" text="combofield4">
+				<parameter-attribute name="dictionary" value="D_YESNO"/>
+			</query-parameter>
+			<query-parameter name="checkboxfield5" columnName="linkPhone" editor="checkboxfield" restriction="in" text="checkboxfield5">
+				<parameter-attribute name="dictionary" value="D_YESNO"/>
+			</query-parameter>
+			<query-parameter name="radiofield6" columnName="linkPhone" editor="radiofield" restriction="in" text="radiofield6">
+				<parameter-attribute name="dictionary" value="D_YESNO"/>
+			</query-parameter>
+			<query-parameter name="numberfield7" columnName="linkPhone" editor="numberfield" restriction="ge" text="numberfield7">
+			</query-parameter>
+			<query-parameter name="datefield8" columnName="linkPhone" editor="datefield" restriction="ge" text="datefield8">
+				<parameter-attribute name="displayPattern" value="yyyy-MM-dd"/>
+				<parameter-attribute name="dbPattern" value="yyyyMMdd"/>
+			</query-parameter>
+			<query-parameter name="datefield9" columnName="linkPhone" editor="datefield" restriction="ge" text="datefield9">
+				<parameter-attribute name="displayPattern" value="yyyy-MM-dd HH:mm:ss"/>
+				<parameter-attribute name="dbPattern" value="yyyyMMddHHmmss"/>
+			</query-parameter>
+			<query-parameter name="datefield10" columnName="linkPhone" editor="datefield" restriction="ge" text="datefield10">
+				<parameter-attribute name="displayPattern" value="HH:mm:ss"/>
+				<parameter-attribute name="dbPattern" value="HHmmss"/>
+			</query-parameter>
+			<query-parameter name="textareafield11" columnName="linkPhone" editor="textareafield" restriction="ge" text="textareafield11">
+				<parameter-attribute name="fieldCls" value="memem"/>
+			</query-parameter>
+			<query-parameter name="triggerfield12" columnName="linkPhone" editor="triggerfield" restriction="ge" text="triggerfield12">
+				<relationDS>
+				</relationDS>
+			</query-parameter>
+			<query-parameter name="displayfield13" columnName="linkPhone" editor="displayfield" restriction="ge" text="displayfield13">
+			</query-parameter>
 		</query-parameters>
 	</data-provider>
 

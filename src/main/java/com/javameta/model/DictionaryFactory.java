@@ -9,18 +9,18 @@ import com.javameta.util.New;
 /**
  * 字典工厂,所谓的字典就是{
  * 		D_YESNO:[{
- * 			ITEMCODE:0,
- * 			ITEMNAME:'否'
+ * 			code:0,
+ * 			name:'否'
  * 		}, {
- * 			ITEMCODE:1,
- * 			ITEMNAME:'是'
+ * 			code:1,
+ * 			name:'是'
  * 		}],
  * 		D_BILLSTATUS:[{
- * 			ITEMCODE:0,
- * 			ITEMNAME:'否'
+ * 			code:0,
+ * 			name:'否'
  * 		}, {
- * 			ITEMCODE:1,
- * 			ITEMNAME:'是'
+ * 			code:1,
+ * 			name:'是'
  * 		}],
  * }
  * @author hongjinqiu

@@ -122,16 +122,25 @@ QueryParameterManager.prototype.findQueryParameterAttr = function(queryParameter
 }
 
 QueryParameterManager.prototype.getQueryField = function(id, name) {
+	var self = this;
+//	var queryParameterManager = new QueryParameterManager();
+//	var treeUrlAttr = queryParameterManager.findQueryParameterAttr(targetQueryParameter, "treeUrl");
 	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
 	var field = null;
 	formTemplateIterator.iterateAnyTemplateQueryParameter(result, function(queryParameter, result){
 		if (queryParameter.name == name) {
+			var fieldClsAttr = self.findQueryParameterAttr(queryParameter, "fieldCls");
+			var fieldCls = "";
+			if (fieldClsAttr) {
+				fieldCls = fieldClsAttr.value;
+			}
 			var readOnly = queryParameter.readOnly === "true";
 			if (queryParameter.editor == "hiddenfield") {
 				field = new LHiddenField({
 					id: id,
 					name : name,
+					cls: fieldCls,
 					validateInline: true,
 					readonly: readOnly
 				});
@@ -139,6 +148,7 @@ QueryParameterManager.prototype.getQueryField = function(id, name) {
 				field = new LTextField({
 					id: id,
 					name : name,
+					cls: fieldCls,
 					validateInline: true,
 					readonly: readOnly
 				});
@@ -146,6 +156,7 @@ QueryParameterManager.prototype.getQueryField = function(id, name) {
 				field = new LTextareaField({
 					id: id,
 					name : name,
+					cls: fieldCls,
 					validateInline: true,
 					readonly: readOnly
 				});
@@ -153,6 +164,7 @@ QueryParameterManager.prototype.getQueryField = function(id, name) {
 				field = new LNumberField({
 					id: id,
 					name : name,
+					cls: fieldCls,
 					validateInline: true,
 					readonly: readOnly
 				});
@@ -160,6 +172,7 @@ QueryParameterManager.prototype.getQueryField = function(id, name) {
 				field = new LDateField({
 					id: id,
 					name : name,
+					cls: fieldCls,
 					validateInline: true,
 					readonly: readOnly
 				});
@@ -167,6 +180,7 @@ QueryParameterManager.prototype.getQueryField = function(id, name) {
 				field = new LSelectField({
 					id: id,
 					name : name,
+					cls: fieldCls,
 					validateInline: true,
 					readonly: readOnly
 				});
@@ -174,6 +188,7 @@ QueryParameterManager.prototype.getQueryField = function(id, name) {
 				field = new LDisplayField({
 					id: id,
 					name : name,
+					cls: fieldCls,
 					validateInline: true,
 					readonly: readOnly
 				});
@@ -181,6 +196,7 @@ QueryParameterManager.prototype.getQueryField = function(id, name) {
 				field = new LChoiceField({
 					id: id,
 					name : name,
+					cls: fieldCls,
 					validateInline: true,
 					multiple: true,
 					readonly: readOnly
@@ -189,6 +205,7 @@ QueryParameterManager.prototype.getQueryField = function(id, name) {
 				field = new LChoiceField({
 					id: id,
 					name : name,
+					cls: fieldCls,
 					validateInline: true,
 					readonly: readOnly
 				});
@@ -196,6 +213,7 @@ QueryParameterManager.prototype.getQueryField = function(id, name) {
 				field = new LTriggerField({
 					id: id,
 					name : name,
+					cls: fieldCls,
 					validateInline: true,
 					readonly: readOnly
 				});

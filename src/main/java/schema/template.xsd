@@ -996,7 +996,7 @@
 												<enumeration value="treeUrl"></enumeration>
 												<enumeration value="treeHeight"></enumeration>
 												<enumeration value="observe"></enumeration>
-												<enumeration value="style"></enumeration>
+												<enumeration value="fieldCls"></enumeration>
 												<enumeration value="template"></enumeration><!-- 弹出的选择 -->
 												<enumeration value="selectionMode"></enumeration>
 												<enumeration value="selectionTemplate"></enumeration>

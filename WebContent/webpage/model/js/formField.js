@@ -183,8 +183,13 @@ function PTextField(param) {
 	for ( var key in param) {
 		self.config[key] = param[key];
 	}
+	
+	var easyUiConfig = {};
+	if (param["cls"]) {
+		easyUiConfig["cls"] = param["cls"];
+	}
 
-	$("#" + self.config.id).textbox({});
+	$("#" + self.config.id).textbox(easyUiConfig);
 
 	$("#" + self.config.id).validatebox({
 		validType : "validateTextField"
@@ -247,12 +252,18 @@ function PSelectField(param) {
 	for ( var key in param) {
 		self.config[key] = param[key];
 	}
-
-	$("#" + self.config.id).combobox({
+	
+	var easyUiConfig = {
 		valueField : 'value',
 		textField : 'label',
+		limitToList: true,
 		multiple : param["multiple"] || false
-	});
+	};
+	if (param["cls"]) {
+		easyUiConfig["cls"] = param["cls"];
+	}
+
+	$("#" + self.config.id).combobox(easyUiConfig);
 	$("#" + self.config.id).validatebox({
 		validType : "validateSelectField"
 	});
@@ -269,12 +280,22 @@ function PSelectField(param) {
 
 PSelectField.prototype.get = function(key) {
 	var self = this;
+	
+	if (key == "choices") {
+		return $("#" + self.get("id")).combobox("getData");
+	}
+	
 	return formFieldCommonGet(self, key);
 }
 
 PSelectField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "choices") {
+		$("#" + self.get("id")).combobox("loadData", value);
+		return;
+	}
+	
 	formFieldCommonSet(self, key, value);
 }
 
@@ -284,12 +305,18 @@ function PChoiceField(param) {
 	for ( var key in param) {
 		self.config[key] = param[key];
 	}
-
-	$("#" + self.config.id).combobox({
+	
+	var easyUiConfig = {
 		valueField : 'value',
 		textField : 'label',
+		limitToList: true,
 		multiple : param["multiple"] || false
-	});
+	};
+	if (param["cls"]) {
+		easyUiConfig["cls"] = param["cls"];
+	}
+
+	$("#" + self.config.id).combobox(easyUiConfig);
 	$("#" + self.config.id).validatebox({
 		validType : "validateChoiceField"
 	});
@@ -338,8 +365,13 @@ function PNumberField(param) {
 	for ( var key in param) {
 		self.config[key] = param[key];
 	}
+	
+	var easyUiConfig = {};
+	if (param["cls"]) {
+		easyUiConfig["cls"] = param["cls"];
+	}
 
-	$("#" + self.config.id).numberbox({});
+	$("#" + self.config.id).numberbox(easyUiConfig);
 	$("#" + self.config.id).validatebox({
 		validType : "validateNumberField"
 	});
@@ -431,6 +463,7 @@ function PDateField(param) {
 
 	if (dbPattern == "yyyyMMdd") {
 		$("#" + self.config.id).datebox({
+			cls: param["cls"] || "",
 			formatter: function(date) {
 				var y = date.getFullYear();
 				var m = date.getMonth()+1;
@@ -449,6 +482,7 @@ function PDateField(param) {
 		});
 	} else if (dbPattern == "yyyyMMddHHmmss") {
 		$("#" + self.config.id).datetimebox({
+			cls: param["cls"] || "",
 		    showSeconds: false,
 		    formatter: function(date) {
 				var y = date.getFullYear();
@@ -471,6 +505,7 @@ function PDateField(param) {
 		});
 	} else if (dbPattern == "HHmmss") {
 		$("#" + self.config.id).timespinner({
+			cls: param["cls"] || "",
 		    showSeconds: false
 		});
 	}
@@ -491,13 +526,86 @@ function PDateField(param) {
 PDateField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "value") {
+		var value = $("#" + self.config.id).val();
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			if (value.length == 16) {
+				value = value + ":00";
+			}
+		} else if (dbPattern == "HHmmss") {
+			if (value.length == 5) {
+				value = value + ":00";
+			}
+		}
+		return value;
+	}
+	
 	return formFieldCommonGet(self, key);
 }
 
 PDateField.prototype.set = function(key, value) {
 	var self = this;
+	
+	if (key == "value") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			$("#" + self.config.id).datebox("setValue", self.getFormatValue(value));
+			return;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			$("#" + self.config.id).datetimebox("setValue", self.getFormatValue(value));
+			return;
+		} else if (dbPattern == "HHmmss") {
+			$("#" + self.config.id).timespinner("setValue", self.getFormatValue(value));
+			return;
+		}
+	}
 
 	formFieldCommonSet(self, key, value);
+}
+
+PDateField.prototype.getFormatValue = function(value) {
+	var self = this;
+	if (!value) {
+		return "";
+	}
+	value = value.replace(/[ :\/-]/g, "");
+	var displayPattern = self.get("displayPattern");
+	var dbPattern = self.get("dbPattern");
+	if (dbPattern == "yyyyMMdd") {
+		if (displayPattern.indexOf("-") > -1) {
+			if (value.length >= 6) {
+				return value.substring(0, 4) + "-" + value.substring(4, 6) + "-" + value.substring(6, 8);
+			}
+		} else {
+			if (value.length >= 6) {
+				return value.substring(0, 4) + "/" + value.substring(4, 6) + "/" + value.substring(6, 8);
+			}
+		}
+	} else if (dbPattern == "yyyyMMddHHmmss") {
+		if (displayPattern.indexOf("-") > -1) {
+			if (value.length >= 14) {
+				return value.substring(0, 4) + "-" + value.substring(4, 6) + "-" + value.substring(6, 8) + " " + value.substring(8, 10) + ":" + value.substring(10, 12) + ":" + value.substring(12, 14);
+			} else if (value.length >= 12) {
+				return value.substring(0, 4) + "-" + value.substring(4, 6) + "-" + value.substring(6, 8) + " " + value.substring(8, 10) + ":" + value.substring(10, 12) + ":00";
+			}
+		} else {
+			if (value.length >= 14) {
+				return value.substring(0, 4) + "/" + value.substring(4, 6) + "/" + value.substring(6, 8) + " " + value.substring(8, 10) + ":" + value.substring(10, 12) + ":" + value.substring(12, 14);
+			} else if (value.length >= 12) {
+				return value.substring(0, 4) + "/" + value.substring(4, 6) + "/" + value.substring(6, 8) + " " + value.substring(8, 10) + ":" + value.substring(10, 12) + ":00";
+			}
+		}
+	} else if (dbPattern == "HHmmss") {
+		if (value.length >= 6) {
+			return value.substring(0, 2) + ":" + value.substring(2, 4) + ":" + value.substring(4, 6);
+		} else if (value.length >= 4) {
+			return value.substring(0, 2) + ":" + value.substring(2, 4) + ":00";
+		}
+	}
+	return "";
 }
 
 function PTextareaField(param) {
