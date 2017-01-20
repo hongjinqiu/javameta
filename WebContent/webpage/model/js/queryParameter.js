@@ -63,7 +63,7 @@ QueryParameterManager.prototype.applyObserveEventBehavior = function() {
 											var treeUrlAttr = queryParameterManager.findQueryParameterAttr(targetQueryParameter, "treeUrl");
 											
 											if (treeUrlAttr) {
-												var uri = "/tree/" + treeUrlAttr.value;
+												var uri = webRoot + "/tree/" + treeUrlAttr.value;
 												if (uri.indexOf("?") > -1) {
 													uri += "&parentId=" + g_masterFormFieldDict[queryParameter.name].get("value");
 												} else {

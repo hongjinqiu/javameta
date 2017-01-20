@@ -9,8 +9,11 @@
 	});
 
 required:true,
+validateOnCreate: false,
 validType:['email','length[0,20]']
-	
+
+t.textbox("validate")
+
 	t.validatebox("validate")
 	t.validatebox("enableValidation")
 	t.validatebox("disableValidation")
@@ -19,18 +22,13 @@ validType:['email','length[0,20]']
 
 function commonValidate(fieldElem, value, param) {
 	var lFormManager = new LFormManager();
-	var name = $(fieldElem).attr("name");
+	var name = param[0];
 	var formObj = g_masterFormFieldDict[name];
 	return lFormManager.queryParameterFieldValidator(value, formObj);
 }
 
 function validateTextField(value, param) {
 	var self = this;
-	if (true) {
-		console.log("validate");
-		$(self).validatebox("options").invalidMessage = "2测试3";
-		return false;
-	}
 	return commonValidate(self, value, param);
 }
 
@@ -71,10 +69,6 @@ function validateTriggerField(value, param) {
 
 function validateDisplayField(value, param) {
 	var self = this;
-	if (true) {
-		$(self).validatebox("options").invalidMessage = "2测试display";
-		return false;
-	}
 	return commonValidate(self, value, param);
 }
 
@@ -183,15 +177,14 @@ function LTextField(param) {
 		self.config[key] = param[key];
 	}
 
-	var easyUiConfig = {};
+	var easyUiConfig = {
+		required: param["required"] || false,
+		validType : "validateTextField['{name}']".replace(/{name}/g, param.name)
+	};
 	if (param["cls"]) {
 		easyUiConfig["cls"] = param["cls"];
 	}
 	$("#" + self.config.id).textbox(easyUiConfig);
-
-	$("#" + self.config.id).validatebox({
-		validType : "validateTextField"
-	});
 
 	for ( var key in param) {
 		self.set(key, param[key]);
@@ -226,7 +219,8 @@ function LHiddenField(param) {
 	}
 	
 	$("#" + self.config.id).validatebox({
-		validType : "validateHiddenField"
+		required: param["required"] || false,
+		validType : "validateHiddenField['{name}']".replace(/{name}/g, param.name)
 	});
 
 	for ( var key in param) {
@@ -260,6 +254,8 @@ function LSelectField(param) {
 		valueField : 'value',
 		textField : 'label',
 		limitToList: true,
+		required: param["required"] || false,
+		validType : "validateSelectField['{name}']".replace(/{name}/g, param.name),
 		multiple : param["multiple"] || false
 	};
 	if (param["cls"]) {
@@ -267,9 +263,6 @@ function LSelectField(param) {
 	}
 
 	$("#" + self.config.id).combobox(easyUiConfig);
-	$("#" + self.config.id).validatebox({
-		validType : "validateSelectField"
-	});
 	
 	for ( var key in param) {
 		self.set(key, param[key]);
@@ -320,6 +313,8 @@ function LChoiceField(param) {
 		valueField : 'value',
 		textField : 'label',
 		limitToList: true,
+		required: param["required"] || false,
+		validType : "validateChoiceField['{name}']".replace(/{name}/g, param.name),
 		multiple : param["multiple"] || false
 	};
 	if (param["cls"]) {
@@ -327,9 +322,6 @@ function LChoiceField(param) {
 	}
 
 	$("#" + self.config.id).combobox(easyUiConfig);
-	$("#" + self.config.id).validatebox({
-		validType : "validateChoiceField"
-	});
 
 	for ( var key in param) {
 		self.set(key, param[key]);
@@ -383,15 +375,15 @@ function LNumberField(param) {
 		self.config[key] = param[key];
 	}
 	
-	var easyUiConfig = {};
+	var easyUiConfig = {
+		required: param["required"] || false,
+		validType : "validateNumberField['{name}']".replace(/{name}/g, param.name)
+	};
 	if (param["cls"]) {
 		easyUiConfig["cls"] = param["cls"];
 	}
 
 	$("#" + self.config.id).numberbox(easyUiConfig);
-	$("#" + self.config.id).validatebox({
-		validType : "validateNumberField"
-	});
 	for ( var key in param) {
 		self.set(key, param[key]);
 	}
@@ -490,6 +482,8 @@ function LDateField(param) {
 	if (dbPattern == "yyyyMMdd") {
 		$("#" + self.config.id).datebox({
 			cls: param["cls"] || "",
+			required: param["required"] || false,
+			validType : "validateDateField['{name}']".replace(/{name}/g, param.name),
 			formatter: function(date) {
 				var y = date.getFullYear();
 				var m = date.getMonth()+1;
@@ -510,6 +504,8 @@ function LDateField(param) {
 		$("#" + self.config.id).datetimebox({
 			cls: param["cls"] || "",
 		    showSeconds: false,
+		    required: param["required"] || false,
+		    validType : "validateDateField['{name}']".replace(/{name}/g, param.name),
 		    formatter: function(date) {
 				var y = date.getFullYear();
 				var m = date.getMonth()+1;
@@ -533,14 +529,12 @@ function LDateField(param) {
 	} else if (dbPattern == "HHmmss") {
 		$("#" + self.config.id).timespinner({
 			cls: param["cls"] || "",
+			required: param["required"] || false,
+			validType : "validateDateField['{name}']".replace(/{name}/g, param.name),
 		    showSeconds: false
 		});
 	}
 	
-	$("#" + self.config.id).validatebox({
-		validType : "validateDateField"
-	});
-
 	for ( var key in param) {
 		self.set(key, param[key]);
 	}
@@ -643,7 +637,8 @@ function LTextareaField(param) {
 	}
 	
 	$("#" + self.config.id).validatebox({
-		validType : "validateTextareaField"
+		required: param["required"] || false,
+		validType : "validateTextareaField['{name}']".replace(/{name}/g, param.name)
 	});
 	for ( var key in param) {
 		self.set(key, param[key]);
@@ -672,7 +667,8 @@ function LDisplayField(param) {
 		self.config[key] = param[key];
 	}
 	$("#" + self.config.id).validatebox({
-		validType : "validateDisplayField"
+		required: param["required"] || false,
+		validType : "validateDisplayField['{name}']".replace(/{name}/g, param.name)
 	});
 	for ( var key in param) {
 		self.set(key, param[key]);

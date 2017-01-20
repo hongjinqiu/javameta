@@ -72,6 +72,13 @@
 			</query-parameter>
 			<query-parameter name="displayfield13" columnName="linkPhone" editor="displayfield" restriction="ge" text="displayfield13">
 			</query-parameter>
+			<query-parameter name="be_observe14" columnName="linkPhone" editor="textfield" restriction="ge" text="be_observe14">
+			</query-parameter>
+			<query-parameter name="observe14" columnName="linkPhone" editor="textfield" restriction="ge" text="observe14">
+				<parameter-attribute name="observe" value="be_observe14,be_observe15" />
+			</query-parameter>
+			<query-parameter name="be_observe15" columnName="linkPhone" editor="textfield" restriction="ge" text="be_observe15">
+			</query-parameter>
 		</query-parameters>
 	</data-provider>
 
