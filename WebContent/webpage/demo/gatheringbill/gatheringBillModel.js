@@ -2,7 +2,7 @@ var modelExtraInfo = {
 	"A" : {
 		"property" : {
 			listeners : {
-				valueChange : function(e, formObj) {
+				change : function(newValue, oldValue) {
 					if (formObj.get("value") == "" || formObj.get("value") == "3") {// 空(请选择),4:其他
 						g_masterFormFieldDict["accountId"].set("readonly", true);
 					} else {
@@ -13,7 +13,7 @@ var modelExtraInfo = {
 		},
 		"chamberlainType" : {
 			listeners : {
-				valueChange : function(e, formObj) {
+				change : function(newValue, oldValue) {
 					if (formObj.get("value") == "" || formObj.get("value") == "4") {// 空(请选择),4:其他
 						g_masterFormFieldDict["chamberlainId"].set("readonly", true);
 					} else {
@@ -26,7 +26,7 @@ var modelExtraInfo = {
 	"B" : {
 		"accountType" : {
 			listeners : {
-				valueChange : function(e, formObj) {
+				change : function(newValue, oldValue) {
 					var formManager = new FormManager();
 					var fieldDict = formManager.getFieldDict(formObj);
 					if (fieldDict["accountId"]) {
@@ -111,7 +111,7 @@ function main(Y) {
 		});
 	}
 	if (g_formStatus != "view") {
-		modelExtraInfo.A.property.listeners.valueChange(null, g_masterFormFieldDict["property"]);
-		modelExtraInfo.A.chamberlainType.listeners.valueChange(null, g_masterFormFieldDict["chamberlainType"]);
+		modelExtraInfo.A.property.listeners.change(null, g_masterFormFieldDict["property"]);
+		modelExtraInfo.A.chamberlainType.listeners.change(null, g_masterFormFieldDict["chamberlainType"]);
 	}
 }

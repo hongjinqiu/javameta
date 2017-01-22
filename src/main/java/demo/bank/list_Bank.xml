@@ -9,7 +9,7 @@
 
 	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
 	<description>银行资料列表</description>
-	<scripts>model/js/ds_listtoolbar.js</scripts>
+	<scripts>model/js/ds_listtoolbar.js,demo/bank/bankListTemplate.js</scripts>
 	<view-template view="model/listSchema.jsp" />
 
 	<!-- <security byUnit="true" /> -->
@@ -72,12 +72,12 @@
 			</query-parameter>
 			<query-parameter name="displayfield13" columnName="linkPhone" editor="displayfield" restriction="ge" text="displayfield13">
 			</query-parameter>
-			<query-parameter name="be_observe14" columnName="linkPhone" editor="textfield" restriction="ge" text="be_observe14">
-			</query-parameter>
 			<query-parameter name="observe14" columnName="linkPhone" editor="textfield" restriction="ge" text="observe14">
-				<parameter-attribute name="observe" value="be_observe14,be_observe15" />
+				<parameter-attribute name="observe" value="be_observe15,be_observe16" />
 			</query-parameter>
 			<query-parameter name="be_observe15" columnName="linkPhone" editor="textfield" restriction="ge" text="be_observe15">
+			</query-parameter>
+			<query-parameter name="be_observe16" columnName="linkPhone" editor="textfield" restriction="ge" text="be_observe16">
 			</query-parameter>
 		</query-parameters>
 	</data-provider>

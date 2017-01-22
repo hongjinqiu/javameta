@@ -4,7 +4,7 @@ function FormFieldFactory() {
 FormFieldFactory.prototype.getFormField = function(id, name, dataSetId) {
 	var self = this;
 	var field = null;
-	// 从column-attribute里面读取
+	// 从eidtor.name读取
 	for (var i = 0; i < g_formTemplateJsonData.toolbarOrDataProviderOrColumnModel.length; i++) {
 		var formElem = g_formTemplateJsonData.toolbarOrDataProviderOrColumnModel[i];
 		if (formElem.xmlName == "column-model") {

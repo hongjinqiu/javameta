@@ -5,15 +5,14 @@ function PTriggerField(param) {
 		self.config[key] = param[key];
 	}
 	var easyUiConfig = {
-		readonly: true
+		readonly: true,
+		validType:"validateTriggerField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name)
 	};
-	if (param["cls"]) {
-		easyUiConfig["cls"] = param["cls"];
+	var fieldCls = getEditorAttrFieldCls(param["dataSetId"], param["name"]);
+	if (fieldCls) {
+	    easyUiConfig["cls"] = fieldCls;
 	}
 	$("#" + self.config.id).textbox(easyUiConfig);
-	$("#" + self.config.id).validatebox({
-		validType:"validateTriggerField"
-	});
 	for ( var key in param) {
 		self.set(key, param[key]);
 	}
@@ -434,6 +433,11 @@ PTriggerField.prototype.get = function(key) {
 
 PTriggerField.prototype.set = function(key, value) {
 	var self = this;
+	
+	if (key == "change") {
+		$("#" + self.config.id).textbox({"onChange": value});
+		return;
+	}
 	
 	if (key == "value") {
 		$("#" + self.get("id")).attr("idValue", value);

@@ -37,13 +37,13 @@ LFormManager.prototype.applyEventBehavior = function(formObj) {
 			if (queryParameter.jsConfig) {
 				for (var key in queryParameter.jsConfig.listeners) {
 					if (key == "change") {
-						$("#" + self.get("id")).on("change", function(key) {
+						self.set("change", function(key) {
 							return function(e) {
 								queryParameter.jsConfig.listeners[key](e, self);
 							}
 						}(key));
 					} else {
-						$("#" + self.get("id")).on(key, function(key) {
+						self.set(key, function(key) {
 							return function(e) {
 								queryParameter.jsConfig.listeners[key](e, self);
 							}
@@ -80,6 +80,7 @@ LFormManager.prototype.queryParameterFieldValidator = function(value, formFieldO
 		return false;
 	});
 	
+	console.log(messageLi);
 	if (messageLi.length > 0) {
 		formFieldObj.set("error", messageLi.join("<br />"));
 		return false;
@@ -90,7 +91,7 @@ LFormManager.prototype.queryParameterFieldValidator = function(value, formFieldO
 
 LFormManager.prototype.qpFieldValidator = function(value, queryParameter) {
 	var messageLi = [];
-	if (queryParameter.Editor == "datefield") {
+	if (queryParameter.editor == "datefield") {
 		var dbPattern = "";
 		var displayPattern = "";
 		var dateSeperator = "-";
@@ -139,7 +140,7 @@ LFormManager.prototype.qpFieldValidator = function(value, queryParameter) {
 				return messageLi;
 			}
 		}
-	} else if (queryParameter.Editor == "numberfield") {
+	} else if (queryParameter.editor == "numberfield") {
 		var regexp = /^-?\d*(\.\d*)?$/;
 		if (!regexp.test(value)) {
 			messageLi.push("必须由数字小数点组成");

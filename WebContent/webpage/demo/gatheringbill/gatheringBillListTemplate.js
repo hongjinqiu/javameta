@@ -5,7 +5,7 @@ var listTemplateExtraInfo = {
 	"queryParameter" : {
 		"property" : {
 			listeners : {
-				valueChange : function(e, formObj) {
+				change : function(newValue, oldValue) {
 					if (formObj.get("value") == "" || formObj.get("value") == "3") {// 空(请选择),4:其他
 						g_masterFormFieldDict["accountId"].set("readonly", true);
 					} else {
@@ -16,7 +16,7 @@ var listTemplateExtraInfo = {
 		},
 		"chamberlainType" : {
 			listeners : {
-				valueChange : function(e, formObj) {
+				change : function(newValue, oldValue) {
 					if (formObj.get("value") == "" || formObj.get("value") == "4") {// 空(请选择),4:其他
 						g_masterFormFieldDict["chamberlainId"].set("readonly", true);
 					} else {
@@ -30,7 +30,7 @@ var listTemplateExtraInfo = {
 
 function main(Y) {
 	
-		listTemplateExtraInfo.QueryParameter.property.listeners.valueChange(null, g_masterFormFieldDict["property"]);
-		listTemplateExtraInfo.QueryParameter.chamberlainType.listeners.valueChange(null, g_masterFormFieldDict["chamberlainType"]);
+		listTemplateExtraInfo.QueryParameter.property.listeners.change(null, g_masterFormFieldDict["property"]);
+		listTemplateExtraInfo.QueryParameter.chamberlainType.listeners.change(null, g_masterFormFieldDict["chamberlainType"]);
 }
 

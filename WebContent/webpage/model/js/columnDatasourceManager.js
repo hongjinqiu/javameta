@@ -14,7 +14,7 @@ ColumnDatasourceManager.prototype.getColumns = function(columnModelName, columnM
 //			columns[i].allowHTML = true;
 			datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
 				if (fieldGroup.getDataSetId() == columnModel.dataSetId && fieldGroup.id == columns[i].field) {
-					if (fieldGroup.allowEmpty == "false") {
+					if (fieldGroup.allowEmpty != true) {
 						columns[i].title = '<font style="color:red">*</font>' + columns[i].title;
 					}
 				}

@@ -208,7 +208,7 @@ FormManager.prototype.applyEventBehavior = function(formObj) {
 			if (fieldGroup.jsConfig && fieldGroup.jsConfig.listeners) {
 				for (var key in fieldGroup.jsConfig.listeners) {
 					var id = self.get("id");
-					$("#" + id).on(key, function(key) {
+					self.set(key, function(key) {
 						return function(e) {
 							fieldGroup.jsConfig.listeners[key](e, self);
 						}
@@ -222,12 +222,12 @@ FormManager.prototype.applyEventBehavior = function(formObj) {
 	var result = "";
 	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
 		if (column.name == name) {
-			if (column.columnAttribute) {
-				for (var i = 0; i < column.columnAttribute.length; i++) {
-					if (column.columnAttribute[i].name == "observe") {
-						var observeFields = column.columnAttribute[i].value.split(",");
+			if (column.editor && column.editor.editorAttribute) {
+				for (var i = 0; i < column.editor.editorAttribute.length; i++) {
+					if (column.editor.editorAttribute[i].name == "observe") {
+						var observeFields = column.editor.editorAttribute[i].value.split(",");
 						if (dataSetId == "A") {
-							$("#" + self.get("id")).on("change", function() {
+							self.set("change", function() {
 								for (var j = 0; j < observeFields.length; j++) {
 									var targetObj = g_masterFormFieldDict[observeFields[j]];
 									if (targetObj) {
@@ -236,7 +236,7 @@ FormManager.prototype.applyEventBehavior = function(formObj) {
 								}
 							});
 						} else {
-							$("#" + self.get("id")).on("change", function() {
+							self.set("change", function() {
 								var formManager = new FormManager();
 								if (formManager.isMatchDetailEditor(dataSetId)) {
 									for (var j = 0; j < observeFields.length; j++) {

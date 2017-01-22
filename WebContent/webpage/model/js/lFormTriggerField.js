@@ -5,15 +5,15 @@ function LTriggerField(param) {
 		self.config[key] = param[key];
 	}
 	var easyUiConfig = {
-		readonly: true
+		readonly: true,
+		validType:"validateTriggerField['{name}']".replace(/{name}/g, param.name)
 	};
-	if (param["cls"]) {
-		easyUiConfig["cls"] = param["cls"];
+	var fieldCls = getQueryParameterAttrFieldCls(param["name"]);
+	if (fieldCls) {
+	    easyUiConfig["cls"] = fieldCls;
 	}
 	$("#" + self.config.id).textbox(easyUiConfig);
-	$("#" + self.config.id).validatebox({
-		validType:"validateTriggerField"
-	});
+
 	for ( var key in param) {
 		self.set(key, param[key]);
 	}
@@ -397,6 +397,10 @@ LTriggerField.prototype.get = function(key) {
 LTriggerField.prototype.set = function(key, value) {
 	var self = this;
 	
+	if (key == "change") {
+		$("#" + self.config.id).textbox({"onChange": value});
+		return;
+	}
 	if (key == "value") {
 		$("#" + self.get("id")).attr("idValue", value);
 		self._syncDisplayValue();

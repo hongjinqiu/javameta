@@ -77,7 +77,9 @@
 		</auto-column>
 		<auto-column name="billTypeId" colSpan="2" labelWidth="13%" />
 		<auto-column name="property" colSpan="2">
-			<column-attribute name="observe" value="accountId,receiveBankId,accountProperty" />
+			<editor>
+				<editor_attribute name="observe" value="accountId,receiveBankId,accountProperty" />
+			</editor>
 		</auto-column>
 		<auto-column name="billStatus" colSpan="2" />
 	</column-model>
@@ -102,7 +104,9 @@
 
 	<column-model name="A_3" dataSetId="A" colSpan="6" dataProvider="queryDataSetA" displayMode="form">
 		<auto-column name="chamberlainType" colSpan="2" labelWidth="13%" columnWidth="20%">
-			<column-attribute name="observe" value="chamberlainId,chamberlainDesc" />
+			<editor>
+				<editor_attribute name="observe" value="chamberlainId,chamberlainDesc" />
+			</editor>
 		</auto-column>
 		<auto-column name="chamberlainId" colSpan="2" labelWidth="13%" columnWidth="20%" />
 		<auto-column name="chamberlainDesc" colSpan="2" labelWidth="13%" />
@@ -162,7 +166,9 @@
 			</buttons>
 		</virtual-column>
 		<auto-column name="accountType">
-			<column-attribute name="observe" value="accountId,bankId" />
+			<editor>
+				<editor_attribute name="observe" value="accountId,bankId" />
+			</editor>
 		</auto-column>
 		<auto-column name="accountId">
 			<relationDS>

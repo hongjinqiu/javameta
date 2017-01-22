@@ -82,36 +82,45 @@ function validateDisplayField(value, param) {
 $.extend($.fn.validatebox.defaults.rules, {
 	validateTextField : {
 		validator : validateTextField
+		,message: ''
 	},
 	validateHiddenField : {
 		validator : validateHiddenField
+		,message: ''
 	},
 	validateSelectField : {
 		validator : validateSelectField
+		,message: ''
 	},
 	validateChoiceField : {
 		validator : validateChoiceField
+		,message: ''
 	},
 	validateNumberField : {
 		validator : validateNumberField
+		,message: ''
 	},
 	validateDateField : {
 		validator : validateDateField
+		,message: ''
 	},
 	validateTextareaField : {
 		validator : validateTextareaField
+		,message: ''
 	},
 	validateTriggerField : {
 		validator : validateTriggerField
+		,message: ''
 	},
 	validateDisplayField : {
 		validator : validateDisplayField
+		,message: ''
 	}
 });
 
 function isValidatebox(id) {
-	var cls = $("#" + id).attr("class");
-	return cls.indexOf("validatebox") > -1;
+	var cls = $("#" + id).attr("textboxname");
+	return cls == undefined;
 }
 
 function formFieldCommonGet(self, key) {
@@ -177,6 +186,40 @@ function formFieldCommonSet(self, key, value) {
 	self.config[key] = value;
 }
 
+function getEditorAttrFieldCls(dataSetId, name) {
+	var formTemplateIterator = new FormTemplateIterator();
+	var result = "";
+	var fieldCls = "";
+	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
+		if (column.name == name) {
+			if (column.editor && column.editor.editorAttribute) {
+				for (var i = 0; i < column.editor.editorAttribute.length; i++) {
+					if (column.editor.editorAttribute[i].name == "fieldCls") {
+						fieldCls = column.editor.editorAttribute[i].value;
+					}
+				}
+			}
+			return true;
+		}
+		return false;
+	});
+	return fieldCls;
+}
+
+function getFieldAttrAllowEmpty(dataSetId, name) {
+	var datasourceIterator = new DatasourceIterator();
+	var result = "";
+	var allowEmpty = true;
+	datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
+		if (fieldGroup.getDataSetId() == dataSetId && fieldGroup.id == name) {
+			if (fieldGroup.allowEmpty != true) {
+				allowEmpty = false;
+			}
+		}
+	});
+	return allowEmpty;
+}
+
 function PTextField(param) {
 	var self = this;
 	this.config = {};
@@ -185,11 +228,12 @@ function PTextField(param) {
 	}
 	
 	var easyUiConfig = {
-		required: param["required"] || false,
+		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		validType : "validateTextField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name)
 	};
-	if (param["cls"]) {
-		easyUiConfig["cls"] = param["cls"];
+	var fieldCls = getEditorAttrFieldCls(param["dataSetId"], param["name"]);
+	if (fieldCls) {
+	    easyUiConfig["cls"] = fieldCls;
 	}
 
 	$("#" + self.config.id).textbox(easyUiConfig);
@@ -210,6 +254,16 @@ PTextField.prototype.get = function(key) {
 
 PTextField.prototype.set = function(key, value) {
 	var self = this;
+	
+	if (key == "change") {
+		$("#" + self.config.id).textbox({"onChange": value});
+		return;
+	}
+
+	if (key == "value") {
+		$("#" + self.config.id).textbox("setValue", value);
+		return;
+	}
 
 	formFieldCommonSet(self, key, value);
 }
@@ -222,7 +276,7 @@ function PHiddenField(param) {
 	}
 	
 	$("#" + self.config.id).validatebox({
-		required: param["required"] || false,
+		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		validType : "validateHiddenField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name)
 	});
 
@@ -243,6 +297,10 @@ PHiddenField.prototype.get = function(key) {
 PHiddenField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "change") {
+		$("#" + self.config.id).change(value);
+		return;
+	}
 	formFieldCommonSet(self, key, value);
 }
 
@@ -257,12 +315,13 @@ function PSelectField(param) {
 		valueField : 'value',
 		textField : 'label',
 		validType : "validateSelectField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name),
-		required: param["required"] || false,
+		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		limitToList: true,
 		multiple : param["multiple"] || false
 	};
-	if (param["cls"]) {
-		easyUiConfig["cls"] = param["cls"];
+	var fieldCls = getEditorAttrFieldCls(param["dataSetId"], param["name"]);
+	if (fieldCls) {
+	    easyUiConfig["cls"] = fieldCls;
 	}
 
 	$("#" + self.config.id).combobox(easyUiConfig);
@@ -290,8 +349,16 @@ PSelectField.prototype.get = function(key) {
 PSelectField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "change") {
+		$("#" + self.config.id).combobox({"onChange": value});
+		return;
+	}
 	if (key == "choices") {
 		$("#" + self.get("id")).combobox("loadData", value);
+		return;
+	}
+	if (key == "value") {
+		$("#" + self.config.id).combobox("setValue", value);
 		return;
 	}
 	
@@ -309,12 +376,13 @@ function PChoiceField(param) {
 		valueField : 'value',
 		textField : 'label',
 		validType : "validateChoiceField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name),
-		required: param["required"] || false,
+		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		limitToList: true,
 		multiple : param["multiple"] || false
 	};
-	if (param["cls"]) {
-		easyUiConfig["cls"] = param["cls"];
+	var fieldCls = getEditorAttrFieldCls(param["dataSetId"], param["name"]);
+	if (fieldCls) {
+	    easyUiConfig["cls"] = fieldCls;
 	}
 
 	$("#" + self.config.id).combobox(easyUiConfig);
@@ -345,12 +413,20 @@ PChoiceField.prototype.get = function(key) {
 PChoiceField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "change") {
+		$("#" + self.config.id).combobox({"onChange": value});
+		return;
+	}
 	if (key == "multiple") {
 		$("#" + self.get("id")).combobox("options").multiple = value;
 		return;
 	}
 	if (key == "choices") {
 		$("#" + self.get("id")).combobox("loadData", value);
+		return;
+	}
+	if (key == "value") {
+		$("#" + self.config.id).combobox("setValue", value);
 		return;
 	}
 
@@ -365,11 +441,12 @@ function PNumberField(param) {
 	}
 	
 	var easyUiConfig = {
-		required: param["required"] || false,
+		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		validType : "validateNumberField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name)
 	};
-	if (param["cls"]) {
-		easyUiConfig["cls"] = param["cls"];
+	var fieldCls = getEditorAttrFieldCls(param["dataSetId"], param["name"]);
+	if (fieldCls) {
+	    easyUiConfig["cls"] = fieldCls;
 	}
 
 	$("#" + self.config.id).numberbox(easyUiConfig);
@@ -406,6 +483,10 @@ PNumberField.prototype.get = function(key) {
 PNumberField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "change") {
+		$("#" + self.config.id).numberbox({"onChange": value});
+		return;
+	}
 	if (key == "prefix") {
 		$("#" + self.config.id).numberbox("options").prefix = value;
 		return;
@@ -424,6 +505,10 @@ PNumberField.prototype.set = function(key, value) {
 	}
 	if (key == "suffix") {
 		$("#" + self.config.id).numberbox("options").suffix = value;
+		return;
+	}
+	if (key == "value") {
+		$("#" + self.config.id).numberbox("setValue", value);
 		return;
 	}
 
@@ -458,11 +543,13 @@ function PDateField(param) {
 	});
 	this.set("dbPattern", dbPattern);
 	this.set("displayPattern", displayPattern);
+	
+	var fieldCls = getEditorAttrFieldCls(param["dataSetId"], param["name"]);
 
 	if (dbPattern == "yyyyMMdd") {
 		$("#" + self.config.id).datebox({
-			cls: param["cls"] || "",
-			required: param["required"] || false,
+			cls: fieldCls,
+			required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 			validType : "validateDateField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name),
 			formatter: function(date) {
 				var y = date.getFullYear();
@@ -482,8 +569,8 @@ function PDateField(param) {
 		});
 	} else if (dbPattern == "yyyyMMddHHmmss") {
 		$("#" + self.config.id).datetimebox({
-			cls: param["cls"] || "",
-			required: param["required"] || false,
+			cls: fieldCls,
+			required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 			validType : "validateDateField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name),
 		    showSeconds: false,
 		    formatter: function(date) {
@@ -507,9 +594,9 @@ function PDateField(param) {
 		});
 	} else if (dbPattern == "HHmmss") {
 		$("#" + self.config.id).timespinner({
-			required: param["required"] || false,
+			required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 			validType : "validateDateField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name),
-			cls: param["cls"] || "",
+			cls: fieldCls,
 		    showSeconds: false
 		});
 	}
@@ -549,6 +636,19 @@ PDateField.prototype.get = function(key) {
 PDateField.prototype.set = function(key, value) {
 	var self = this;
 	
+	if (key == "change") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			$("#" + self.config.id).datebox({"onChange": value});
+			return;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			$("#" + self.config.id).datetimebox({"onChange": value});
+			return;
+		} else if (dbPattern == "HHmmss") {
+			$("#" + self.config.id).timespinner({"onChange": value});
+			return;
+		}
+	}
 	if (key == "value") {
 		var dbPattern = self.get("dbPattern");
 		if (dbPattern == "yyyyMMdd") {
@@ -616,7 +716,7 @@ function PTextareaField(param) {
 	}
 	
 	$("#" + self.config.id).validatebox({
-		required: param["required"] || false,
+		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		validType : "validateTextareaField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name)
 	});
 	for ( var key in param) {
@@ -636,6 +736,11 @@ PTextareaField.prototype.get = function(key) {
 PTextareaField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "change") {
+		$("#" + self.config.id).change(value);
+		return;
+	}
+	
 	formFieldCommonSet(self, key, value);
 }
 
@@ -646,7 +751,7 @@ function PDisplayField(param) {
 		self.config[key] = param[key];
 	}
 	$("#" + self.config.id).validatebox({
-		required: param["required"] || false,
+		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		validType : "validateDisplayField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name)
 	});
 	for ( var key in param) {
@@ -660,11 +765,25 @@ function PDisplayField(param) {
 
 PDisplayField.prototype.get = function(key) {
 	var self = this;
+	
+	if (key == "value") {
+		return $("#" + self.config.id).html();
+	}
 	return formFieldCommonGet(self, key);
 }
 
 PDisplayField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "value") {
+		if (self.get("zeroShowEmpty")) {
+			if (value === 0 || value === "0") {
+				value = "";
+			}
+		}
+
+		$("#" + self.config.id).html(value);
+		return;
+	}
 	formFieldCommonSet(self, key, value);
 }
