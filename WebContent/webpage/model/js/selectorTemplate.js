@@ -117,6 +117,13 @@ function selectorMain() {
 	});
 	
 	
+	var queryParameterManager = new QueryParameterManager();
+	queryParameterManager.applyQueryDefaultValue();
+	queryParameterManager.applyFormData();
+	queryParameterManager.applyObserveEventBehavior();
+	applyQueryBtnBehavior();
+	
+	
 	$("#confirmBtn").on("click", function(e){
 		if (parent && parent.g_relationManager) {
 			var selectorId = listTemplate.id;

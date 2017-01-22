@@ -114,7 +114,32 @@ var g_masterFormFieldDict = {};
 			</c:if>
 		</c:if>
 	</c:if>
+	<c:if test="${item.xmlName == 'column-model'}">
+		<c:set var="columnModelForJsp" value="${item}" scope="request"></c:set>
+		<c:if test="${empty item.rendererTemplate}">
+			<jsp:include page="/webpage/model/render/columnModel_listTemplate.jsp"></jsp:include>
+		</c:if>
+		<c:if test="${not empty item.rendererTemplate}">
+			<jsp:include page="${item.rendererTemplate}"></jsp:include>
+		</c:if>
+	</c:if>
 </c:forEach>
 
+<script type="text/javascript">
+$(document).ready(function() {
+	/* 
+	g_Y = Y;
+	for (var i = 0; i < g_yuiCommondLi.length; i++) {
+		g_yuiCommondLi[i](Y);
+	}
+	*/
+	if (typeof(listMain) !== "undefined") {
+		listMain();
+	}
+	if (typeof(main) !== "undefined") {
+		main();
+	}
+});
+</script>
 </body>
 </html>

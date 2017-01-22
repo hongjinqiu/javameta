@@ -23,22 +23,33 @@ function getQueryString(Y) {
 	return stringifyJSON(result);
 }
 
+function createListTemplateGrid() {
+	var url = webRoot + "/console/listschema?@name=" + listTemplate.id + "&format=json";
+	createGridWithUrl(url);
+}
+
 function createGridWithUrl(url, config) {
-		var dataTableManager = new DataTableManager();
-		var renderName = "#columnModel_1";
-		var columnModelName = renderName.replace("#", "");
-		var param = {
-				data:g_dataBo.items,
-				columnModel:listTemplate.ColumnModel,
-				columnModelName:columnModelName,
-				render:renderName,
-				url:url,
-				totalResults: g_dataBo.totalResults || 1,
-				pageSize: DATA_PROVIDER_SIZE
-		};
-		if (config && config.columnManager) {
-			param.columnManager = config.columnManager;
-		}
+	var formTemplateIterator = new FormTemplateIterator();
+	var listColumnModel = null;
+	var result = "";
+	formTemplateIterator.iterateAnyTemplateColumnModel(result, function(columnModel, result){
+		listColumnModel = columnModel;
+		return true;
+	});
+	
+	var dataTableManager = new DataTableManager();
+	var param = {
+			data:g_dataBo.items,
+			columnModel:listColumnModel,
+			columnModelName:listColumnModel.name,
+			render:"#" + listColumnModel.name,
+			url:url,
+			totalResults: g_dataBo.totalResults || 1,
+			pageSize: DATA_PROVIDER_SIZE
+	};
+	if (config && config.columnManager) {
+		param.columnManager = config.columnManager;
+	}
 		// TODO loader,
 		/*
 param.loader,
@@ -55,18 +66,19 @@ $('#dg').datagrid('load',{
 });
 reload	param	Reload the rows. Same as the 'load' method but stay on current page.
 		 */
-		dtInst = dataTableManager.createDataGrid(param);
-		g_gridPanelDict[columnModelName] = dtInst;
-		var queryParameterManager = new QueryParameterManager();
-		queryParameterManager.applyQueryDefaultValue();
-		queryParameterManager.applyFormData();
-		queryParameterManager.applyObserveEventBehavior();
-		applyQueryBtnBehavior();
+	dtInst = dataTableManager.createDataGrid(param);
+	g_gridPanelDict[listColumnModel.name] = dtInst;
 }
 
 function listMain() {
-	var url = "/console/listschema?@name=" + listTemplate.id + "&format=json";
-	createGridWithUrl(url);
+	if (true) {
+		return;
+	}
+	var queryParameterManager = new QueryParameterManager();
+	queryParameterManager.applyQueryDefaultValue();
+	queryParameterManager.applyFormData();
+	queryParameterManager.applyObserveEventBehavior();
+	applyQueryBtnBehavior();
 }
 
 function queryFormValidator() {
