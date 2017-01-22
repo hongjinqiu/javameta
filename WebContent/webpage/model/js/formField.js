@@ -23,12 +23,12 @@ function commonValidate(fieldElem, value, param) {
 	if (dataSetId == "A") {
 		var name = param[1];
 		var formObj = g_masterFormFieldDict[name];
-		return formManager.dsFormFieldValidator(value, formObj);
+		return formManager.dsFormFieldValidator(value, formObj, param);
 	} else {
 		if (formManager.isMatchDetailEditor(dataSetId)) {
 			var name = param[1];
 			var formObj = g_popupFormField[name];
-			return formManager.dsFormFieldValidator(value, formObj);
+			return formManager.dsFormFieldValidator(value, formObj, param);
 		}
 	}
 	return true;
@@ -82,63 +82,49 @@ function validateDisplayField(value, param) {
 $.extend($.fn.validatebox.defaults.rules, {
 	validateTextField : {
 		validator : validateTextField
-		,message: ''
+		,message: '{2}'
 	},
 	validateHiddenField : {
 		validator : validateHiddenField
-		,message: ''
+		,message: '{2}'
 	},
 	validateSelectField : {
 		validator : validateSelectField
-		,message: ''
+		,message: '{2}'
 	},
 	validateChoiceField : {
 		validator : validateChoiceField
-		,message: ''
+		,message: '{2}'
 	},
 	validateNumberField : {
 		validator : validateNumberField
-		,message: ''
+		,message: '{2}'
 	},
 	validateDateField : {
 		validator : validateDateField
-		,message: ''
+		,message: '{2}'
 	},
 	validateTextareaField : {
 		validator : validateTextareaField
-		,message: ''
+		,message: '{2}'
 	},
 	validateTriggerField : {
 		validator : validateTriggerField
-		,message: ''
+		,message: '{2}'
 	},
 	validateDisplayField : {
 		validator : validateDisplayField
-		,message: ''
+		,message: '{2}'
 	}
 });
 
-function isValidatebox(id) {
-	var cls = $("#" + id).attr("textboxname");
-	return cls == undefined;
-}
 
 function formFieldCommonGet(self, key) {
-	if (key == "required") {
-		if (isValidatebox(self.config.id)) {
-			return $("#" + self.config.id).validatebox("options").required;
-		}
-	}
 	if (key == "value") {
 		return $("#" + self.config.id).val();
 	}
 	if (key == "readonly") {
 		return $("#" + self.config.id).attr("readonly") == "readonly";
-	}
-	if (key == "error") {
-		if (isValidatebox(self.config.id)) {
-			return $("#" + self.config.id).validatebox("options").invalidMessage;
-		}
 	}
 	if (key == "fieldCls") {
 		return self.config[key];
@@ -147,12 +133,6 @@ function formFieldCommonGet(self, key) {
 }
 
 function formFieldCommonSet(self, key, value) {
-	if (key == "required") {
-		if (isValidatebox(self.config.id)) {
-			$("#" + self.config.id).validatebox("options").required = value;
-			return;
-		}
-	}
 	if (key == "value") {
 		if (self.get("zeroShowEmpty")) {
 			if (value === 0 || value === "0") {
@@ -170,12 +150,6 @@ function formFieldCommonSet(self, key, value) {
 			$("#" + self.config.id).removeAttr("readonly");
 		}
 		return;
-	}
-	if (key == "error") {
-		if (isValidatebox(self.config.id)) {
-			$("#" + self.config.id).validatebox("options").invalidMessage = value;
-			return;
-		}
 	}
 	if (key == "fieldCls") {
 		$("#" + self.config.id).addClass(value);
@@ -249,12 +223,35 @@ function PTextField(param) {
 
 PTextField.prototype.get = function(key) {
 	var self = this;
+	
+	if (key == "readonly") {
+	    return $("#" + self.config.id).textbox("options").readonly;
+	}
+	if (key == "required") {
+	    return $("#" + self.config.id).textbox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).textbox("options").invalidMessage;
+	}
+	
 	return formFieldCommonGet(self, key);
 }
 
 PTextField.prototype.set = function(key, value) {
 	var self = this;
 	
+	if (key == "readonly") {
+	    $("#" + self.config.id).textbox("readonly", value);
+		return;
+	}
+	if (key == "required") {
+	    $("#" + self.config.id).textbox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).textbox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).textbox({"onChange": value});
 		return;
@@ -339,6 +336,15 @@ function PSelectField(param) {
 PSelectField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "readonly") {
+	    return $("#" + self.config.id).combobox("options").readonly;
+	}
+	if (key == "required") {
+	    return $("#" + self.config.id).combobox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).combobox("options").invalidMessage;
+	}
 	if (key == "choices") {
 		return $("#" + self.get("id")).combobox("getData");
 	}
@@ -349,6 +355,18 @@ PSelectField.prototype.get = function(key) {
 PSelectField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "readonly") {
+	    $("#" + self.config.id).combobox("readonly", value);
+		return;
+	}
+	if (key == "required") {
+	    $("#" + self.config.id).combobox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).combobox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).combobox({"onChange": value});
 		return;
@@ -400,6 +418,15 @@ function PChoiceField(param) {
 PChoiceField.prototype.get = function(key) {
 	var self = this;
 
+	if (key == "readonly") {
+	    return $("#" + self.config.id).combobox("options").readonly;
+	}
+	if (key == "required") {
+	    return $("#" + self.config.id).combobox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).combobox("options").invalidMessage;
+	}
 	if (key == "multiple") {
 		return $("#" + self.get("id")).combobox("options").multiple;
 	}
@@ -413,6 +440,18 @@ PChoiceField.prototype.get = function(key) {
 PChoiceField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "readonly") {
+	    $("#" + self.config.id).combobox("readonly", value);
+		return;
+	}
+	if (key == "required") {
+	    $("#" + self.config.id).combobox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).combobox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).combobox({"onChange": value});
 		return;
@@ -461,6 +500,15 @@ function PNumberField(param) {
 
 PNumberField.prototype.get = function(key) {
 	var self = this;
+	if (key == "readonly") {
+	    return $("#" + self.config.id).numberbox("options").readonly;
+	}
+	if (key == "required") {
+	    return $("#" + self.config.id).numberbox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).numberbox("options").invalidMessage;
+	}
 	if (key == "prefix") {
 		return $("#" + self.config.id).numberbox("options").prefix;
 	}
@@ -483,6 +531,18 @@ PNumberField.prototype.get = function(key) {
 PNumberField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "readonly") {
+	    $("#" + self.config.id).numberbox("readonly", value);
+		return;
+	}
+	if (key == "required") {
+	    $("#" + self.config.id).numberbox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).numberbox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).numberbox({"onChange": value});
 		return;
@@ -613,6 +673,36 @@ function PDateField(param) {
 PDateField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "readonly") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			return $("#" + self.config.id).datebox("options").readonly;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			return $("#" + self.config.id).datetimebox("options").readonly;
+		} else if (dbPattern == "HHmmss") {
+			return $("#" + self.config.id).timespinner("options").readonly;
+		}
+	}
+	if (key == "required") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			return $("#" + self.config.id).datebox("options").required;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			return $("#" + self.config.id).datetimebox("options").required;
+		} else if (dbPattern == "HHmmss") {
+			return $("#" + self.config.id).timespinner("options").required;
+		}
+	}
+	if (key == "error") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			return $("#" + self.config.id).datebox("options").invalidMessage;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			return $("#" + self.config.id).datetimebox("options").invalidMessage;
+		} else if (dbPattern == "HHmmss") {
+			return $("#" + self.config.id).timespinner("options").invalidMessage;
+		}
+	}
 	if (key == "value") {
 		var value = $("#" + self.config.id).val();
 		var dbPattern = self.get("dbPattern");
@@ -636,6 +726,45 @@ PDateField.prototype.get = function(key) {
 PDateField.prototype.set = function(key, value) {
 	var self = this;
 	
+	if (key == "readonly") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			$("#" + self.config.id).datebox("readonly", value);
+			return;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			$("#" + self.config.id).datetimebox("readonly", value);
+			return;
+		} else if (dbPattern == "HHmmss") {
+			$("#" + self.config.id).timespinner("readonly", value);
+			return;
+		}
+	}
+	if (key == "required") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			$("#" + self.config.id).datebox("options").required = value;
+			return;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			$("#" + self.config.id).datetimebox("options").required = value;
+			return;
+		} else if (dbPattern == "HHmmss") {
+			$("#" + self.config.id).timespinner("options").required = value;
+			return;
+		}
+	}
+	if (key == "error") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			$("#" + self.config.id).datebox("options").invalidMessage = value;
+			return;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			$("#" + self.config.id).datetimebox("options").invalidMessage = value;
+			return;
+		} else if (dbPattern == "HHmmss") {
+			$("#" + self.config.id).timespinner("options").invalidMessage = value;
+			return;
+		}
+	}
 	if (key == "change") {
 		var dbPattern = self.get("dbPattern");
 		if (dbPattern == "yyyyMMdd") {
@@ -730,12 +859,35 @@ function PTextareaField(param) {
 
 PTextareaField.prototype.get = function(key) {
 	var self = this;
+	
+	if (key == "readonly") {
+	    return $("#" + self.config.id).validatebox("options").readonly;
+	}
+	if (key == "required") {
+	    return $("#" + self.config.id).validatebox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).validatebox("options").invalidMessage;
+	}
+	
 	return formFieldCommonGet(self, key);
 }
 
 PTextareaField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "readonly") {
+	    $("#" + self.config.id).validatebox("readonly", value);
+		return;
+	}
+	if (key == "required") {
+	    $("#" + self.config.id).validatebox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).validatebox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).change(value);
 		return;

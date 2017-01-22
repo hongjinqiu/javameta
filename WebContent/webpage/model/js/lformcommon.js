@@ -38,8 +38,8 @@ LFormManager.prototype.applyEventBehavior = function(formObj) {
 				for (var key in queryParameter.jsConfig.listeners) {
 					if (key == "change") {
 						self.set("change", function(key) {
-							return function(e) {
-								queryParameter.jsConfig.listeners[key](e, self);
+							return function(newValue, oldValue) {
+								queryParameter.jsConfig.listeners[key](newValue, oldValue, self);
 							}
 						}(key));
 					} else {
@@ -65,7 +65,7 @@ LFormManager.prototype.initializeAttr = function(formObj, Y) {
 //	self.set("validator", lFormManager.queryParameterFieldValidator);
 }
 
-LFormManager.prototype.queryParameterFieldValidator = function(value, formFieldObj) {
+LFormManager.prototype.queryParameterFieldValidator = function(value, formFieldObj, param) {
 	var self = formFieldObj;
 	
 	var messageLi = [];
@@ -80,9 +80,11 @@ LFormManager.prototype.queryParameterFieldValidator = function(value, formFieldO
 		return false;
 	});
 	
-	console.log(messageLi);
 	if (messageLi.length > 0) {
 		formFieldObj.set("error", messageLi.join("<br />"));
+		if (param) {
+			param[1] = messageLi.join("<br />");// easyui控件配置,message: "{1}",会把这里的message替换进去
+		}
 		return false;
 	}
 	
@@ -92,6 +94,7 @@ LFormManager.prototype.queryParameterFieldValidator = function(value, formFieldO
 LFormManager.prototype.qpFieldValidator = function(value, queryParameter) {
 	var messageLi = [];
 	if (queryParameter.editor == "datefield") {
+		value = value.replace(/[ :\/-]/g, "");
 		var dbPattern = "";
 		var displayPattern = "";
 		var dateSeperator = "-";
@@ -129,6 +132,9 @@ LFormManager.prototype.qpFieldValidator = function(value, queryParameter) {
 				return messageLi;
 			}
 		} else if (dbPattern == "yyyyMMddHHmmss") {
+			if (value && value.length == 12) {
+				value = value + "00";
+			}
 			var message = "";
 			if (dateSeperator == "-") {
 				message = "格式错误，正确格式类似于：1970-01-02 03:04:05";

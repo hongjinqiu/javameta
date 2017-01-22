@@ -5,6 +5,7 @@ function PTriggerField(param) {
 		self.config[key] = param[key];
 	}
 	var easyUiConfig = {
+		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		readonly: true,
 		validType:"validateTriggerField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name)
 	};
@@ -168,7 +169,7 @@ PTriggerField.prototype.applyEventBehavior = function() {
 PTriggerField.prototype._applyTextFieldEventBehavior = function() {
 	var self = this;
 	var id = self.get("id");
-	$("#" + id).change(function(self){
+	self.set("change", function(self){
 		return function(){
 			var formFormTemplateIterator = new FormTemplateIterator();
 			var result = "";
@@ -417,13 +418,19 @@ PTriggerField.prototype._syncDisplayValue = function() {
     	}
     	valueLi.push(value);
     }
-    $("#" + self.get("id")).val(valueLi.join(";"));
+    $("#" + self.get("id")).textbox("setValue", valueLi.join(";"));
 }
 
 
 PTriggerField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "required") {
+	    return $("#" + self.config.id).textbox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).textbox("options").invalidMessage;
+	}
 	if (key == "value") {
 		return $("#" + self.get("id")).attr("idValue");
 	}
@@ -434,6 +441,14 @@ PTriggerField.prototype.get = function(key) {
 PTriggerField.prototype.set = function(key, value) {
 	var self = this;
 	
+	if (key == "required") {
+	    $("#" + self.config.id).textbox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).textbox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).textbox({"onChange": value});
 		return;

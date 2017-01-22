@@ -208,11 +208,19 @@ FormManager.prototype.applyEventBehavior = function(formObj) {
 			if (fieldGroup.jsConfig && fieldGroup.jsConfig.listeners) {
 				for (var key in fieldGroup.jsConfig.listeners) {
 					var id = self.get("id");
-					self.set(key, function(key) {
-						return function(e) {
-							fieldGroup.jsConfig.listeners[key](e, self);
-						}
-					}(key));
+					if (key == "change") {
+						self.set(key, function(key) {
+							return function(newValue, oldValue) {
+								fieldGroup.jsConfig.listeners[key](newValue, oldValue, self);
+							}
+						}(key));
+					} else {
+						self.set(key, function(key) {
+							return function(e) {
+								fieldGroup.jsConfig.listeners[key](e, self);
+							}
+						}(key));
+					}
 				}
 			}
 		}
@@ -472,7 +480,7 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 /**
  * datasource field validator
  */
-FormManager.prototype.dsFormFieldValidator = function(value, formFieldObj) {
+FormManager.prototype.dsFormFieldValidator = function(value, formFieldObj, param) {
 	var self = this;
 	var datasourceIterator = new DatasourceIterator();
 	var messageLi = [];
@@ -487,6 +495,9 @@ FormManager.prototype.dsFormFieldValidator = function(value, formFieldObj) {
 	
 	if (messageLi.length > 0) {
 		formFieldObj.set("error", messageLi.join("<br />"));
+		if (param) {
+			param[2] = messageLi.join("<br />");// easyui控件配置,message: "{2}",会把这里的message替换进去
+		}
 		return false;
 	}
 	

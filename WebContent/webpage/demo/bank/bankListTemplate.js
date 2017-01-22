@@ -3,15 +3,25 @@ var listTemplateExtraInfo = {
 
 	},
 	"queryParameter" : {
-		/*"datefield8" : {
+		"datefield8" : {
 			listeners : {
-				change : function(newValue, oldValue) {
+				change : function(newValue, oldValue, formObj) {
 //					g_masterFormFieldDict["accountId"].set("readonly", true);
-					console.log("newValue is:" + newValue);
-					console.log("oldValue is:" + oldValue);
+					console.log(newValue);
+					console.log(oldValue);
 				}
 			}
-		}*/
+		},
+		"code" : {
+			listeners : {
+				change : function(newValue, oldValue, formObj) {
+//					g_masterFormFieldDict["accountId"].set("readonly", true);
+					console.log(newValue);
+					console.log(oldValue);
+					console.log(formObj);
+				}
+			}
+		}
 	}
 };
 

@@ -24,9 +24,7 @@ function commonValidate(fieldElem, value, param) {
 	var lFormManager = new LFormManager();
 	var name = param[0];
 	var formObj = g_masterFormFieldDict[name];
-	console.log(value);
-	console.log(formObj);
-	return lFormManager.queryParameterFieldValidator(value, formObj);
+	return lFormManager.queryParameterFieldValidator(value, formObj, param);
 }
 
 function validateTextField(value, param) {
@@ -77,63 +75,48 @@ function validateDisplayField(value, param) {
 $.extend($.fn.validatebox.defaults.rules, {
 	validateTextField : {
 		validator : validateTextField
-		,message: ''
+		,message: '{1}'
 	},
 	validateHiddenField : {
 		validator : validateHiddenField
-		,message: ''
+		,message: '{1}'
 	},
 	validateSelectField : {
 		validator : validateSelectField
-		,message: ''
+		,message: '{1}'
 	},
 	validateChoiceField : {
 		validator : validateChoiceField
-		,message: ''
+		,message: '{1}'
 	},
 	validateNumberField : {
 		validator : validateNumberField
-		,message: ''
+		,message: '{1}'
 	},
 	validateDateField : {
 		validator : validateDateField
-		,message: ''
+		,message: '{1}'
 	},
 	validateTextareaField : {
 		validator : validateTextareaField
-		,message: ''
+		,message: '{1}'
 	},
 	validateTriggerField : {
 		validator : validateTriggerField
-		,message: ''
+		,message: '{1}'
 	},
 	validateDisplayField : {
 		validator : validateDisplayField
-		,message: ''
+		,message: '{1}'
 	}
 });
 
-function isValidatebox(id) {
-	var cls = $("#" + id).attr("textboxname");
-	return cls != undefined;
-}
-
 function formFieldCommonGet(self, key) {
-	if (key == "required") {
-		if (isValidatebox(self.config.id)) {
-			return $("#" + self.config.id).validatebox("options").required;
-		}
-	}
 	if (key == "value") {
 		return $("#" + self.config.id).val();
 	}
 	if (key == "readonly") {
 		return $("#" + self.config.id).attr("readonly") == "readonly";
-	}
-	if (key == "error") {
-		if (isValidatebox(self.config.id)) {
-			return $("#" + self.config.id).validatebox("options").invalidMessage;
-		}
 	}
 	if (key == "fieldCls") {
 		return self.config[key];
@@ -142,12 +125,6 @@ function formFieldCommonGet(self, key) {
 }
 
 function formFieldCommonSet(self, key, value) {
-	if (key == "required") {
-		if (isValidatebox(self.config.id)) {
-			$("#" + self.config.id).validatebox("options").required = value;
-			return;
-		}
-	}
 	if (key == "value") {
 		if (self.get("zeroShowEmpty")) {
 			if (value === 0 || value === "0") {
@@ -165,12 +142,6 @@ function formFieldCommonSet(self, key, value) {
 			$("#" + self.config.id).removeAttr("readonly");
 		}
 		return;
-	}
-	if (key == "error") {
-		if (isValidatebox(self.config.id)) {
-			$("#" + self.config.id).validatebox("options").invalidMessage = value;
-			return;
-		}
 	}
 	if (key == "fieldCls") {
 		$("#" + self.config.id).addClass(value);
@@ -225,7 +196,7 @@ function LTextField(param) {
 	}
 
 	var easyUiConfig = {
-		required: getQueryParameterAttrRequired(param["required"]),
+		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateTextField['{name}']".replace(/{name}/g, param.name)
 	};
 	var fieldCls = getQueryParameterAttrFieldCls(param["name"]);
@@ -246,12 +217,34 @@ function LTextField(param) {
 LTextField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "readonly") {
+	    return $("#" + self.config.id).textbox("options").readonly;
+	}
+	if (key == "required") {
+	    return $("#" + self.config.id).textbox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).textbox("options").invalidMessage;
+	}
+	
 	return formFieldCommonGet(self, key);
 }
 
 LTextField.prototype.set = function(key, value) {
 	var self = this;
 	
+	if (key == "readonly") {
+	    $("#" + self.config.id).textbox("readonly", value);
+		return;
+	}
+	if (key == "required") {
+	    $("#" + self.config.id).textbox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).textbox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).textbox({"onChange": value});
 		return;
@@ -273,7 +266,7 @@ function LHiddenField(param) {
 	}
 	
 	$("#" + self.config.id).validatebox({
-		required: getQueryParameterAttrRequired(param["required"]),
+		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateHiddenField['{name}']".replace(/{name}/g, param.name)
 	});
 
@@ -314,7 +307,7 @@ function LSelectField(param) {
 		valueField : 'value',
 		textField : 'label',
 		limitToList: true,
-		required: getQueryParameterAttrRequired(param["required"]),
+		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateSelectField['{name}']".replace(/{name}/g, param.name),
 		multiple : param["multiple"] || false
 	};
@@ -341,6 +334,15 @@ function LSelectField(param) {
 LSelectField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "readonly") {
+	    return $("#" + self.config.id).combobox("options").readonly;
+	}
+	if (key == "required") {
+	    return $("#" + self.config.id).combobox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).combobox("options").invalidMessage;
+	}
 	if (key == "choices") {
 		return $("#" + self.get("id")).combobox("getData");
 	}
@@ -351,6 +353,18 @@ LSelectField.prototype.get = function(key) {
 LSelectField.prototype.set = function(key, value) {
 	var self = this;
 	
+	if (key == "readonly") {
+	    $("#" + self.config.id).combobox("readonly", value);
+		return;
+	}
+	if (key == "required") {
+	    $("#" + self.config.id).combobox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).combobox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).combobox({"onChange": value});
 		return;
@@ -378,7 +392,7 @@ function LChoiceField(param) {
 		valueField : 'value',
 		textField : 'label',
 		limitToList: true,
-		required: getQueryParameterAttrRequired(param["required"]),
+		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateChoiceField['{name}']".replace(/{name}/g, param.name),
 		multiple : param["multiple"] || false
 	};
@@ -405,6 +419,15 @@ function LChoiceField(param) {
 LChoiceField.prototype.get = function(key) {
 	var self = this;
 
+	if (key == "readonly") {
+	    return $("#" + self.config.id).combobox("options").readonly;
+	}
+	if (key == "required") {
+	    return $("#" + self.config.id).combobox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).combobox("options").invalidMessage;
+	}
 	if (key == "multiple") {
 		return $("#" + self.get("id")).combobox("options").multiple;
 	}
@@ -418,6 +441,18 @@ LChoiceField.prototype.get = function(key) {
 LChoiceField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "readonly") {
+	    $("#" + self.config.id).combobox("readonly", value);
+		return;
+	}
+	if (key == "required") {
+	    $("#" + self.config.id).combobox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).combobox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).combobox({"onChange": value});
 		return;
@@ -446,7 +481,7 @@ function LNumberField(param) {
 	}
 	
 	var easyUiConfig = {
-		required: getQueryParameterAttrRequired(param["required"]),
+		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateNumberField['{name}']".replace(/{name}/g, param.name)
 	};
 	var fieldCls = getQueryParameterAttrFieldCls(param["name"]);
@@ -467,6 +502,15 @@ function LNumberField(param) {
 LNumberField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "readonly") {
+	    return $("#" + self.config.id).numberbox("options").readonly;
+	}
+	if (key == "required") {
+	    return $("#" + self.config.id).numberbox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).numberbox("options").invalidMessage;
+	}
 	if (key == "prefix") {
 		return $("#" + self.config.id).numberbox("options").prefix;
 	}
@@ -489,6 +533,18 @@ LNumberField.prototype.get = function(key) {
 LNumberField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "readonly") {
+	    $("#" + self.config.id).numberbox("readonly", value);
+		return;
+	}
+	if (key == "required") {
+	    $("#" + self.config.id).numberbox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).numberbox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).numberbox({"onChange": value});
 		return;
@@ -560,7 +616,7 @@ function LDateField(param) {
 	if (dbPattern == "yyyyMMdd") {
 		$("#" + self.config.id).datebox({
 			cls: fieldCls,
-			required: getQueryParameterAttrRequired(param["required"]),
+			required: getQueryParameterAttrRequired(param["name"]),
 			validType : "validateDateField['{name}']".replace(/{name}/g, param.name),
 			formatter: function(date) {
 				var y = date.getFullYear();
@@ -582,7 +638,7 @@ function LDateField(param) {
 		$("#" + self.config.id).datetimebox({
 			cls: fieldCls,
 		    showSeconds: false,
-		    required: getQueryParameterAttrRequired(param["required"]),
+		    required: getQueryParameterAttrRequired(param["name"]),
 		    validType : "validateDateField['{name}']".replace(/{name}/g, param.name),
 		    formatter: function(date) {
 				var y = date.getFullYear();
@@ -607,7 +663,7 @@ function LDateField(param) {
 	} else if (dbPattern == "HHmmss") {
 		$("#" + self.config.id).timespinner({
 			cls: fieldCls,
-			required: getQueryParameterAttrRequired(param["required"]),
+			required: getQueryParameterAttrRequired(param["name"]),
 			validType : "validateDateField['{name}']".replace(/{name}/g, param.name),
 		    showSeconds: false
 		});
@@ -625,6 +681,36 @@ function LDateField(param) {
 LDateField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "readonly") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			return $("#" + self.config.id).datebox("options").readonly;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			return $("#" + self.config.id).datetimebox("options").readonly;
+		} else if (dbPattern == "HHmmss") {
+			return $("#" + self.config.id).timespinner("options").readonly;
+		}
+	}
+	if (key == "required") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			return $("#" + self.config.id).datebox("options").required;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			return $("#" + self.config.id).datetimebox("options").required;
+		} else if (dbPattern == "HHmmss") {
+			return $("#" + self.config.id).timespinner("options").required;
+		}
+	}
+	if (key == "error") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			return $("#" + self.config.id).datebox("options").invalidMessage;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			return $("#" + self.config.id).datetimebox("options").invalidMessage;
+		} else if (dbPattern == "HHmmss") {
+			return $("#" + self.config.id).timespinner("options").invalidMessage;
+		}
+	}
 	if (key == "value") {
 		var value = $("#" + self.config.id).val();
 		var dbPattern = self.get("dbPattern");
@@ -648,6 +734,45 @@ LDateField.prototype.get = function(key) {
 LDateField.prototype.set = function(key, value) {
 	var self = this;
 	
+	if (key == "readonly") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			$("#" + self.config.id).datebox("readonly", value);
+			return;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			$("#" + self.config.id).datetimebox("readonly", value);
+			return;
+		} else if (dbPattern == "HHmmss") {
+			$("#" + self.config.id).timespinner("readonly", value);
+			return;
+		}
+	}
+	if (key == "required") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			$("#" + self.config.id).datebox("options").required = value;
+			return;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			$("#" + self.config.id).datetimebox("options").required = value;
+			return;
+		} else if (dbPattern == "HHmmss") {
+			$("#" + self.config.id).timespinner("options").required = value;
+			return;
+		}
+	}
+	if (key == "error") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			$("#" + self.config.id).datebox("options").invalidMessage = value;
+			return;
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			$("#" + self.config.id).datetimebox("options").invalidMessage = value;
+			return;
+		} else if (dbPattern == "HHmmss") {
+			$("#" + self.config.id).timespinner("options").invalidMessage = value;
+			return;
+		}
+	}
 	if (key == "change") {
 		var dbPattern = self.get("dbPattern");
 		if (dbPattern == "yyyyMMdd") {
@@ -728,7 +853,7 @@ function LTextareaField(param) {
 	}
 	
 	$("#" + self.config.id).validatebox({
-		required: getQueryParameterAttrRequired(param["required"]),
+		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateTextareaField['{name}']".replace(/{name}/g, param.name)
 	});
 	for ( var key in param) {
@@ -742,12 +867,34 @@ function LTextareaField(param) {
 
 LTextareaField.prototype.get = function(key) {
 	var self = this;
+	
+	if (key == "readonly") {
+	    return $("#" + self.config.id).validatebox("options").readonly;
+	}
+	if (key == "required") {
+	    return $("#" + self.config.id).validatebox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).validatebox("options").invalidMessage;
+	}
 	return formFieldCommonGet(self, key);
 }
 
 LTextareaField.prototype.set = function(key, value) {
 	var self = this;
 
+	if (key == "readonly") {
+	    $("#" + self.config.id).validatebox("readonly", value);
+		return;
+	}
+	if (key == "required") {
+	    $("#" + self.config.id).validatebox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).validatebox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).change(value);
 		return;
@@ -763,7 +910,7 @@ function LDisplayField(param) {
 		self.config[key] = param[key];
 	}
 	$("#" + self.config.id).validatebox({
-		required: getQueryParameterAttrRequired(param["required"]),
+		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateDisplayField['{name}']".replace(/{name}/g, param.name)
 	});
 	for ( var key in param) {

@@ -5,6 +5,7 @@ function LTriggerField(param) {
 		self.config[key] = param[key];
 	}
 	var easyUiConfig = {
+		required: getQueryParameterAttrRequired(param["name"]),
 		readonly: true,
 		validType:"validateTriggerField['{name}']".replace(/{name}/g, param.name)
 	};
@@ -176,7 +177,7 @@ LTriggerField.prototype.applyEventBehavior = function() {
 LTriggerField.prototype._applyTextFieldEventBehavior = function() {
 	var self = this;
 	var id = self.get("id");
-	$("#" + id).change(function(self){
+	self.set("change", function(self){
 		return function(){
 			var formTemplateIterator = new FormTemplateIterator();
 			var result = "";
@@ -380,13 +381,19 @@ LTriggerField.prototype._syncDisplayValue = function() {
     	}
     	valueLi.push(value);
     }
-    $("#" + self.get("id")).val(valueLi.join(";"));
+    $("#" + self.get("id")).textbox("setValue", valueLi.join(";"));
 }
 
 
 LTriggerField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "required") {
+	    return $("#" + self.config.id).textbox("options").required;
+	}
+	if (key == "error") {
+	    return $("#" + self.config.id).textbox("options").invalidMessage;
+	}
 	if (key == "value") {
 		return $("#" + self.get("id")).attr("idValue");
 	}
@@ -397,6 +404,14 @@ LTriggerField.prototype.get = function(key) {
 LTriggerField.prototype.set = function(key, value) {
 	var self = this;
 	
+	if (key == "required") {
+	    $("#" + self.config.id).textbox("options").required = value;
+		return;
+	}
+	if (key == "error") {
+	    $("#" + self.config.id).textbox("options").invalidMessage = value;
+	    return;
+	}
 	if (key == "change") {
 		$("#" + self.config.id).textbox({"onChange": value});
 		return;
