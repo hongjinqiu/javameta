@@ -109,6 +109,15 @@ var g_masterFormFieldDict = {};
 	<c:if test="${item.xmlName == 'html-fragment'}">
 		<jsp:include page="${item.rendererTemplate}"></jsp:include>
 	</c:if>
+	<c:if test="${item.xmlName == 'toolbar'}">
+		<c:set var="toolbarForJsp" value="${item}" scope="request"></c:set>
+		<c:if test="${empty item.rendererTemplate}">
+			<jsp:include page="/webpage/model/render/toolbar_list.jsp"></jsp:include>
+		</c:if>
+		<c:if test="${not empty item.rendererTemplate}">
+			<jsp:include page="${item.rendererTemplate}"></jsp:include>
+		</c:if>
+	</c:if>
 	<c:if test="${item.xmlName == 'data-provider'}">
 		<c:if test="${not empty item.queryParameters}">
 			<c:if test="${empty item.queryParameters.rendererTemplate}">

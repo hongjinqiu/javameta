@@ -1,6 +1,7 @@
 function getFirstColumnModelName() {
 	var formTemplateIterator = new FormTemplateIterator();
 	var firstColumnModelName = "";
+	var result = "";
 	formTemplateIterator.iterateAnyTemplateColumnModel(result, function(columnModel, result) {
 		firstColumnModelName = columnModel.name;
 		return true;

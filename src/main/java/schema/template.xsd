@@ -158,7 +158,7 @@
 		<annotation>
 			<documentation>列模型属性</documentation>
 		</annotation>
-		<attribute name="name" type="ID"></attribute>
+		<attribute name="name" use="required" type="ID"></attribute>
 		<attribute name="rendererTemplate"></attribute>
 		<attribute name="export" default="true" type="boolean"></attribute>
 		<attribute name="exporter"></attribute>

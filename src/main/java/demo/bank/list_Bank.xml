@@ -14,16 +14,6 @@
 
 	<!-- <security byUnit="true" /> -->
 
-	<toolbar export="true">
-		<button text="新增" mode="url" handler="/console/formschema?@name=Bank" iconCls="but_box" />
-
-		<button text="删除" mode="fn" handler="g_deleteRecords" iconCls="but_box">
-		</button>
-		<button text="查看配置" mode="url^" handler="/console/rawxmlcontent?@name=Bank&amp;type=Component" iconCls="but_box">
-		</button>
-	</toolbar>
-
-
 	<data-provider name="queryDataSetA" size="10">
 		<sql>
 			select * from pub_bank
@@ -86,6 +76,15 @@
 			</query-parameter>
 		</query-parameters>
 	</data-provider>
+	
+	<toolbar export="true">
+		<button text="新增" mode="url" handler="/console/formschema?@name=Bank" iconCls="but_box" />
+
+		<button text="删除" mode="fn" handler="g_deleteRecords" iconCls="but_box">
+		</button>
+		<button text="查看配置" mode="url^" handler="/console/rawxmlcontent?@name=Bank&amp;type=Component" iconCls="but_box">
+		</button>
+	</toolbar>
 
 	<column-model name="A_1" dataSetId="A" dataProvider="queryDataSetA" text="银行资料列表" rownumber="true" sqlOrderBy="code">
 		<checkbox-column name="checkboxSelect" hideable="false">
