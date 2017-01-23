@@ -15,16 +15,20 @@ function getSelectRecordLi() {
 	return dtInst.getSelectRecordLi();
 }
 
-function getQueryString(Y) {
+function getQueryString() {
+	return stringifyJSON(getQueryDict());
+}
+
+function getQueryDict() {
 	var result = {};
 	for (var key in g_masterFormFieldDict) {
 		result[key] = g_masterFormFieldDict[key].get("value");
 	}
-	return stringifyJSON(result);
+	return result;
 }
 
 function createListTemplateGrid() {
-	var url = webRoot + "/console/listschema?@name=" + listTemplate.id + "&format=json";
+	var url = webRoot + "/schema/listschema.do?@name=" + listTemplate.id + "&format=json";
 	createGridWithUrl(url);
 }
 
@@ -39,13 +43,25 @@ function createGridWithUrl(url, config) {
 	
 	var dataTableManager = new DataTableManager();
 	var param = {
-			data:g_dataBo.items,
-			columnModel:listColumnModel,
-			columnModelName:listColumnModel.name,
-			render:"#" + listColumnModel.name,
-			url:url,
-			totalResults: g_dataBo.totalResults || 1,
-			pageSize: DATA_PROVIDER_SIZE
+//		data:g_dataBo.items,
+		data:[],
+		columnModel:listColumnModel,
+		columnModelName:listColumnModel.name,
+		render:"#" + listColumnModel.name,
+		url:url,
+//		totalResults: g_dataBo.totalResults || 1,
+		pageSize: DATA_PROVIDER_SIZE,
+		pagination: true,
+		onLoadSuccess: function(data) {
+		},
+		onBeforeLoad: function(param) {
+			var queryDict = getQueryDict();
+			for (var key in queryDict) {
+				param[key] = queryDict[key];
+			}
+			console.log(param);
+			return true;
+		}
 	};
 	if (config && config.columnManager) {
 		param.columnManager = config.columnManager;

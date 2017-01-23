@@ -82,7 +82,7 @@
 		</query-parameters>
 	</data-provider>
 
-	<column-model name="A_1" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行资料" selectionTemplate="{code},{name}" sqlOrderBy="code">
+	<column-model name="A_1" dataSetId="A" dataProvider="queryDataSetA" text="银行资料列表" rownumber="true" sqlOrderBy="code">
 		<checkbox-column name="checkboxSelect" hideable="false">
 			<expression></expression>
 		</checkbox-column>

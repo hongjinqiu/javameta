@@ -69,6 +69,7 @@ var g_layerBoLi = ${layerBoLiJson};
 var g_layerBoLi = null;
 </c:if>
 
+// easyui采用懒加载,g_usedCheck没值,被用判断要用表格中每一行的javameta_used字段,
 <c:if test="${not empty usedCheckJson}">
 var g_usedCheck = ${usedCheckJson};
 </c:if>
@@ -104,6 +105,9 @@ var g_masterFormFieldDict = {};
 
 <body>
 <c:forEach items="${formTemplate.toolbarOrDataProviderOrColumnModel}" var="item" varStatus="itemStatus">
+	<c:if test="${item.xmlName == 'html-fragment'}">
+		<jsp:include page="${item.rendererTemplate}"></jsp:include>
+	</c:if>
 	<c:if test="${item.xmlName == 'data-provider'}">
 		<c:if test="${not empty item.queryParameters}">
 			<c:if test="${empty item.queryParameters.rendererTemplate}">

@@ -337,11 +337,14 @@ public class SchemaController extends ControllerSupport {
 		String datasourceName = request.getParameter("@name");
 		FormTemplate formTemplate = formTemplateFactory.getFormTemplate(datasourceName, FormTemplateEnum.LIST);
 
-		boolean isGetBo = true;
+		boolean isGetBo = false;
+		String format = request.getParameter("format");
+		if (StringUtils.isNotEmpty(format) && format.equalsIgnoreCase("json")) {
+			isGetBo = true;
+		}
 		boolean isFromList = true;
 		Map<String, Object> result = listSelectorCommon(request, response, formTemplate, isGetBo, isFromList);
 
-		String format = request.getParameter("format");
 		if (StringUtils.isNotEmpty(format) && format.equalsIgnoreCase("json")) {
 			String dataBoText = (String) result.get("dataBoText");
 			request.setAttribute("json", dataBoText);
@@ -472,13 +475,13 @@ public class SchemaController extends ControllerSupport {
 		if (dataProvider.getSize() != null) {
 			pageSize = dataProvider.getSize();
 		}
-		String pageNoText = request.getParameter("pageNo");
+		String pageNoText = request.getParameter("page");
 		if (StringUtils.isNotEmpty(pageNoText)) {
 			if (Integer.parseInt(pageNoText) > 1) {
 				pageNo = Integer.parseInt(pageNoText);
 			}
 		}
-		String pageSizeText = request.getParameter("pageSize");
+		String pageSizeText = request.getParameter("rows");
 		if (StringUtils.isNotEmpty(pageSizeText)) {
 			if (Integer.parseInt(pageSizeText) > 10) {
 				pageSize = Integer.parseInt(pageSizeText);
@@ -506,6 +509,12 @@ public class SchemaController extends ControllerSupport {
 			}
 		}
 		dataBo.put("usedCheckBo", usedCheckBo);
+		
+		// easyui用total,rows
+		dataBo.put("total", dataBo.get("totalResults"));
+		dataBo.put("rows", dataBo.get("items"));
+		
+		// total,rows,
 
 		String dataBoJson = JSONObject.fromObject(dataBo).toString();
 		dataBoJson = CommonUtil.filterJsonEmptyAttr(dataBoJson);

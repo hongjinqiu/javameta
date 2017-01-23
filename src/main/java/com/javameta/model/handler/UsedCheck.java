@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -439,44 +440,59 @@ public class UsedCheck {
 	 */
 	public Map<String, Object> getListUsedCheck(Datasource datasource, List<Map<String, Object>> items, String dataSetId) {
 		Map<String, Object> result = New.hashMap();
-		
-		for (Map<String, Object> item: items) {
+
+		List<String> sqlLi = New.arrayList();
+		Map<String, Object> referenceQuery = New.hashMap();
+		for (int i = 0; i < items.size(); i++) {
+			Map<String, Object> item = items.get(i);
 			StringBuilder sb = new StringBuilder();
-			Map<String, Object> referenceQuery = New.hashMap();
 			if (dataSetId.equals("A")) {
-				referenceQuery.put("be_ref_datasource_id", datasource.getId());
-				referenceQuery.put("be_ref_dataset_id", dataSetId);
-				referenceQuery.put("be_ref_field_id", "id");
-				referenceQuery.put("be_ref_field_id_value", item.get("id"));
+				referenceQuery.put("be_ref_datasource_id_" + i, datasource.getId());
+				referenceQuery.put("be_ref_dataset_id_" + i, dataSetId);
+				referenceQuery.put("be_ref_field_id_" + i, "id");
+				referenceQuery.put("be_ref_field_id_value_" + i, item.get("id"));
 				
-				sb.append(" select count(1) from PUB_REFERENCE_LOG ");
+				sb.append(" select count1, id_value from ( ");
+				sb.append(" select count(1) as count1, " + item.get("id") + " as id_value from PUB_REFERENCE_LOG ");
 				sb.append(" where 1=1 ");
-				sb.append(" and be_ref_datasource_id=:be_ref_datasource_id ");
-				sb.append(" and be_ref_dataset_id=:be_ref_dataset_id ");
-				sb.append(" and be_ref_field_id=:be_ref_field_id ");
-				sb.append(" and be_ref_field_id_value=:be_ref_field_id_value ");
+				sb.append(" and be_ref_datasource_id=:be_ref_datasource_id_" + i);
+				sb.append(" and be_ref_dataset_id=:be_ref_dataset_id_" + i);
+				sb.append(" and be_ref_field_id=:be_ref_field_id_" + i);
+				sb.append(" and be_ref_field_id_value=:be_ref_field_id_value_" + i);
 				sb.append(" limit 1 ");
+				sb.append(" ) s ");
 			} else {
-				referenceQuery.put("be_ref_datasource_id", datasource.getId());
-				referenceQuery.put("be_ref_dataset_id_1", dataSetId);
-				referenceQuery.put("be_ref_field_id_1", "id");
-				referenceQuery.put("be_ref_field_id_value_1", item.get("id"));
+				referenceQuery.put("be_ref_datasource_id_" + i, datasource.getId());
+				referenceQuery.put("be_ref_dataset_id_1_" + i, dataSetId);
+				referenceQuery.put("be_ref_field_id_1_" + i, "id");
+				referenceQuery.put("be_ref_field_id_value_1_" + i, item.get("id"));
 				
-				sb.append(" select count(1) from PUB_REFERENCE_LOG ");
+				sb.append(" select count1, id_value from ( ");
+				sb.append(" select count(1) as count1, " + item.get("id") + " as id_value from PUB_REFERENCE_LOG ");
 				sb.append(" where 1=1 ");
-				sb.append(" and be_ref_datasource_id=:be_ref_datasource_id ");
-				sb.append(" and be_ref_dataset_id_1=:be_ref_dataset_id_1 ");
-				sb.append(" and be_ref_field_id_1=:be_ref_field_id_1 ");
-				sb.append(" and be_ref_field_id_value_1=:be_ref_field_id_value_1 ");
+				sb.append(" and be_ref_datasource_id=:be_ref_datasource_id_" + i);
+				sb.append(" and be_ref_dataset_id_1=:be_ref_dataset_id_1_" + i);
+				sb.append(" and be_ref_field_id_1=:be_ref_field_id_1_" + i);
+				sb.append(" and be_ref_field_id_value_1=:be_ref_field_id_value_1_" + i);
 				sb.append(" limit 1 ");
+				sb.append(" ) s ");
 			}
-			int count = getFormTemplateDao().getNamedParameterJdbcTemplate().queryForInt(sb.toString(), referenceQuery);
+			sqlLi.add(sb.toString());
+		}
+		String sql = StringUtils.join(sqlLi.toArray(), " union ");
+		List<Map<String, Object>> queryLi = getFormTemplateDao().getNamedParameterJdbcTemplate().queryForList(sql, referenceQuery);
+		for (Map<String, Object> query: queryLi) {
+			long count = (Long)query.get("count1");
 			boolean isUsed = count > 0;
 			if (result.get(dataSetId) == null) {
 				result.put(dataSetId, new HashMap<String, Object>());
 			}
 			Map<String, Object> dataSetUsedMap = (Map<String, Object>)result.get(dataSetId);
-			dataSetUsedMap.put(item.get("id").toString(), isUsed);
+			dataSetUsedMap.put(query.get("id_value").toString(), isUsed);
+		}
+		for (Map<String, Object> item: items) {
+			Map<String, Object> dataSetUsedMap = (Map<String, Object>)result.get(dataSetId);
+			item.put("javameta_used", dataSetUsedMap.get(item.get("id").toString()));
 		}
 		
 		return result;

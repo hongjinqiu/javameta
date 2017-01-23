@@ -255,7 +255,7 @@ public class FormTemplateFactory {
 
 		FormTemplateDao formTemplateDao = (FormTemplateDao) ApplicationContextUtil.getApplicationContext().getBean("formTemplateDao");
 		String countSql = "select count(*) from " + bodySql;
-		int totalCount = formTemplateDao.getNamedParameterJdbcTemplate().queryForInt(countSql, nameParameterMap);
+		int totalResults = formTemplateDao.getNamedParameterJdbcTemplate().queryForInt(countSql, nameParameterMap);
 
 		List<String> columnNameLi = New.arrayList();
 		List<Column> columnLi = New.arrayList();
@@ -286,7 +286,7 @@ public class FormTemplateFactory {
 		String selectSql = "select " + StringUtils.join(columnNameLi.toArray(), ",") + " from " + bodySql + orderBy + " limit " + offset + "," + pageSize;
 		List<Map<String, Object>> items = formTemplateDao.getNamedParameterJdbcTemplate().queryForList(selectSql, nameParameterMap);
 
-		result.put("totalCount", totalCount);
+		result.put("totalResults", totalResults);
 		result.put("items", items);
 
 		return result;
@@ -539,7 +539,7 @@ public class FormTemplateFactory {
 		
 		Map<String, Object> result = New.hashMap();
 		result.put("totalResults", queryResult.get("totalResults"));
-		result.put("items", items);
+		result.put("items", itemsDict.get("items"));
 		result.put("relationBo", relationBo);
 		return result;
 	}

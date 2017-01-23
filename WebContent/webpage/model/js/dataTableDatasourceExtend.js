@@ -194,7 +194,12 @@ function g_removeRow(dataSetId) {
 	} else {
 		var hasUsed = false;
 		for (var i = 0; i < selectRecordLi.length; i++) {
-			var isUsed = g_usedCheck && g_usedCheck[dataSetId] && g_usedCheck[dataSetId][selectRecordLi[i].id];
+			var isUsed;
+			if (selectRecordLi[i]["javameta_used"] !== undefined) {// 列表页,easyui用的是懒加载,g_usedCheck没值,值放到row.javameta_used中,
+				isUsed = selectRecordLi[i]["javameta_used"];
+			} else {
+				isUsed = g_usedCheck && g_usedCheck[dataSetId] && g_usedCheck[dataSetId][selectRecordLi[i].id];
+			}
 			if (isUsed) {
 				hasUsed = true;
 			} else {

@@ -39,7 +39,8 @@ ColumnManager.prototype.createIdColumn = function(columnModel) {
 		title: columnModel.idColumn.text,
 		colspan: columnModel.idColumn.colSpan || 1,
 		rowspan: columnModel.idColumn.rowSpan || 1,
-		hidden: columnModel.idColumn.hideable
+		hidden: columnModel.idColumn.hideable,
+		fixed: true
 	};
 }
 
@@ -51,6 +52,7 @@ ColumnManager.prototype.createCheckboxColumn = function(columnModel) {
 		colspan: columnModel.checkboxColumn.colSpan || 1,
 		rowspan: columnModel.checkboxColumn.rowSpan || 1,
 		hidden: columnModel.checkboxColumn.hideable,
+		fixed: true,
 		checkbox: true
 	};
 }
@@ -66,6 +68,7 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 			colspan: columnModel.columnList[i].colSpan || 1,
 			rowspan: columnModel.columnList[i].rowSpan || 1,
 			hidden: columnModel.columnList[i].hideable,
+			fixed: true,
 			formatter:      function(virtualColumn){
 				return function(o, row, index){
 					var htmlLi = [];
@@ -87,7 +90,12 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 						}
 						if (!buttonBoLi || buttonBoLi[j]["isShow"]) {
 							var id = columnModel.idColumn.name;
-							var isUsed = g_usedCheck && g_usedCheck[columnModel.dataSetId] && g_usedCheck[columnModel.dataSetId][row[id]];
+							var isUsed;
+							if (row["javameta_used"] !== undefined) {// 列表页,easyui用的是懒加载,g_usedCheck没值,值放到row.javameta_used中,
+								isUsed = row["javameta_used"];
+							} else {
+								isUsed = g_usedCheck && g_usedCheck[columnModel.dataSetId] && g_usedCheck[columnModel.dataSetId][row[id]];
+							}
 							if (!(isUsed && virtualColumn.buttons.button[j].name == "btn_delete")) {
 								// handler进行值的预替换,
 								var handler = virtualColumn.buttons.button[j].handler;
@@ -128,6 +136,7 @@ ColumnManager.prototype.createNumberColumn = function(columnConfig, columnModel)
 			colspan: columnConfig.colSpan || 1,
 			rowspan: columnConfig.rowSpan || 1,
 			hidden: columnConfig.hideable,
+			fixed: true,
 			formatter: function(value, row, index) {
 				if (value == "0") {
 					return "";
@@ -142,7 +151,8 @@ ColumnManager.prototype.createNumberColumn = function(columnConfig, columnModel)
 		title: columnConfig.text,
 		colspan: columnConfig.colSpan || 1,
 		rowspan: columnConfig.rowSpan || 1,
-		hidden: columnConfig.hideable
+		hidden: columnConfig.hideable,
+		fixed: true
 	};
 }
 
@@ -181,6 +191,7 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 			colspan: columnConfig.colSpan || 1,
 			rowspan: columnConfig.rowSpan || 1,
 			hidden: columnConfig.hideable,
+			fixed: true,
 			formatter: function(o, row, index) {
 				if (new ColumnManager().isZeroShowEmpty(columnConfig.zeroShowEmpty, o)) {
 					return "";
@@ -248,6 +259,7 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 			colspan: columnConfig.colSpan || 1,
 			rowspan: columnConfig.rowSpan || 1,
 			hidden: columnConfig.hideable,
+			fixed: true,
 			formatter: function(o, row, index) {
 				if (o == "0") {
 					return "";
@@ -262,7 +274,8 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 		title: columnConfig.text,
 		colspan: columnConfig.colSpan || 1,
 		rowspan: columnConfig.rowSpan || 1,
-		hidden: columnConfig.hideable
+		hidden: columnConfig.hideable,
+		fixed: true
 	};
 }
 
@@ -274,6 +287,7 @@ ColumnManager.prototype.createBooleanColumn = function(columnConfig) {
 		colspan: columnConfig.colSpan || 1,
 		rowspan: columnConfig.rowSpan || 1,
 		hidden: columnConfig.hideable,
+		fixed: true,
 		formatter: function(o, row, index) {
 			if (o + "" == "true") {
 				return "是";
@@ -293,6 +307,7 @@ ColumnManager.prototype.createDictionaryColumn = function(columnConfig) {
 		colspan: columnConfig.colSpan || 1,
 		rowspan: columnConfig.rowSpan || 1,
 		hidden: columnConfig.hideable,
+		fixed: true,
 		formatter: function(o, row, index) {
 			if (g_layerBo[columnConfig.dictionary] && g_layerBo[columnConfig.dictionary][o]) {
 				return g_layerBo[columnConfig.dictionary][o].name;
@@ -319,6 +334,7 @@ ColumnManager.prototype.createTriggerColumn = function(columnConfig) {
 		colspan: columnConfig.colSpan || 1,
 		rowspan: columnConfig.rowSpan || 1,
 		hidden: columnConfig.hideable,
+		fixed: true,
 		zeroShowEmpty: columnConfig.zeroShowEmpty,
 		formatter: function(o, row, index) {
 			if (new ColumnManager().isZeroShowEmpty(columnConfig.zeroShowEmpty, o)) {
@@ -381,6 +397,7 @@ ColumnManager.prototype.createColumn = function(columnConfig, columnModel) {
 				colspan: columnConfig.colSpan || 1,
 				rowspan: columnConfig.rowSpan || 1,
 				hidden: columnConfig.hideable,
+				fixed: true,
 				"children": []
 			};
 			for (var i = 0; i < columnConfig.columnModel.columnList.length; i++) {
@@ -409,7 +426,8 @@ ColumnManager.prototype.createColumn = function(columnConfig, columnModel) {
 			title: columnConfig.text,
 			colspan: columnConfig.colSpan || 1,
 			rowspan: columnConfig.rowSpan || 1,
-			hidden: columnConfig.hideable
+			hidden: columnConfig.hideable,
+			fixed: true
 		};
 	}
 	return null;

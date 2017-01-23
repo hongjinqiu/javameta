@@ -115,18 +115,26 @@ DataTableManager.prototype.createDataGrid = function(param) {
 	}
 	var columns = columnManager.getColumns(param.columnModelName, columnModel);
 	var gridConfig = {
+		url: url,
 		title: columnModel.text,
 		idField: columnModel.idColumn.name,
 		columns : columns,
 		data : data,
 		checkOnSelect: true,
 		selectOnCheck: true,
-		singleSelect: columnModel.selectionMode == "radio"
+		fitColumns: true,
+		total: totalResults,
+		pageSize: pageSize,
+		pagination: param.pagination || false,
+		singleSelect: columnModel.selectionMode == "radio",
 		//width: "100%"
 		//		,datasource: datasource
 	};
-	if (param.loader) {
-		gridConfig.loader = loader;
+	if (param.onBeforeLoad) {
+		gridConfig.onBeforeLoad = param.onBeforeLoad;
+	}
+	if (param.onLoadSuccess) {
+		gridConfig.onLoadSuccess = param.onLoadSuccess;
 	}
 	var toolbar = self.createColumnModelToolbar(columnModel);
 	if (toolbar.length > 0) {
@@ -134,6 +142,7 @@ DataTableManager.prototype.createDataGrid = function(param) {
 	}
 	$("#" + param.columnModelName).datagrid(gridConfig);
 	self.dt = $("#" + param.columnModelName);
+	return self;
 }
 
 DataTableManager.prototype.getSelectRecordLi = function() {
