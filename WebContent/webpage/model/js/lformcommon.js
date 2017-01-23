@@ -86,6 +86,8 @@ LFormManager.prototype.queryParameterFieldValidator = function(value, formFieldO
 			param[1] = messageLi.join("<br />");// easyui控件配置,message: "{1}",会把这里的message替换进去
 		}
 		return false;
+	} else {
+		formFieldObj.set("error", "");
 	}
 	
 	return true;

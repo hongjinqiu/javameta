@@ -217,6 +217,9 @@ function LTextField(param) {
 LTextField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+	    return $("#" + self.config.id).textbox("isValid");
+	}
 	if (key == "readonly") {
 	    return $("#" + self.config.id).textbox("options").readonly;
 	}
@@ -282,6 +285,9 @@ function LHiddenField(param) {
 LHiddenField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+		return $("#" + self.config.id).validatebox("isValid");
+	}
 	return formFieldCommonGet(self, key);
 }
 
@@ -334,6 +340,9 @@ function LSelectField(param) {
 LSelectField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+	    return $("#" + self.config.id).combobox("isValid");
+	}
 	if (key == "readonly") {
 	    return $("#" + self.config.id).combobox("options").readonly;
 	}
@@ -419,6 +428,9 @@ function LChoiceField(param) {
 LChoiceField.prototype.get = function(key) {
 	var self = this;
 
+	if (key == "isValid") {
+	    return $("#" + self.config.id).combobox("isValid");
+	}
 	if (key == "readonly") {
 	    return $("#" + self.config.id).combobox("options").readonly;
 	}
@@ -502,6 +514,9 @@ function LNumberField(param) {
 LNumberField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+	    return $("#" + self.config.id).numberbox("isValid");
+	}
 	if (key == "readonly") {
 	    return $("#" + self.config.id).numberbox("options").readonly;
 	}
@@ -681,6 +696,16 @@ function LDateField(param) {
 LDateField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			return $("#" + self.config.id).datebox("isValid");
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			return $("#" + self.config.id).datetimebox("isValid");
+		} else if (dbPattern == "HHmmss") {
+			return $("#" + self.config.id).timespinner("isValid");
+		}
+	}
 	if (key == "readonly") {
 		var dbPattern = self.get("dbPattern");
 		if (dbPattern == "yyyyMMdd") {
@@ -868,6 +893,9 @@ function LTextareaField(param) {
 LTextareaField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+	    return $("#" + self.config.id).validatebox("isValid");
+	}
 	if (key == "readonly") {
 	    return $("#" + self.config.id).validatebox("options").readonly;
 	}
@@ -925,6 +953,9 @@ function LDisplayField(param) {
 LDisplayField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+	    return $("#" + self.config.id).validatebox("isValid");
+	}
 	if (key == "value") {
 		return $("#" + self.config.id).html();
 	}

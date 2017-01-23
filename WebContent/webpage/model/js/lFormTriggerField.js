@@ -388,6 +388,9 @@ LTriggerField.prototype._syncDisplayValue = function() {
 LTriggerField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+	    return $("#" + self.config.id).textbox("isValid");
+	}
 	if (key == "required") {
 	    return $("#" + self.config.id).textbox("options").required;
 	}

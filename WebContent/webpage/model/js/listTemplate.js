@@ -59,42 +59,18 @@ function createGridWithUrl(url, config) {
 			for (var key in queryDict) {
 				param[key] = queryDict[key];
 			}
-			console.log(param);
 			return true;
 		}
 	};
 	if (config && config.columnManager) {
 		param.columnManager = config.columnManager;
 	}
-		// TODO loader,
-		/*
-param.loader,
-Defines how to load data from remote server. Return false can abort this action. This function takes following parameters:
-param: the parameter object to pass to remote server.
-success(data): the callback function that will be called when retrieve data successfully.
-error(): the callback function that will be called when failed to retrieve data.
-
-	
-load	param	 Load and show the first page rows. If the 'param' is specified, it will replace with the queryParams property. Usually do a query by passing some parameters, this method can be called to load new data from server.
-$('#dg').datagrid('load',{
-	code: '01',
-	name: 'name01'
-});
-reload	param	Reload the rows. Same as the 'load' method but stay on current page.
-		 */
 	dtInst = dataTableManager.createDataGrid(param);
 	g_gridPanelDict[listColumnModel.name] = dtInst;
 }
 
 function listMain() {
-	if (true) {
-		return;
-	}
-	var queryParameterManager = new QueryParameterManager();
-	queryParameterManager.applyQueryDefaultValue();
-	queryParameterManager.applyFormData();
-	queryParameterManager.applyObserveEventBehavior();
-	applyQueryBtnBehavior();
+	
 }
 
 function queryFormValidator() {
@@ -105,8 +81,8 @@ function queryFormValidator() {
 	formTemplateIterator.iterateAllTemplateQueryParameter(result, function(queryParameter, result){
 		for (var key in g_masterFormFieldDict) {
 			if (queryParameter.name == key) {
-				if (!g_masterFormFieldDict[key].validateField()) {
-					messageLi.push(queryParameter.Text + g_masterFormFieldDict[key].get("error"));
+				if (!g_masterFormFieldDict[key].get("isValid")) {
+					messageLi.push(queryParameter.text + g_masterFormFieldDict[key].get("error"));
 				}
 			}
 		}
@@ -131,13 +107,7 @@ function applyQueryBtnBehavior() {
 				if (!validateResult.result) {
 					showError(validateResult.message);
 				} else {
-					var pagModel = dtInst.dt.datagrid("getPager");
-					var page = pagModel.pageNumber;
-					if (page == 1) {
-						dtInst.dt.datagrid('reload');
-					} else {
-						dtInst.dt.datagrid('gotoPage', 1);
-					}
+					dtInst.dt.datagrid('load');
 				}
 			});
 

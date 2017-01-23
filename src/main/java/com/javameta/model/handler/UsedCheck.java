@@ -439,6 +439,10 @@ public class UsedCheck {
 	 * }
 	 */
 	public Map<String, Object> getListUsedCheck(Datasource datasource, List<Map<String, Object>> items, String dataSetId) {
+		if (items.size() == 0) {
+			return New.hashMap();
+		}
+		
 		Map<String, Object> result = New.hashMap();
 
 		List<String> sqlLi = New.arrayList();

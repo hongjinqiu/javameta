@@ -9,6 +9,7 @@
 <title>${formTemplate.description}</title>
 <link rel="stylesheet" type="text/css" href="${webRoot}/webpage/css/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="${webRoot}/webpage/css/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="${webRoot}/webpage/model/css/common.css">
 <script type="text/javascript" src="${webRoot}/webpage/js/jquery.min.js"></script>
 <script type="text/javascript" src="${webRoot}/webpage/js/stringifyjson.js"></script>
 <script type="text/javascript" src="${webRoot}/webpage/js/jquery.easyui.min.js"></script>

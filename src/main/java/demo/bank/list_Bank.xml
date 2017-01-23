@@ -30,13 +30,16 @@
 			where 1=1
  		</sql>
  		<query-parameters dataSetId="A">
+ 			<query-parameter name="id" auto="true" text="" editor="hiddenfield">
+			</query-parameter>
 			<query-parameter name="code" auto="true" text="">
 			</query-parameter>
 			<query-parameter name="name" auto="true" text=""></query-parameter>
 			<query-parameter name="bankShort" auto="true" text=""></query-parameter>
 			<query-parameter name="linkman" auto="true" text=""></query-parameter>
 			<query-parameter name="linkPhone" auto="true" text=""></query-parameter>
-			<query-parameter name="linkPhone2" columnName="linkPhone" editor="hiddenfield" restriction="like" text="hiddenPhone"></query-parameter>
+			<query-parameter name="linkPhone2" columnName="linkPhone" editor="hiddenfield" restriction="like" text="hiddenPhone">
+			</query-parameter>
 			<query-parameter name="linkPhone3" columnName="linkPhone" editor="textfield" restriction="like" text="linkPhone3">
 				<parameter-attribute name="fieldCls" value="linkePhone3"/>
 			</query-parameter>
@@ -63,6 +66,7 @@
 				<parameter-attribute name="displayPattern" value="HH:mm:ss"/>
 				<parameter-attribute name="dbPattern" value="HHmmss"/>
 			</query-parameter>
+			<!-- 
 			<query-parameter name="textareafield11" columnName="linkPhone" editor="textareafield" restriction="ge" text="textareafield11">
 				<parameter-attribute name="fieldCls" value="memem"/>
 			</query-parameter>
@@ -70,6 +74,7 @@
 				<relationDS>
 				</relationDS>
 			</query-parameter>
+			 -->
 			<query-parameter name="displayfield13" columnName="linkPhone" editor="displayfield" restriction="ge" text="displayfield13">
 			</query-parameter>
 			<query-parameter name="observe14" columnName="linkPhone" editor="textfield" restriction="ge" text="observe14">

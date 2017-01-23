@@ -224,6 +224,9 @@ function PTextField(param) {
 PTextField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+	    return $("#" + self.config.id).textbox("isValid");
+	}
 	if (key == "readonly") {
 	    return $("#" + self.config.id).textbox("options").readonly;
 	}
@@ -288,6 +291,10 @@ function PHiddenField(param) {
 
 PHiddenField.prototype.get = function(key) {
 	var self = this;
+	
+	if (key == "isValid") {
+		return $("#" + self.config.id).validatebox("isValid");
+	}
 	return formFieldCommonGet(self, key);
 }
 
@@ -336,6 +343,9 @@ function PSelectField(param) {
 PSelectField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+	    return $("#" + self.config.id).combobox("isValid");
+	}
 	if (key == "readonly") {
 	    return $("#" + self.config.id).combobox("options").readonly;
 	}
@@ -418,6 +428,9 @@ function PChoiceField(param) {
 PChoiceField.prototype.get = function(key) {
 	var self = this;
 
+	if (key == "isValid") {
+	    return $("#" + self.config.id).combobox("isValid");
+	}
 	if (key == "readonly") {
 	    return $("#" + self.config.id).combobox("options").readonly;
 	}
@@ -500,6 +513,10 @@ function PNumberField(param) {
 
 PNumberField.prototype.get = function(key) {
 	var self = this;
+	
+	if (key == "isValid") {
+	    return $("#" + self.config.id).numberbox("isValid");
+	}
 	if (key == "readonly") {
 	    return $("#" + self.config.id).numberbox("options").readonly;
 	}
@@ -673,6 +690,16 @@ function PDateField(param) {
 PDateField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+		var dbPattern = self.get("dbPattern");
+		if (dbPattern == "yyyyMMdd") {
+			return $("#" + self.config.id).datebox("isValid");
+		} else if (dbPattern == "yyyyMMddHHmmss") {
+			return $("#" + self.config.id).datetimebox("isValid");
+		} else if (dbPattern == "HHmmss") {
+			return $("#" + self.config.id).timespinner("isValid");
+		}
+	}
 	if (key == "readonly") {
 		var dbPattern = self.get("dbPattern");
 		if (dbPattern == "yyyyMMdd") {
@@ -860,6 +887,9 @@ function PTextareaField(param) {
 PTextareaField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+	    return $("#" + self.config.id).validatebox("isValid");
+	}
 	if (key == "readonly") {
 	    return $("#" + self.config.id).validatebox("options").readonly;
 	}
@@ -918,6 +948,9 @@ function PDisplayField(param) {
 PDisplayField.prototype.get = function(key) {
 	var self = this;
 	
+	if (key == "isValid") {
+	    return $("#" + self.config.id).validatebox("isValid");
+	}
 	if (key == "value") {
 		return $("#" + self.config.id).html();
 	}

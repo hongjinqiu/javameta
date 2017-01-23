@@ -46,3 +46,13 @@
 		</div>
 	</form>
 </div>
+<script type="text/javascript">
+g_yuiCommondLi.push(function() {
+	var queryParameterManager = new QueryParameterManager();
+	queryParameterManager.applyQueryDefaultValue();
+	queryParameterManager.applyFormData();
+	queryParameterManager.applyObserveEventBehavior();
+	applyQueryBtnBehavior();
+});
+g_yuiCommondLi[g_yuiCommondLi.length - 1]();
+</script>

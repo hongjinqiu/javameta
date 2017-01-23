@@ -1,0 +1,29 @@
+* { /* color: #333333; */
+	font-family: "宋体", Arial;
+	font-size: 12px;
+}
+
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td {
+	margin: 0;
+	padding: 0;
+}
+
+.queryContent {
+	height: 22px;
+	margin-bottom: 2px;
+	background: none repeat scroll 0 0 #F6FAFD;
+	border: 1px solid #C9DBF2;
+	line-height: 24px;
+	overflow: hidden;
+	padding: 8px;
+}
+
+.queryMain {
+	border-spacing: 0;
+	line-height: 27px;
+}
+
+.queryMain th,.queryMain td {
+	border: 0px;
+	padding: 0px;
+}
