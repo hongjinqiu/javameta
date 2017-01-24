@@ -9,29 +9,31 @@ function getFirstColumnModelName() {
 }
 
 function syncSelection(record) {
-	// 是否添加
-	var id = record["id"];
-	var idInputItem = $("#selectionResult .selectionItem input[value='" + id + "']");
-	if (idInputItem.length == 0) {
-		var tempLi = ['<div class="selectionItem">'];
-		tempLi.push('<div class="left">{display}</div>');
-		tempLi.push('<div class="right" onclick="removeSelection(this)"><input type="hidden" name="selectionId" value="{id}" /></div>');
-		tempLi.push('</div>');
-		
-		var display = "";
-		var formTemplateIterator = new FormTemplateIterator();
-		var result = "";
-		formTemplateIterator.iterateAnyTemplateColumnModel(result, function(columnModel, result){
-			display = objectReplace(columnModel.selectionTemplate, record);
-			return true;
-		});
-		
-		var tempContent = objectReplace(tempLi.join(""), {
-			"display": display,
-			"id": id
-		});
-		
-		$("#selectionResult").html($("#selectionResult").html() + tempContent);
+	if (typeof(record) == "object") {// easyui有bug,有时候会传"id"进来,
+		// 是否添加
+		var id = record["id"];
+		var idInputItem = $("#selectionResult .selectionItem input[value='" + id + "']");
+		if (idInputItem.length == 0) {
+			var tempLi = ['<div class="selectionItem">'];
+			tempLi.push('<div class="left">{display}</div>');
+			tempLi.push('<div class="right" onclick="removeSelection(this)"><input type="hidden" name="selectionId" value="{id}" /></div>');
+			tempLi.push('</div>');
+			
+			var display = "";
+			var formTemplateIterator = new FormTemplateIterator();
+			var result = "";
+			formTemplateIterator.iterateAnyTemplateColumnModel(result, function(columnModel, result){
+				display = objectReplace(columnModel.selectionTemplate, record);
+				return true;
+			});
+			
+			var tempContent = objectReplace(tempLi.join(""), {
+				"display": display,
+				"id": id
+			});
+			
+			$("#selectionResult").html($("#selectionResult").html() + tempContent);
+		}
 	}
 }
 
@@ -52,10 +54,12 @@ function syncSelectionWhenChangeCheckbox(dataGrid) {
 		}
 	}
 	
-	for (var i = 0; i < checkLi.length; i++) {
-		var record = checkLi[i];
-		g_selectionManager.addSelectionBo(record);
-		syncSelection(record);
+	if (rows.length > 0) {// easyui有bug,有时候getChecked返回["id"],但是getRows返回[]
+		for (var i = 0; i < checkLi.length; i++) {
+			var record = checkLi[i];
+			g_selectionManager.addSelectionBo(record);
+			syncSelection(record);
+		}
 	}
 	for (var i = 0; i < unCheckLi.length; i++) {
 		// 是否删除
@@ -64,7 +68,7 @@ function syncSelectionWhenChangeCheckbox(dataGrid) {
 		if (idInputItem.length > 0) {
 			var selectionItemLi = $("#selectionResult .selectionItem");
 			selectionItemLi.each(function(selectionItemIndex, selectionItem){
-				if (selectionItem.find("input[value='" + id + "']").length > 0) {
+				if ($(selectionItem).find("input[value='" + id + "']").length > 0) {
 					$(selectionItem).remove();
 				}
 			});
@@ -73,8 +77,8 @@ function syncSelectionWhenChangeCheckbox(dataGrid) {
 }
 
 function removeSelection(elem) {
-		$(elem).remove();
-		syncCheckboxWhenChangeSelection(dtInst.dt);
+	$(elem).parent(".selectionItem").remove();
+	syncCheckboxWhenChangeSelection(dtInst.dt);
 }
 
 function syncCheckboxWhenChangeSelection(dataGrid) {
@@ -82,9 +86,12 @@ function syncCheckboxWhenChangeSelection(dataGrid) {
 	$("#selectionResult .selectionItem input").each(function(index, item){
 		selectionInputValueLi.push($(item).val());
 	});
+	//dataGrid.datagrid("uncheckAll");
+	//dataGrid.datagrid("unselectAll");
+	dataGrid.datagrid("clearChecked");
 	for (var i = 0; i < selectionInputValueLi.length; i++) {
 		var index = dataGrid.datagrid("getRowIndex", selectionInputValueLi[i]);
-		dataGrid.dataGrid("checkRow", index);
+		dataGrid.datagrid("checkRow", index);
 	}
 }
 
@@ -98,13 +105,20 @@ function syncCallbackSelection() {
 				syncSelection(g_selectionBo[key]);
 			}
 		}
-		syncCheckboxWhenChangeSelection(dtInst.dt);
 	}
+	// 此时表格有可能还没好,因此需要用setTimeout来同步一次,
+	/*
+	setTimeout(function() {
+		syncCheckboxWhenChangeSelection(dtInst.dt);
+	}, 1000);
+	*/
 }
 
 function createSelectorTemplateGrid() {
 	var url = webRoot + "/schema/selectorschema.do?@name=" + listTemplate.id + "&format=json";
-	createGridWithUrl(url, {
+	createGridWithUrl({
+		url: url
+	}, {
 		onLoadSuccess: function(data) {
 			if (data.relationBo) {
 				g_relationManager.mergeRelationBo(data.relationBo);
@@ -112,16 +126,22 @@ function createSelectorTemplateGrid() {
 			if (data.usedCheckBo) {
 				g_usedCheck = data.usedCheckBo;
 			}
-		}
-	});
-	syncCheckboxWhenChangeSelection(dtInst.dt);
-	var dataGrid = dtInst.dt;
-	dataGrid.datagrid({
+			// 此时表格有可能还没好,因此需要用setTimeout来同步一次,
+			setTimeout(function() {
+				syncCheckboxWhenChangeSelection(dtInst.dt);
+			}, 500);
+		},
 		onCheck: function(index,row){
-			syncSelectionWhenChangeCheckbox(dataGrid);
+			syncSelectionWhenChangeCheckbox(dtInst.dt);
+		},
+		onUncheck: function(index, row) {
+			syncSelectionWhenChangeCheckbox(dtInst.dt);
 		},
 		onCheckAll: function(rows) {
-			syncSelectionWhenChangeCheckbox(dataGrid);
+			syncSelectionWhenChangeCheckbox(dtInst.dt);
+		},
+		onUncheckAll: function(rows) {
+			syncSelectionWhenChangeCheckbox(dtInst.dt);
 		}
 	});
 }
@@ -134,10 +154,10 @@ function selectorMain() {
 	var dataGrid = dtInst.dt;
 	dataGrid.datagrid({
 		onCheck: function(index,row){
-			syncSelectionWhenChangeCheckbox(dataGrid);
+			syncSelectionWhenChangeCheckbox(dtInst.dt);
 		},
 		onCheckAll: function(rows) {
-			syncSelectionWhenChangeCheckbox(dataGrid);
+			syncSelectionWhenChangeCheckbox(dtInst.dt);
 		}
 	});
 	*/
@@ -150,9 +170,6 @@ function selectorMain() {
 	applyQueryBtnBehavior();
 	*/
 	
-	if (true) {
-		return;
-	}
 	$("#confirmBtn").on("click", function(e){
 		if (parent && parent.g_relationManager) {
 			var selectorId = listTemplate.id;
@@ -189,6 +206,10 @@ function selectorMain() {
 				g_masterFormFieldDict[key].set("value", queryDict[key]);
 			}
 		}
+	}
+	// 创建表格
+	for (var i = 0; i < g_delayLi.length; i++) {
+		g_delayLi[i]();
 	}
 	// 同步g_selectionBo到选择区域,
 	syncCallbackSelection();

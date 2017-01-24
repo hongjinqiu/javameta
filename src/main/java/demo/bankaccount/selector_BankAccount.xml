@@ -9,8 +9,8 @@
 
 	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
 	<description>银行账户列表</description>
-	<scripts>js/ds_listtoolbar.js</scripts>
-	<view-template view="Console/SelectorSchema.html" />
+	<scripts></scripts>
+	<view-template view="model/selectorSchema.jsp" />
 
 	<!-- <security byUnit="true" /> -->
 

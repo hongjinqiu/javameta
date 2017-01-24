@@ -10,7 +10,7 @@
 	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
 	<description>收款单列表</description>
 	<scripts>js/ds_listtoolbar.js&amp;gatheringbill/gatheringBillListTemplate.js</scripts>
-	<view-template view="Console/ListSchema.html" />
+	<view-template view="model/listSchema.jsp" />
 
 	<!-- <security byUnit="true" /> -->
 

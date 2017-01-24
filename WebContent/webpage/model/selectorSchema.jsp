@@ -40,6 +40,7 @@
 </c:if>
 <script type="text/javascript">
 var g_yuiCommondLi = [];
+var g_delayLi = [];
 
 var g_dataBo = ${dataBoJson};
 var listTemplate = ${listTemplateJson};
@@ -147,5 +148,15 @@ var g_masterFormFieldDict = {};
 		</c:if>
 	</c:if>
 </c:forEach>
+<script type="text/javascript">
+$(document).ready(function() {
+	if (typeof(selectorMain) !== "undefined") {
+		selectorMain();
+	}
+	if (typeof(main) !== "undefined") {
+		main();
+	}
+});
+</script>
 </body>
 </html>

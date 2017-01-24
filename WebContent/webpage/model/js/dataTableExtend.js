@@ -96,7 +96,7 @@ DataTableManager.prototype.createColumnModelToolbar = function(columnModel) {
 	return result;
 }
 
-DataTableManager.prototype.createDataGrid = function(param) {
+DataTableManager.prototype.createDataGrid = function(param, datagridConfig) {
 	var self = this;
 	self.param = param;
 	
@@ -130,11 +130,10 @@ DataTableManager.prototype.createDataGrid = function(param) {
 		//width: "100%"
 		//		,datasource: datasource
 	};
-	if (param.onBeforeLoad) {
-		gridConfig.onBeforeLoad = param.onBeforeLoad;
-	}
-	if (param.onLoadSuccess) {
-		gridConfig.onLoadSuccess = param.onLoadSuccess;
+	if (datagridConfig) {
+		for (var key in datagridConfig) {
+			gridConfig[key] = datagridConfig[key];
+		}
 	}
 	var toolbar = self.createColumnModelToolbar(columnModel);
 	if (toolbar.length > 0) {

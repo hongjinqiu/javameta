@@ -380,7 +380,7 @@ public class SchemaController extends ControllerSupport {
 		Map<String, Object> result = listSelectorCommon(request, response, formTemplate, isGetBo, isFromList);
 		Map<String, Object> selectionBo = New.hashMap();
 		selectionBo.put("url", formTemplateFactory.getViewUrl(formTemplate));
-		selectionBo.put("Description", formTemplate.getDescription());
+		selectionBo.put("description", formTemplate.getDescription());
 
 		String ids = request.getParameter("@id");
 		if (StringUtils.isNotEmpty(ids)) {
@@ -392,6 +392,7 @@ public class SchemaController extends ControllerSupport {
 					Map<String, Object> itemDict = New.hashMap();
 					itemDict.put("relationId", item);
 					itemDict.put("selectorId", selectorId);
+					itemDict.put("valueField", "id");
 					relationLi.add(itemDict);
 				}
 			}

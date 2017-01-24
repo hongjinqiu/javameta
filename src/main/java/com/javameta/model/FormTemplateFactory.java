@@ -823,7 +823,7 @@ public class FormTemplateFactory {
 			// 选择器只有一个data-provider,一个column-model,因此,直接取一个即可
 			ColumnModel columnModel = selectorTemplate.getColumnModel().get(0);
 			Map<String, String> paramMap = New.hashMap();
-			paramMap.put(valueField, selectorId);
+			paramMap.put(valueField, relationId);
 			int pageNo = 1;
 			int pageSize = 1;
 			Map<String, Object> queryDataResult = queryDataForColumnModel(selectorTemplate, columnModel, paramMap, pageNo, pageSize);

@@ -40,6 +40,7 @@
 //g_formTemplateJsonData
 //listTemplate
 var g_yuiCommondLi = [];
+var g_delayLi = [];
 
 var g_dataBo = ${dataBoJson};
 var listTemplate = ${listTemplateJson};

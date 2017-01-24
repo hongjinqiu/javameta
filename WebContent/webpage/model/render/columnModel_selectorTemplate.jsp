@@ -4,8 +4,7 @@
 	<table id="${columnModelForJsp.name}"></table>
 </div>
 <script type="text/javascript">
-g_yuiCommondLi.push(function() {
+g_delayLi.push(function() {
 	createSelectorTemplateGrid();
 });
-g_yuiCommondLi[g_yuiCommondLi.length - 1]();
 </script>

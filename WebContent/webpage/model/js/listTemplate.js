@@ -29,10 +29,10 @@ function getQueryDict() {
 
 function createListTemplateGrid() {
 	var url = webRoot + "/schema/listschema.do?@name=" + listTemplate.id + "&format=json";
-	createGridWithUrl(url, {
+	createGridWithUrl({
+		url: url
+	}, {
 		onLoadSuccess: function(data) {
-			console.log("load success data is:");
-			console.log(data);
 			if (data.relationBo) {
 				g_relationManager.mergeRelationBo(data.relationBo);
 			}
@@ -43,7 +43,7 @@ function createListTemplateGrid() {
 	});
 }
 
-function createGridWithUrl(url, config) {
+function createGridWithUrl(config, datagridConfig) {
 	var formTemplateIterator = new FormTemplateIterator();
 	var listColumnModel = null;
 	var result = "";
@@ -53,6 +53,10 @@ function createGridWithUrl(url, config) {
 	});
 	
 	var dataTableManager = new DataTableManager();
+	var url = "";
+	if (config && config.url) {
+		url = config.url;
+	}
 	var param = {
 //		data:g_dataBo.items,
 		data:[],
@@ -62,24 +66,27 @@ function createGridWithUrl(url, config) {
 		url:url,
 //		totalResults: g_dataBo.totalResults || 1,
 		pageSize: DATA_PROVIDER_SIZE,
-		pagination: true,
-		onLoadSuccess: function(data) {
-		},
-		onBeforeLoad: function(param) {
-			var queryDict = getQueryDict();
-			for (var key in queryDict) {
-				param[key] = queryDict[key];
-			}
-			return true;
-		}
+		pagination: true
 	};
+	var onBeforeLoad = function(param) {
+		var queryDict = getQueryDict();
+		for (var key in queryDict) {
+			param[key] = queryDict[key];
+		}
+		return true;
+	};
+	if (datagridConfig) {
+		datagridConfig.onBeforeLoad = onBeforeLoad;
+	} else {
+		datagridConfig = {
+			onBeforeLoad: onBeforeLoad
+		}
+	}
 	if (config && config.columnManager) {
 		param.columnManager = config.columnManager;
 	}
-	if (config && config.onLoadSuccess) {
-		param.onLoadSuccess = config.onLoadSuccess;
-	}
-	dtInst = dataTableManager.createDataGrid(param);
+	
+	dtInst = dataTableManager.createDataGrid(param, datagridConfig);
 	g_gridPanelDict[listColumnModel.name] = dtInst;
 }
 

@@ -197,6 +197,9 @@ function showConfirm(msg, callback, width, height){
 
 function objectReplace(text, obj) {
 	for (var key in obj) {
+		if (key == "0") {
+			console.log("ggg");
+		}
 		var regExp = new RegExp("{" + key + "}");
 		regExp.global = true;
 		text = text.replace(regExp, obj[key]);
