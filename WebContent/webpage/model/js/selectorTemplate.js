@@ -102,7 +102,32 @@ function syncCallbackSelection() {
 	}
 }
 
+function createSelectorTemplateGrid() {
+	var url = webRoot + "/schema/selectorschema.do?@name=" + listTemplate.id + "&format=json";
+	createGridWithUrl(url, {
+		onLoadSuccess: function(data) {
+			if (data.relationBo) {
+				g_relationManager.mergeRelationBo(data.relationBo);
+			}
+			if (data.usedCheckBo) {
+				g_usedCheck = data.usedCheckBo;
+			}
+		}
+	});
+	syncCheckboxWhenChangeSelection(dtInst.dt);
+	var dataGrid = dtInst.dt;
+	dataGrid.datagrid({
+		onCheck: function(index,row){
+			syncSelectionWhenChangeCheckbox(dataGrid);
+		},
+		onCheckAll: function(rows) {
+			syncSelectionWhenChangeCheckbox(dataGrid);
+		}
+	});
+}
+
 function selectorMain() {
+	/*
 	var id = listTemplate.id;
 	var url = "/console/selectorschema?@name=" + id + "&format=json";
 	createGridWithUrl(url);
@@ -115,15 +140,19 @@ function selectorMain() {
 			syncSelectionWhenChangeCheckbox(dataGrid);
 		}
 	});
+	*/
 	
-	
+	/*
 	var queryParameterManager = new QueryParameterManager();
 	queryParameterManager.applyQueryDefaultValue();
 	queryParameterManager.applyFormData();
 	queryParameterManager.applyObserveEventBehavior();
 	applyQueryBtnBehavior();
+	*/
 	
-	
+	if (true) {
+		return;
+	}
 	$("#confirmBtn").on("click", function(e){
 		if (parent && parent.g_relationManager) {
 			var selectorId = listTemplate.id;
@@ -164,5 +193,5 @@ function selectorMain() {
 	// 同步g_selectionBo到选择区域,
 	syncCallbackSelection();
 	
-	g_gridPanelDict[getFirstColumnModelName()].dt.datagrid("reload");
+	//g_gridPanelDict[getFirstColumnModelName()].dt.datagrid("load");
 }

@@ -351,13 +351,6 @@ public class SchemaController extends ControllerSupport {
 			return new ModelAndView("model/json");
 		}
 
-		/*
-		tmplResult := map[string]interface{}{
-			"result": result,
-		}
-		result["ListPageContent"] = template.HTML(self.getListPageContent(tmplResult))	// 没用,不用管,
-		result["ListQueryParameterContent"] = template.HTML(self.getListQueryParameterContent(tmplResult))	// 直接页面上处理即可,
-		 */
 		for (String key : result.keySet()) {
 			request.setAttribute(key, result.get(key));
 		}
@@ -617,7 +610,7 @@ public class SchemaController extends ControllerSupport {
 			isHasCookie = true;
 		}
 		boolean isConfigCookie = false;
-		if (StringUtils.isNotEmpty(formTemplate.getCookie().getName())) {
+		if (formTemplate.getCookie() != null && StringUtils.isNotEmpty(formTemplate.getCookie().getName())) {
 			isConfigCookie = true;
 		}
 		Map<String, String> cookieData = New.hashMap();
@@ -652,7 +645,9 @@ public class SchemaController extends ControllerSupport {
 			cookie.setPath("/");
 			response.addCookie(cookie);
 		}
-		cookieData = getCookieKeyValueMap(request, formTemplate.getCookie().getName());
+		if (isConfigCookie) {
+			cookieData = getCookieKeyValueMap(request, formTemplate.getCookie().getName());
+		}
 
 		return cookieData;
 	}

@@ -14,7 +14,7 @@
 
 	<!-- <security byUnit="true" /> -->
 
-	<toolbar export="true">
+	<toolbar name="toolbar" export="true">
 		<button text="新增" mode="url" handler="/console/formschema?@name=GatheringBill" iconCls="but_box" />
 		<button text="删除" mode="fn" handler="listLimitControlDeleteDataGroup" iconCls="but_box">
 		</button>

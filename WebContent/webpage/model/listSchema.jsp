@@ -70,7 +70,7 @@ var g_layerBoLi = ${layerBoLiJson};
 var g_layerBoLi = null;
 </c:if>
 
-// easyui采用懒加载,g_usedCheck没值,被用判断要用表格中每一行的javameta_used字段,
+// easyui采用懒加载,g_usedCheck没值,渲染表格时没值,被用判断要用表格中每一行的javameta_used字段,
 <c:if test="${not empty usedCheckJson}">
 var g_usedCheck = ${usedCheckJson};
 </c:if>

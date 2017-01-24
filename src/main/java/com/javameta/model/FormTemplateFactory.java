@@ -869,7 +869,7 @@ public class FormTemplateFactory {
 					VirtualColumn virtualColumn = (VirtualColumn) column;
 					if (virtualColumn.getButtons() != null) {
 						for (Button button : virtualColumn.getButtons().getButton()) {
-							if (button.getName().equals("btn_view")) {
+							if (button.getName() != null && button.getName().equals("btn_view")) {
 								return button.getHandler();
 							}
 						}

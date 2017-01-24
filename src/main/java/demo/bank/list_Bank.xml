@@ -77,7 +77,7 @@
 		</query-parameters>
 	</data-provider>
 	
-	<toolbar export="true">
+	<toolbar name="toolbar" export="true">
 		<button text="新增" mode="url" handler="/console/formschema?@name=Bank" iconCls="but_box" />
 
 		<button text="删除" mode="fn" handler="g_deleteRecords" iconCls="but_box">

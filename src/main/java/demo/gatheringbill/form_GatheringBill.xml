@@ -13,7 +13,7 @@
 
 	<after-query-data></after-query-data>
 
-	<toolbar rendererTemplate="">
+	<toolbar name="toolbar" rendererTemplate="">
 		<button name="listBtn" text="列表页" mode="url" handler="/console/listschema?@name=GatheringBill" iconCls="but_box" rendererTemplate=""></button>
 		<button name="newBtn" text="新增" mode="fn" handler="newData" iconCls="but_box"></button>
 		<button name="copyBtn" text="复制" mode="fn" handler="copyData" iconCls="but_box"></button>
@@ -136,7 +136,7 @@
 	</column-model>
 	
 	<column-model name="B_1" dataSetId="B" rownumber="false" dataProvider="queryDataSetB">
-		<toolbar>
+		<toolbar name="B_1_toolbar">
 			<button name="selectRowBtn" text="选择" mode="fn" handler="g_selectRow" iconCls="but_box">
 				<relationDS>
 					<relationItem name="BankAccountCurrencyType"><!-- 需要修改从 BankAccountCurrencyType 中查找 -->
@@ -152,7 +152,7 @@
 			<button text="编辑" mode="fn" handler="g_editRow" iconCls="but_box"></button>
 			<button text="删除" mode="fn" handler="g_removeRow" iconCls="but_box"></button>
 		</toolbar>
-		<editor-toolbar>
+		<editor-toolbar name="B_1_editor-toolbar">
 			<button text="新增" mode="fn" handler="g_pluginAddRow" iconCls="but_box"></button>
 			<button text="删除" mode="fn" handler="g_pluginRemoveRow" iconCls="but_box"></button>
 		</editor-toolbar>

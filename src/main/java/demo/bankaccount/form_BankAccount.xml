@@ -11,7 +11,7 @@
 	<view-template view="Console/FormSchema.html" />
 	<security byUnit="true" />
 
-	<toolbar>
+	<toolbar name="toolbar">
 		<button name="listBtn" text="列表页" mode="url" handler="/console/listschema?@name=BankAccount" iconCls="but_box"></button>
 		<button name="newBtn" text="新增" mode="fn" handler="newData" iconCls="but_box"></button>
 		<button name="copyBtn" text="复制" mode="fn" handler="copyData" iconCls="but_box"></button>
@@ -44,7 +44,7 @@
 	</column-model>
 
 	<column-model name="B_1" dataSetId="B">
-		<toolbar>
+		<toolbar name="B_1_toolbar">
 			<button name="selectRowBtn" text="选择" mode="fn" handler="g_selectRow" iconCls="but_box">
 				<relationDS>
 					<relationItem name="CurrencyType">
@@ -58,7 +58,7 @@
 			<button text="编辑" mode="fn" handler="g_editRow" iconCls="but_box"></button>
 			<button text="删除" mode="fn" handler="g_removeRow" iconCls="but_box"></button>
 		</toolbar>
-		<editor-toolbar>
+		<editor-toolbar name="B_1_editor-toolbar">
 			<button text="新增" mode="fn" handler="g_pluginAddRow" iconCls="but_box"></button>
 			<button text="删除" mode="fn" handler="g_pluginRemoveRow" iconCls="but_box"></button>
 		</editor-toolbar>

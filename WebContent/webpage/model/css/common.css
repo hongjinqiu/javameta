@@ -8,6 +8,20 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input
 	padding: 0;
 }
 
+.queryTitle {
+	background: url("../image/kbg1.jpg") repeat scroll 0 0 #BFDBFF;
+	border-left: 1px solid #C9DBF2;
+	border-right: 1px solid #C9DBF2;
+	border-top: 1px solid #C9DBF2;
+	clear: both;
+	color: #006699;
+	font-size: 12px;
+	font-weight: 700;
+	height: 24px;
+	line-height: 24px;
+	padding-left: 1em;
+}
+
 .queryContent {
 	height: 22px;
 	margin-bottom: 2px;
@@ -26,4 +40,129 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input
 .queryMain th,.queryMain td {
 	border: 0px;
 	padding: 0px;
+}
+
+.btnMore,.btnUp {
+	background: url("../image/but_morebg.jpg") repeat-x scroll 0 0 transparent;
+	border: 0 none;
+	border-radius: 3px 3px 3px 3px;
+	color: #000000;
+	cursor: pointer;
+	font-size: 12px;
+	height: 23px;
+	line-height: 23px;
+	padding-left: 5px;
+	text-align: left;
+	width: 80px;
+	margin-left: 5px;
+	margin-right: 3px;
+}
+
+.queryBtn,.queryReset {
+	background: url("../image/btn_searchbg.jpg") repeat-x scroll 0 0 transparent;
+	border: 0 none;
+	border-radius: 3px 3px 3px 3px;
+	color: #FFFFFF;
+	cursor: pointer;
+	font-size: 12px;
+	height: 26px;
+	line-height: 26px;
+	text-align: center;
+	width: 79px;
+}
+
+.queryBtn {
+	margin-left: 10px;
+	margin-right: 3px;
+}
+
+.queryBtn:hover,.queryReset:hover {
+	background: url("../image/btn_searchbg.jpg") repeat-x scroll 0 53% transparent;
+}
+
+.selectionArea td.selectionAreaTd {
+	margin: 0px;
+	padding: 0px;
+	vertical-align: top;
+	border: 0px;
+}
+
+.selectionArea td.selectorLeftWrapper {
+	width: 210px;
+	vertical-align: top;
+	border: 1px solid #ABC7EB;
+}
+
+.selectionArea td.selectorMiddleWrapper {
+	width: 2px;
+	vertical-align: top;
+}
+
+.selectorMiddleArea {
+	width: 2px;
+}
+
+.selectionArea td.selectorRightWrapper {
+	vertical-align: top;
+	border: 1px solid #ABC7EB;
+}
+
+.selectorLeftArea {
+	width: 210px;
+	overflow: hidden;
+	min-height: 350px;
+}
+
+.selectorLeftArea div,.listTitle {
+	font-size: 12px;
+	height: 24px;
+	line-height: 24px;
+	vertical-align: middle;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.selectionTitle,.listTitle {
+	background: url("../image/kbg1.jpg") repeat scroll 0 0 #BFDBFF;
+	border-bottom: 1px solid #C9DBF2;
+	color: #006699;
+	font-weight: 700;
+	/* margin-top: 2px; */
+	padding-left: 1em;
+}
+
+.selectionTitle2 {
+	margin: 0;
+	padding: 0 5px;
+	border-bottom: 1px dotted #CCCCCC;
+	color: #444444;
+	text-align: left;
+	background: none repeat scroll 0 0 #F0F3F8;
+	min-width: 90px;
+}
+
+.selectionItem {
+	background: none repeat scroll 0 0 #F4F9FF;
+	margin: 0;
+	padding: 0 5px;
+	border-bottom: 1px dotted #CCCCCC;
+	color: #444444;
+}
+
+.selectionItem .left {
+	float: left;
+	overflow: hidden;
+	width: 150px;
+}
+
+.selectionItem .right {
+	float: right;
+	background-image: url("../image/forbidden.png");
+	cursor: pointer;
+	background-position: center center;
+	background-repeat: no-repeat;
+	display: block;
+	height: 16px;
+	margin: 2px 8px 0 0;
+	width: 16px;
 }

@@ -12,7 +12,7 @@
 
 	<security byUnit="true" />
 
-	<toolbar>
+	<toolbar name="toolbar">
 		<button name="listBtn" text="列表页" mode="url" handler="/console/listschema?@name=Bank" iconCls="but_box"></button>
 		<button name="newBtn" text="新增" mode="fn" handler="newData" iconCls="but_box"></button>
 		<button name="copyBtn" text="复制" mode="fn" handler="copyData" iconCls="but_box"></button>

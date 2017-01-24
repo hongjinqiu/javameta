@@ -29,7 +29,18 @@ function getQueryDict() {
 
 function createListTemplateGrid() {
 	var url = webRoot + "/schema/listschema.do?@name=" + listTemplate.id + "&format=json";
-	createGridWithUrl(url);
+	createGridWithUrl(url, {
+		onLoadSuccess: function(data) {
+			console.log("load success data is:");
+			console.log(data);
+			if (data.relationBo) {
+				g_relationManager.mergeRelationBo(data.relationBo);
+			}
+			if (data.usedCheckBo) {
+				g_usedCheck = data.usedCheckBo;
+			}
+		}
+	});
 }
 
 function createGridWithUrl(url, config) {
@@ -64,6 +75,9 @@ function createGridWithUrl(url, config) {
 	};
 	if (config && config.columnManager) {
 		param.columnManager = config.columnManager;
+	}
+	if (config && config.onLoadSuccess) {
+		param.onLoadSuccess = config.onLoadSuccess;
 	}
 	dtInst = dataTableManager.createDataGrid(param);
 	g_gridPanelDict[listColumnModel.name] = dtInst;

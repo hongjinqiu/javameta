@@ -33,9 +33,9 @@
 				<button text="访问" iconCls="img_look" mode="url^" handler="/schema/listschema.do?@name={id}">
 					<expression></expression>
 				</button>
-				<button text="raw xml" iconCls="img_look" mode="url^" handler="/schema/rawxml?@name={id}&amp;type=Component">
+				<button text="raw xml" iconCls="img_look" mode="url^" handler="/schema/rawxml.do?@name={id}&amp;type=Component">
 				</button>
-				<button text="xml" iconCls="img_look" mode="url^" handler="/schema/xml?@name={id}&amp;type=Component">
+				<button text="xml" iconCls="img_look" mode="url^" handler="/schema/xml.do?@name={id}&amp;type=Component">
 				</button>
 			</buttons>
 		</virtual-column>
@@ -57,11 +57,11 @@
 		<id-column name="id" width="100" text="编号" hideable="false" />
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
-				<button text="访问" iconCls="img_look" mode="url^" handler="/schema/selectorschema?@name={id}">
+				<button text="访问" iconCls="img_look" mode="url^" handler="/schema/selectorschema.do?@name={id}">
 				</button>
-				<button text="raw xml" iconCls="img_look" mode="url^" handler="/schema/rawxml?@name={id}&amp;type=Selector">
+				<button text="raw xml" iconCls="img_look" mode="url^" handler="/schema/rawxml.do?@name={id}&amp;type=Selector">
 				</button>
-				<button text="xml" iconCls="img_look" mode="url^" handler="/schema/xml?@name={id}&amp;type=Selector">
+				<button text="xml" iconCls="img_look" mode="url^" handler="/schema/xml.do?@name={id}&amp;type=Selector">
 				</button>
 			</buttons>
 		</virtual-column>
@@ -84,11 +84,11 @@
 
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
-				<button text="访问" iconCls="img_look" mode="url^" handler="/schema/formschema?@name={id}">
+				<button text="访问" iconCls="img_look" mode="url^" handler="/schema/formschema.do?@name={id}">
 				</button>
-				<button text="raw xml" iconCls="img_look" mode="url^" handler="/schema/rawxml?@name={id}&amp;type=Form">
+				<button text="raw xml" iconCls="img_look" mode="url^" handler="/schema/rawxml.do?@name={id}&amp;type=Form">
 				</button>
-				<button text="xml" iconCls="img_look" mode="url^" handler="/schema/xml?@name={id}&amp;type=Form">
+				<button text="xml" iconCls="img_look" mode="url^" handler="/schema/xml.do?@name={id}&amp;type=Form">
 				</button>
 			</buttons>
 		</virtual-column>
@@ -111,9 +111,9 @@
 
 		<virtual-column name="FUN_C" text="操作" width="150">
 			<buttons>
-				<button text="raw xml" iconCls="img_look" mode="url^" handler="/schema/rawxml?@name={id}&amp;type=Datasource">
+				<button text="raw xml" iconCls="img_look" mode="url^" handler="/schema/rawxml.do?@name={id}&amp;type=Datasource">
 				</button>
-				<button text="xml" iconCls="img_look" mode="url^" handler="/schema/xml?@name={id}&amp;type=Datasource">
+				<button text="xml" iconCls="img_look" mode="url^" handler="/schema/xml.do?@name={id}&amp;type=Datasource">
 				</button>
 				<button text="获取建表sql" iconCls="img_look" mode="url^" handler="/schema/getGenerateTableSql.do?@name={id}">
 				</button>
