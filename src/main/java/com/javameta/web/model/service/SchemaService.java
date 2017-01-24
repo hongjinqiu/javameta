@@ -13,9 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.javameta.model.datasource.Datasource;
+import com.javameta.model.datasource.DetailData;
 import com.javameta.model.datasource.Field;
 import com.javameta.model.iterate.DatasourceIterator;
 import com.javameta.model.iterate.IDatasourceFieldIterate;
+import com.javameta.model.iterate.IDatasourceLineFieldIterate;
 import com.javameta.util.New;
 import com.javameta.web.model.dao.SchemaDao;
 import com.javameta.web.support.ServiceSupport;
@@ -27,6 +29,68 @@ public class SchemaService extends ServiceSupport {
 	@Autowired
 	private SchemaDao schemaDao;
 
+	private String getFieldSql(Field primaryKey, Field field) {
+		String line = "`{fieldName}` {fieldType} {isNull} {autoIncrement} COMMENT '{comment}'";
+		String fieldName = StringUtils.isNotEmpty(field.getFieldName()) ? field.getFieldName() : field.getId();
+		line = line.replace("{fieldName}", fieldName);
+		String isNull = field.isAllowEmpty() ? "DEFAULT NULL" : "NOT NULL";
+		line = line.replace("{isNull}", isNull);
+		String autoIncrement = "";
+		if (field == primaryKey) {
+			autoIncrement = "AUTO_INCREMENT";
+		}
+		line = line.replace("{autoIncrement}", autoIncrement);
+		String comment = field.getDisplayName();
+		line = line.replace("{comment}", comment);
+		if (field.getFieldType().equalsIgnoreCase("FLOAT")) {
+			String fieldType = "double(" + field.getFieldLength() + "," + field.getDecimalPointLength() + ")";
+			line = line.replace("{fieldType}", fieldType);
+		}
+		if (field.getFieldType().equalsIgnoreCase("DOUBLE")) {
+			String fieldType = "double(" + field.getFieldLength() + "," + field.getDecimalPointLength() + ")";
+			line = line.replace("{fieldType}", fieldType);
+		}
+		if (field.getFieldType().equalsIgnoreCase("DECIMAL")) {
+			String fieldType = "decimal(" + field.getFieldLength() + "," + field.getDecimalPointLength() + ")";
+			line = line.replace("{fieldType}", fieldType);
+		}
+		if (field.getFieldType().equalsIgnoreCase("SHORT")) {
+			String fieldType = "int(" + field.getFieldLength() + ")";
+			line = line.replace("{fieldType}", fieldType);
+		}
+		if (field.getFieldType().equalsIgnoreCase("INT")) {
+			String fieldType = "int(" + field.getFieldLength() + ")";
+			line = line.replace("{fieldType}", fieldType);
+		}
+		if (field.getFieldType().equalsIgnoreCase("LONG")) {
+			String fieldType = "bigint(" + field.getFieldLength() + ")";
+			line = line.replace("{fieldType}", fieldType);
+		}
+		if (field.getFieldType().equalsIgnoreCase("NULL")) {
+		}
+		if (field.getFieldType().equalsIgnoreCase("STRING")) {
+			String fieldType = "varchar(" + field.getFieldLength() + ")";
+			line = line.replace("{fieldType}", fieldType);
+		}
+		if (field.getFieldType().equalsIgnoreCase("DATE")) {
+			String fieldType = "date";
+			line = line.replace("{fieldType}", fieldType);
+		}
+		if (field.getFieldType().equalsIgnoreCase("TIME")) {
+			String fieldType = "time";
+			line = line.replace("{fieldType}", fieldType);
+		}
+		if (field.getFieldType().equalsIgnoreCase("TIMESTAMP")) {
+			String fieldType = "datetime";
+			line = line.replace("{fieldType}", fieldType);
+		}
+		if (field.getFieldType().equalsIgnoreCase("BYTES")) {
+			String fieldType = "blob";
+			line = line.replace("{fieldType}", fieldType);
+		}
+		return line;
+	}
+	
 	/*
 	CREATE TABLE `pub_diccomm` (
 	`DICCOMM_ID` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '内容序列ID',
@@ -43,88 +107,69 @@ public class SchemaService extends ServiceSupport {
 	) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='公共-数据字典内容表'
 	 */
 	public String getGenerateTableSql(final Datasource datasource) {
-		final StringBuilder sb = new StringBuilder();
-		String tableName = StringUtils.isNotEmpty(datasource.getTableName()) ? datasource.getTableName() : datasource.getId();
-		sb.append(" CREATE TABLE `{tableName}` ( ".replace("{tableName}", tableName));
-
-		DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+		final StringBuilder result = new StringBuilder();
+		DatasourceIterator.iterateLineField(datasource, new IDatasourceLineFieldIterate() {
 			@Override
-			public void iterate(Field field) {
-				String line = "`{fieldName}` {fieldType} {isNull} {autoIncrement} COMMENT '{comment}'";
-				String fieldName = StringUtils.isNotEmpty(field.getFieldName()) ? field.getFieldName() : field.getId();
-				line = line.replace("{fieldName}", fieldName);
-				String isNull = field.isAllowEmpty() ? "DEFAULT NULL" : "NOT NULL";
-				line = line.replace("{isNull}", isNull);
-				String autoIncrement = "";
-				if (field == datasource.getMasterData().getFixField().getPrimaryKey()) {
-					autoIncrement = "AUTO_INCREMENT";
+			public void iterate(List<Field> fieldLi) {
+				if (fieldLi.get(0).isMasterField()) {
+					final StringBuilder sb = new StringBuilder();
+					for (Field field: fieldLi) {
+						String tableName = datasource.getCalcTableName();
+						sb.append(" CREATE TABLE `{tableName}` ( ".replace("{tableName}", tableName));
+						
+						String line = getFieldSql(datasource.getMasterData().getFixField().getPrimaryKey(), field);
+						sb.append("\n");
+						sb.append("\t");
+						sb.append(line);
+						sb.append(",");
+						line = "PRIMARY KEY (`{fieldName}`)";
+						Field pField = datasource.getMasterData().getFixField().getPrimaryKey();
+						String fieldName = pField.getCalcFieldName();
+						line = line.replace("{fieldName}", fieldName);
+						sb.append("\n");
+						sb.append("\t");
+						sb.append(line);
+						sb.append("\n");
+						sb.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='{comment}';".replace("{comment}", datasource.getDisplayName()));
+					}
+					result.append(sb.toString());
+					result.append("\n");
+				} else {
+					String dataSetId = fieldLi.get(0).getDataSetId();
+					for (DetailData detailData: datasource.getDetailData()) {
+						if (detailData.getId().equals(dataSetId)) {
+							final StringBuilder sb = new StringBuilder();
+							for (Field field: fieldLi) {
+								String tableName = datasource.getCalcDetailTableName(dataSetId);
+								sb.append(" CREATE TABLE `{tableName}` ( ".replace("{tableName}", tableName));
+								
+								String line = getFieldSql(detailData.getFixField().getPrimaryKey(), field);
+								sb.append("\n");
+								sb.append("\t");
+								sb.append(line);
+								sb.append(",");
+								line = "PRIMARY KEY (`{fieldName}`)";
+								Field pField = detailData.getFixField().getPrimaryKey();
+								String fieldName = pField.getCalcFieldName();
+								line = line.replace("{fieldName}", fieldName);
+								sb.append("\n");
+								sb.append("\t");
+								sb.append(line);
+								sb.append("\n");
+								sb.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='{comment}';".replace("{comment}", datasource.getDisplayName() + "_" + detailData.getDisplayName()));
+							}
+							result.append(sb.toString());
+							result.append("\n");
+						}
+					}
 				}
-				line = line.replace("{autoIncrement}", autoIncrement);
-				String comment = field.getDisplayName();
-				line = line.replace("{comment}", comment);
-				if (field.getFieldType().equalsIgnoreCase("FLOAT")) {
-					String fieldType = "double(" + field.getFieldLength() + "," + field.getDecimalPointLength() + ")";
-					line = line.replace("{fieldType}", fieldType);
-				}
-				if (field.getFieldType().equalsIgnoreCase("DOUBLE")) {
-					String fieldType = "double(" + field.getFieldLength() + "," + field.getDecimalPointLength() + ")";
-					line = line.replace("{fieldType}", fieldType);
-				}
-				if (field.getFieldType().equalsIgnoreCase("DECIMAL")) {
-					String fieldType = "decimal(" + field.getFieldLength() + "," + field.getDecimalPointLength() + ")";
-					line = line.replace("{fieldType}", fieldType);
-				}
-				if (field.getFieldType().equalsIgnoreCase("SHORT")) {
-					String fieldType = "int(" + field.getFieldLength() + ")";
-					line = line.replace("{fieldType}", fieldType);
-				}
-				if (field.getFieldType().equalsIgnoreCase("INT")) {
-					String fieldType = "int(" + field.getFieldLength() + ")";
-					line = line.replace("{fieldType}", fieldType);
-				}
-				if (field.getFieldType().equalsIgnoreCase("LONG")) {
-					String fieldType = "bigint(" + field.getFieldLength() + ")";
-					line = line.replace("{fieldType}", fieldType);
-				}
-				if (field.getFieldType().equalsIgnoreCase("NULL")) {
-				}
-				if (field.getFieldType().equalsIgnoreCase("STRING")) {
-					String fieldType = "varchar(" + field.getFieldLength() + ")";
-					line = line.replace("{fieldType}", fieldType);
-				}
-				if (field.getFieldType().equalsIgnoreCase("DATE")) {
-					String fieldType = "date";
-					line = line.replace("{fieldType}", fieldType);
-				}
-				if (field.getFieldType().equalsIgnoreCase("TIME")) {
-					String fieldType = "time";
-					line = line.replace("{fieldType}", fieldType);
-				}
-				if (field.getFieldType().equalsIgnoreCase("TIMESTAMP")) {
-					String fieldType = "datetime";
-					line = line.replace("{fieldType}", fieldType);
-				}
-				if (field.getFieldType().equalsIgnoreCase("BYTES")) {
-					String fieldType = "blob";
-					line = line.replace("{fieldType}", fieldType);
-				}
-				sb.append("\n");
-				sb.append("\t");
-				sb.append(line);
-				sb.append(",");
 			}
 		});
-		String line = "PRIMARY KEY (`{fieldName}`)";
-		Field field = datasource.getMasterData().getFixField().getPrimaryKey();
-		String fieldName = StringUtils.isNotEmpty(field.getFieldName()) ? field.getFieldName() : field.getId();
-		line = line.replace("{fieldName}", fieldName);
-		sb.append("\n");
-		sb.append("\t");
-		sb.append(line);
-		sb.append("\n");
-		sb.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='{comment}';".replace("{comment}", datasource.getDisplayName()));
-		return sb.toString();
+		
+		return result.toString();
 	}
+	
+//	private void applyInsertSql
 
 	public String getGenerateInsertSql(final Datasource datasource, int count) {
 		String tableName = StringUtils.isNotEmpty(datasource.getTableName()) ? datasource.getTableName() : datasource.getId();
@@ -134,12 +179,17 @@ public class SchemaService extends ServiceSupport {
 			final List<String> keyLi = New.arrayList();
 			final List<String> valueLi = New.arrayList();
 			final int innerI = i;
+			
 			String template = "insert into {tableName}({keyLi}) values ({valueLi});";
+			
+//			DatasourceIterator.iterateLineField(datasource, iterate);
+			
+			
 			template = template.replace("{tableName}", tableName);
 			DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
 				@Override
 				public void iterate(Field field) {
-					String fieldName = StringUtils.isNotEmpty(field.getFieldName()) ? field.getFieldName() : field.getId();
+					String fieldName = field.getCalcFieldName();
 					String keyTemplate = fieldName;
 					String valuesTemplate = "";
 					if (field.getFieldType().equalsIgnoreCase("FLOAT")) {
