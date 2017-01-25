@@ -149,7 +149,7 @@ function createSelectorTemplateGrid() {
 function selectorMain() {
 	/*
 	var id = listTemplate.id;
-	var url = "/console/selectorschema?@name=" + id + "&format=json";
+	var url = webRoot + "/schema/selectorschema.do?@name=" + id + "&format=json";
 	createGridWithUrl(url);
 	var dataGrid = dtInst.dt;
 	dataGrid.datagrid({

@@ -42,7 +42,7 @@ RelationManager.prototype.getRelationBo = function(selectorId, id) {
 	var self = this;
 	var result = null;
 	ajaxRequest({
-		url : "/schema/relation.do?selectorId=" + selectorId + "&id=" + id + "&date=" + new Date(),
+		url : webRoot + "/schema/relation.do?selectorId=" + selectorId + "&id=" + id + "&date=" + new Date(),
 		method: "GET",
 		callback : function(o) {
 			result = o["result"];

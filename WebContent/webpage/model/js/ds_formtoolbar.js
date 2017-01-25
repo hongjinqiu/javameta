@@ -87,7 +87,7 @@ function giveUpData() {
 	var bo = formManager.getBo();
 	showConfirm("您确定要放弃吗？", function(){
 		if (!bo["id"] || bo["id"] == "0") {
-			location.href = "/schema/listschema?@name=" + g_datasourceJson.id;
+			location.href = webRoot + "/schema/listschema.do?@name=" + g_datasourceJson.id;
 		} else {
 			ajaxRequest({
 				url: "/" + getIdUrl(g_datasourceJson.id) + "/giveUpData?format=json"
@@ -118,7 +118,7 @@ function deleteData() {
 				"id": bo["id"]
 			},
 			callback: function(o) {
-				location.href = "/schema/listschema?@name=" + g_datasourceJson.id;
+				location.href = webRoot + "/schema/listschema.do?@name=" + g_datasourceJson.id;
 			}
 		});
 	})
@@ -147,7 +147,7 @@ function logList() {
 	var bo = formManager.getBo();
 	var dialog = showModalDialog({
 		"title": "被用查询",
-		"url": "/schema/listschema?@name=PubReferenceLog&beReferenceDatasourceModelId=" + g_datasourceJson.id + "&beReferenceId=" + bo["id"] + "&date=" + new Date()
+		"url": webRoot + "/schema/listschema.do?@name=PubReferenceLog&beReferenceDatasourceModelId=" + g_datasourceJson.id + "&beReferenceId=" + bo["id"] + "&date=" + new Date()
 	});
 }
 

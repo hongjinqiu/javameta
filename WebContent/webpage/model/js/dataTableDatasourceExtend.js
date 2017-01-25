@@ -145,7 +145,7 @@ function g_selectRow(dataSetId, btnName) {
         	};
         	if (button.relationDS && button.relationDS.relationItem) {
     			var relationItem = button.relationDS.relationItem[0];
-    			var url = "/schema/selectorschema?@name={NAME_VALUE}&@multi={MULTI_VALUE}&@displayField={DISPLAY_FIELD_VALUE}&date=" + new Date();
+    			var url = webRoot + "/schema/selectorschema.do?@name={NAME_VALUE}&@multi={MULTI_VALUE}&@displayField={DISPLAY_FIELD_VALUE}&date=" + new Date();
     			var selectorName = relationItem.relationConfig.selectorName;
     			url = url.replace("{NAME_VALUE}", selectorName);
     			var multi = relationItem.relationConfig.selectionMode == "multi";

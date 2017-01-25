@@ -80,6 +80,14 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input
 	background: url("../image/btn_searchbg.jpg") repeat-x scroll 0 53% transparent;
 }
 
+.floatLeft {
+	float: left;
+}
+
+.selectIndent {
+	margin-left: 5px;
+}
+
 .selectionArea td.selectionAreaTd {
 	margin: 0px;
 	padding: 0px;
@@ -165,4 +173,81 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input
 	height: 16px;
 	margin: 2px 8px 0 0;
 	width: 16px;
+}
+
+.trigger_select {
+	background-position: center center;
+	background-repeat: no-repeat;
+	display: block;
+	float: left;
+	height: 16px;
+	margin: 5px 8px 0 0;
+	width: 16px;
+	background-image: url("../image/img_list.png");
+	color: #006699;
+	outline: medium none;
+	text-decoration: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+.ltrigger_select,.ptrigger_select {
+	margin-top: 4px;
+}
+
+.trigger_delete,.trigger_view,.etrigger_view {
+	background-position: center center;
+	background-repeat: no-repeat;
+	display: block;
+	float: left;
+	height: 16px;
+	margin: 4px 0px 0 2px;
+	width: 16px;
+	color: #006699;
+	outline: medium none;
+	text-decoration: none;
+	/* margin: 0px; */
+	padding: 0px;
+}
+
+.trigger_view {
+	background-image: url("../image/ck_btn.gif");
+}
+
+.trigger_delete {
+	background-image: url("../image/kw_dele.png");
+}
+
+.etrigger_view {
+	background-image: url("../image/ck_btn.gif");
+	margin-top: 0px;
+}
+
+.trigger_date {
+	-moz-box-sizing: border-box;
+	display: block;
+	cursor: pointer;
+	overflow: hidden;
+	border-color: #B5B8C8;
+	border-style: solid;
+	border-width: 0 0 1px;
+	width: 17px;
+	background-image: url("../image/date-trigger.gif");
+	height: 16px;
+	float: left;
+}
+
+.ltrigger_date {
+	-moz-box-sizing: border-box;
+	display: block;
+	cursor: pointer;
+	overflow: hidden;
+	border-color: #B5B8C8;
+	border-style: solid;
+	border-width: 0px;
+	width: 16px;
+	background-image: url("../image/date-trigger.gif");
+	height: 20px;
+	float: left;
+	background-position: 0px -1px;
 }

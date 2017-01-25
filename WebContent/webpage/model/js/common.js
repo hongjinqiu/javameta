@@ -120,7 +120,12 @@ function showDialog(options){
 		} else {
 			href = href + '?ms_=' + date.getTime();
 		}
-		$("<div id='div_for_easyui_window'><iframe class='iframe_for_easyui_window' frameborder='0' src='"+href+"'></iframe></div>").dialog(options);
+		var iframeHtml = "<div id='div_for_easyui_window'><iframe class='iframe_for_easyui_window' style='{style}' frameborder='0' src='"+href+"'></iframe></div>";
+		var style="width: {width}px; height: {height}px;";
+		style = style.replace(/{width}/g, options.width - 30);
+		style = style.replace(/{height}/g, options.height - 10);
+		iframeHtml = iframeHtml.replace(/{style}/g, style);
+		return $(iframeHtml).dialog(options);
 	}
 }
 
@@ -132,7 +137,7 @@ function showModalDialog(config) {
 	var url = config.url;
 	var width = config.width;
 	var height = config.height;
-	showDialog({
+	return showDialog({
 		title: title, 
 		url: url, 
 		width: width, 

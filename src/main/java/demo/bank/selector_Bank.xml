@@ -32,8 +32,6 @@
 		<button text="新增" mode="url!" handler="/console/formschema?@name=Bank" iconCls="but_box" />
 	</toolbar>
 	
-	<html-fragment rendererTemplate="/webpage/model/render/selectorArea1.jsp"/>
-
 	<column-model name="A_1" text="银行资料列表" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行资料" selectionTemplate="{code},{name}" sqlOrderBy="code">
 		<checkbox-column name="checkboxSelect" hideable="false">
 			<expression></expression>
@@ -54,6 +52,4 @@
 		<auto-column name="linkPhone" />
 	</column-model>
 	
-	<html-fragment rendererTemplate="/webpage/model/render/selectorArea2.jsp"/>
-
 </form-template>

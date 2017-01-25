@@ -238,7 +238,7 @@ PTriggerField.prototype._applySelectBtnEventBehavior = function() {
         		return {};
         	};
         	
-        	var url = "/console/selectorschema?@name={NAME_VALUE}&@id={ID_VALUE}&@multi={MULTI_VALUE}&@displayField={DISPLAY_FIELD_VALUE}&date=" + new Date();
+        	var url = webRoot + "/schema/selectorschema.do?@name={NAME_VALUE}&@id={ID_VALUE}&@multi={MULTI_VALUE}&@displayField={DISPLAY_FIELD_VALUE}&date=" + new Date();
             var selectorName = self._getStringOrFunctionResult(self.get("selectorName"));
             if (!selectorName || selectorName == "NullSelector") {
             	showAlert("无法打开选择器");
@@ -250,13 +250,13 @@ PTriggerField.prototype._applySelectBtnEventBehavior = function() {
             	var displayField = self._getStringOrFunctionResult(self.get("displayField"));
             	url = url.replace("{DISPLAY_FIELD_VALUE}", displayField);
             	var selectorTitle = self._getStringOrFunctionResult(self.get("selectorTitle"));
-            	var dialog = showModalDialog({
+            	window.s_dialog = showModalDialog({
             		"title": selectorTitle,
             		"url": url
             	});
             	window.s_closeDialog = function() {
             		if (window.s_dialog) {
-            			window.s_dialog.hide();
+            			window.s_dialog.dialog('destroy');
             		}
             		window.s_dialog = null;
             		window.s_selectFunc = null;

@@ -102,6 +102,13 @@ var g_formDataJson = null;
 
 var g_relationManager = new RelationManager();
 var g_masterFormFieldDict = {};
+
+//http://localhost:8080/webpage/model/image/ck_btn.gif
+function preLoadImage() {
+	var heavyImage = new Image(); 
+	heavyImage.src = webRoot + "/webpage/model/image/ck_btn.gif";
+}
+preLoadImage();
 </script>
 </head>
 
