@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.Unmarshaller;
 
 import net.sf.json.JSONObject;
 
@@ -694,6 +695,86 @@ public class SchemaController extends ControllerSupport {
 		}
 		
 		return result;
+	}
+	
+	@RequestMapping("/xml")
+	@ResponseBody
+	public void xml(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String refretorType = request.getParameter("type");
+		String id = request.getParameter("@name");
+		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
+		
+		if (refretorType.equals("Component")) {
+			FormTemplate formTemplate = formTemplateFactory.getFormTemplate(id, FormTemplateEnum.LIST);
+			String content = formTemplateFactory.marshal(formTemplate);
+			response.setContentType("application/xml; charset=utf-8");
+			response.getWriter().write(content);
+			return;
+		} else if (refretorType.equals("Selector")) {
+			FormTemplate formTemplate = formTemplateFactory.getFormTemplate(id, FormTemplateEnum.SELECTOR);
+			String content = formTemplateFactory.marshal(formTemplate);
+			response.setContentType("application/xml; charset=utf-8");
+			response.getWriter().write(content);
+			return;
+		} else if (refretorType.equals("Form")) {
+			FormTemplate formTemplate = formTemplateFactory.getFormTemplate(id, FormTemplateEnum.FORM);
+			String content = formTemplateFactory.marshal(formTemplate);
+			response.setContentType("application/xml; charset=utf-8");
+			response.getWriter().write(content);
+			return;
+		} else if (refretorType.equals("Datasource")) {
+			DatasourceFactory datasourceFactory = new DatasourceFactory();
+			Datasource datasource = datasourceFactory.getDatasource(id);
+			String content = datasourceFactory.marshal(datasource);
+			response.setContentType("application/xml; charset=utf-8");
+			response.getWriter().write(content);
+			return;
+		}
+		
+		response.getWriter().write("可能传入了错误的refretorType:" + refretorType);
+		return;
+	}
+	
+	@RequestMapping("/rawxml")
+	@ResponseBody
+	public void rawxml(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String refretorType = request.getParameter("type");
+		String id = request.getParameter("@name");
+		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
+		
+		if (refretorType.equals("Component")) {
+			FormTemplateInfo formTemplateInfo = formTemplateFactory.getFormTemplateInfo(id, FormTemplateEnum.LIST);
+			FormTemplate formTemplate = formTemplateFactory.unmarshal(formTemplateInfo.getPath());
+			String content = formTemplateFactory.marshal(formTemplate);
+			response.setContentType("application/xml; charset=utf-8");
+			response.getWriter().write(content);
+			return;
+		} else if (refretorType.equals("Selector")) {
+			FormTemplateInfo formTemplateInfo = formTemplateFactory.getFormTemplateInfo(id, FormTemplateEnum.SELECTOR);
+			FormTemplate formTemplate = formTemplateFactory.unmarshal(formTemplateInfo.getPath());
+			String content = formTemplateFactory.marshal(formTemplate);
+			response.setContentType("application/xml; charset=utf-8");
+			response.getWriter().write(content);
+			return;
+		} else if (refretorType.equals("Form")) {
+			FormTemplateInfo formTemplateInfo = formTemplateFactory.getFormTemplateInfo(id, FormTemplateEnum.FORM);
+			FormTemplate formTemplate = formTemplateFactory.unmarshal(formTemplateInfo.getPath());
+			String content = formTemplateFactory.marshal(formTemplate);
+			response.setContentType("application/xml; charset=utf-8");
+			response.getWriter().write(content);
+			return;
+		} else if (refretorType.equals("Datasource")) {
+			DatasourceFactory datasourceFactory = new DatasourceFactory();
+			DatasourceInfo datasourceInfo = datasourceFactory.getDatasourceInfo(id);
+			Datasource datasource = datasourceFactory.unmarshal(datasourceInfo.getPath());
+			String content = datasourceFactory.marshal(datasource);
+			response.setContentType("application/xml; charset=utf-8");
+			response.getWriter().write(content);
+			return;
+		}
+		
+		response.getWriter().write("可能传入了错误的refretorType:" + refretorType);
+		return;
 	}
 
 	@RequestMapping("/testDB")

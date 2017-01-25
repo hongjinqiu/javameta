@@ -297,9 +297,6 @@ public class UsedCheck {
 		}
 	}
 	
-//	func (o UsedCheck) GetFormUsedCheck(sessionId int, dataSource DataSource, bo map[string]interface{}) map[string]interface{} {
-	
-	
 	/**
 	 * 引用方需要写多个字段,某个字段引用时,也保存这个字段所在数据源主数据集引用,这个字段所在分录数据集引用,
 		`ref_datasource_id` varchar(100) DEFAULT NULL COMMENT '关联方数据源ID',

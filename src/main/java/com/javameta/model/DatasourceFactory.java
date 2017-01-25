@@ -1,5 +1,6 @@
 package com.javameta.model;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -595,6 +596,28 @@ public class DatasourceFactory {
 				FieldExtendUtil.extendFieldPoolField(field, pFields.getField());
 			}
 		});
+	}
+	
+	public Datasource unmarshal(String path) {
+		try {
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			Datasource datasource = (Datasource) unmarshaller.unmarshal(new File(path));
+			return datasource;
+		} catch (JAXBException e) {
+			throw new JavametaException(e);
+		}
+	}
+	
+	public String marshal(Datasource datasource) {
+		try {
+			Marshaller marshaller = context.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			marshaller.marshal(datasource, out);
+			return out.toString();
+		} catch (JAXBException e) {
+			throw new JavametaException(e);
+		}
 	}
 	
 	private static void unMarshalTest() throws Exception {

@@ -1,5 +1,6 @@
 package com.javameta.model;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import net.sf.json.JSONObject;
@@ -156,6 +158,28 @@ public class FormTemplateFactory {
 			if (file.getName().startsWith(formTemplateEnum.getPrefix()) && file.getName().endsWith(".xml")) {
 				loadSingleFormTemplate(file, formTemplateEnum);
 			}
+		}
+	}
+	
+	public FormTemplate unmarshal(String path) {
+		try {
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			FormTemplate formTemplate = (FormTemplate) unmarshaller.unmarshal(new File(path));
+			return formTemplate;
+		} catch (JAXBException e) {
+			throw new JavametaException(e);
+		}
+	}
+	
+	public String marshal(FormTemplate formTemplate) {
+		try {
+			Marshaller marshaller = context.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			marshaller.marshal(formTemplate, out);
+			return out.toString();
+		} catch (JAXBException e) {
+			throw new JavametaException(e);
 		}
 	}
 
