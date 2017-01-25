@@ -90,7 +90,7 @@ public class SchemaService extends ServiceSupport {
 		}
 		return line;
 	}
-	
+
 	/*
 	CREATE TABLE `pub_diccomm` (
 	`DICCOMM_ID` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '内容序列ID',
@@ -111,143 +111,143 @@ public class SchemaService extends ServiceSupport {
 		DatasourceIterator.iterateLineField(datasource, new IDatasourceLineFieldIterate() {
 			@Override
 			public void iterate(List<Field> fieldLi) {
+				String tableName = null;
+				Field pField = null;
+				String comment = null;
+
 				if (fieldLi.get(0).isMasterField()) {
-					final StringBuilder sb = new StringBuilder();
-					for (Field field: fieldLi) {
-						String tableName = datasource.getCalcTableName();
-						sb.append(" CREATE TABLE `{tableName}` ( ".replace("{tableName}", tableName));
-						
-						String line = getFieldSql(datasource.getMasterData().getFixField().getPrimaryKey(), field);
-						sb.append("\n");
-						sb.append("\t");
-						sb.append(line);
-						sb.append(",");
-						line = "PRIMARY KEY (`{fieldName}`)";
-						Field pField = datasource.getMasterData().getFixField().getPrimaryKey();
-						String fieldName = pField.getCalcFieldName();
-						line = line.replace("{fieldName}", fieldName);
-						sb.append("\n");
-						sb.append("\t");
-						sb.append(line);
-						sb.append("\n");
-						sb.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='{comment}';".replace("{comment}", datasource.getDisplayName()));
-					}
-					result.append(sb.toString());
-					result.append("\n");
+					tableName = datasource.getCalcTableName();
+					pField = datasource.getMasterData().getFixField().getPrimaryKey();
+					comment = datasource.getDisplayName();
 				} else {
 					String dataSetId = fieldLi.get(0).getDataSetId();
-					for (DetailData detailData: datasource.getDetailData()) {
+					for (DetailData detailData : datasource.getDetailData()) {
 						if (detailData.getId().equals(dataSetId)) {
-							final StringBuilder sb = new StringBuilder();
-							for (Field field: fieldLi) {
-								String tableName = datasource.getCalcDetailTableName(dataSetId);
-								sb.append(" CREATE TABLE `{tableName}` ( ".replace("{tableName}", tableName));
-								
-								String line = getFieldSql(detailData.getFixField().getPrimaryKey(), field);
-								sb.append("\n");
-								sb.append("\t");
-								sb.append(line);
-								sb.append(",");
-								line = "PRIMARY KEY (`{fieldName}`)";
-								Field pField = detailData.getFixField().getPrimaryKey();
-								String fieldName = pField.getCalcFieldName();
-								line = line.replace("{fieldName}", fieldName);
-								sb.append("\n");
-								sb.append("\t");
-								sb.append(line);
-								sb.append("\n");
-								sb.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='{comment}';".replace("{comment}", datasource.getDisplayName() + "_" + detailData.getDisplayName()));
-							}
-							result.append(sb.toString());
-							result.append("\n");
+							tableName = datasource.getCalcDetailTableName(dataSetId);
+							pField = detailData.getFixField().getPrimaryKey();
+							comment = datasource.getDisplayName() + "_" + detailData.getDisplayName();
 						}
 					}
 				}
+
+				final StringBuilder sb = new StringBuilder();
+				sb.append(" CREATE TABLE `{tableName}` ( ".replace("{tableName}", tableName));
+				for (Field field : fieldLi) {
+					String line = getFieldSql(pField, field);
+					sb.append("\n");
+					sb.append("\t");
+					sb.append(line);
+					sb.append(",");
+				}
+				String line = "PRIMARY KEY (`{fieldName}`)";
+				String fieldName = pField.getCalcFieldName();
+				line = line.replace("{fieldName}", fieldName);
+				sb.append("\n");
+				sb.append("\t");
+				sb.append(line);
+				sb.append("\n");
+				sb.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='{comment}';".replace("{comment}", comment));
+				result.append(sb.toString());
+				result.append("\n");
 			}
 		});
-		
+
 		return result.toString();
 	}
-	
-//	private void applyInsertSql
 
-	public String getGenerateInsertSql(final Datasource datasource, int count) {
-		String tableName = StringUtils.isNotEmpty(datasource.getTableName()) ? datasource.getTableName() : datasource.getId();
+	public String getGenerateInsertSql(final Datasource datasource, final int count) {
 		final List<String> insertLi = New.arrayList();
 
-		for (int i = 0; i < count; i++) {
-			final List<String> keyLi = New.arrayList();
-			final List<String> valueLi = New.arrayList();
-			final int innerI = i;
-			
-			String template = "insert into {tableName}({keyLi}) values ({valueLi});";
-			
-//			DatasourceIterator.iterateLineField(datasource, iterate);
-			
-			
-			template = template.replace("{tableName}", tableName);
-			DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
-				@Override
-				public void iterate(Field field) {
-					String fieldName = field.getCalcFieldName();
-					String keyTemplate = fieldName;
-					String valuesTemplate = "";
-					if (field.getFieldType().equalsIgnoreCase("FLOAT")) {
-						valuesTemplate = "1";
+		DatasourceIterator.iterateLineField(datasource, new IDatasourceLineFieldIterate() {
+			@Override
+			public void iterate(List<Field> fieldLi) {
+				for (int i = 0; i < count; i++) {
+					final List<String> keyLi = New.arrayList();
+					final List<String> valueLi = New.arrayList();
+					final int innerI = i;
+
+					String template = "insert into {tableName}({keyLi}) values ({valueLi});";
+
+					String tableName = null;
+					Field pField = null;
+
+					if (fieldLi.get(0).isMasterField()) {
+						tableName = datasource.getCalcTableName();
+						pField = datasource.getMasterData().getFixField().getPrimaryKey();
+					} else {
+						String dataSetId = fieldLi.get(0).getDataSetId();
+						for (DetailData detailData : datasource.getDetailData()) {
+							if (detailData.getId().equals(dataSetId)) {
+								tableName = datasource.getCalcDetailTableName(dataSetId);
+								pField = detailData.getFixField().getPrimaryKey();
+							}
+						}
 					}
-					if (field.getFieldType().equalsIgnoreCase("DOUBLE")) {
-						valuesTemplate = "1";
-					}
-					if (field.getFieldType().equalsIgnoreCase("DECIMAL")) {
-						valuesTemplate = "1";
-					}
-					if (field.getFieldType().equalsIgnoreCase("SHORT")) {
-						valuesTemplate = "1";
-					}
-					if (field.getFieldType().equalsIgnoreCase("INT")) {
-						valuesTemplate = "1";
-					}
-					if (field.getFieldType().equalsIgnoreCase("LONG")) {
-						valuesTemplate = "1";
-					}
-					if (field.getFieldType().equalsIgnoreCase("NULL")) {
-					}
-					if (field.getFieldType().equalsIgnoreCase("STRING")) {
-						valuesTemplate = "测试_" + innerI;
-					}
-					if (field.getFieldType().equalsIgnoreCase("DATE")) {
-						SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-						Calendar calendar = Calendar.getInstance();
-						calendar.add(Calendar.DATE, innerI);
-						valuesTemplate = format.format(calendar.getTime());
-					}
-					if (field.getFieldType().equalsIgnoreCase("TIME")) {
-						SimpleDateFormat format = new SimpleDateFormat("HHmmss");
-						Calendar calendar = Calendar.getInstance();
-						calendar.add(Calendar.MINUTE, innerI);
-						valuesTemplate = format.format(calendar.getTime());
-					}
-					if (field.getFieldType().equalsIgnoreCase("TIMESTAMP")) {
-						SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-						Calendar calendar = Calendar.getInstance();
-						calendar.add(Calendar.DATE, innerI);
-						valuesTemplate = format.format(calendar.getTime());
-					}
-					if (field.getFieldType().equalsIgnoreCase("BYTES")) {
+					template = template.replace("{tableName}", tableName);
+					for (Field field : fieldLi) {
+						String fieldName = field.getCalcFieldName();
+						String keyTemplate = fieldName;
+						String valuesTemplate = "";
+						if (field.getFieldType().equalsIgnoreCase("FLOAT")) {
+							valuesTemplate = "1";
+						}
+						if (field.getFieldType().equalsIgnoreCase("DOUBLE")) {
+							valuesTemplate = "1";
+						}
+						if (field.getFieldType().equalsIgnoreCase("DECIMAL")) {
+							valuesTemplate = "1";
+						}
+						if (field.getFieldType().equalsIgnoreCase("SHORT")) {
+							valuesTemplate = "1";
+						}
+						if (field.getFieldType().equalsIgnoreCase("INT")) {
+							valuesTemplate = "1";
+						}
+						if (field.getFieldType().equalsIgnoreCase("LONG")) {
+							valuesTemplate = "1";
+						}
+						if (field.getFieldType().equalsIgnoreCase("NULL")) {
+						}
+						if (field.getFieldType().equalsIgnoreCase("STRING")) {
+							valuesTemplate = "测试_" + innerI;
+						}
+						if (field.getFieldType().equalsIgnoreCase("DATE")) {
+							SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+							Calendar calendar = Calendar.getInstance();
+							calendar.add(Calendar.DATE, innerI);
+							valuesTemplate = format.format(calendar.getTime());
+						}
+						if (field.getFieldType().equalsIgnoreCase("TIME")) {
+							SimpleDateFormat format = new SimpleDateFormat("HHmmss");
+							Calendar calendar = Calendar.getInstance();
+							calendar.add(Calendar.MINUTE, innerI);
+							valuesTemplate = format.format(calendar.getTime());
+						}
+						if (field.getFieldType().equalsIgnoreCase("TIMESTAMP")) {
+							SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+							Calendar calendar = Calendar.getInstance();
+							calendar.add(Calendar.DATE, innerI);
+							valuesTemplate = format.format(calendar.getTime());
+						}
+						if (field.getFieldType().equalsIgnoreCase("BYTES")) {
+						}
+
+						if (field == pField) {
+							valuesTemplate = "0";
+						}
+
+						keyLi.add(keyTemplate);
+						valueLi.add("\"" + valuesTemplate + "\"");
 					}
 					
-					if (field == datasource.getMasterData().getFixField().getPrimaryKey()) {
-						valuesTemplate = "0";
-					}
-					
-					keyLi.add(keyTemplate);
-					valueLi.add("\"" + valuesTemplate + "\"");
+					template = template.replace("{keyLi}", StringUtils.join(keyLi.toArray(), ","));
+					template = template.replace("{valueLi}", StringUtils.join(valueLi.toArray(), ","));
+					insertLi.add(template);
 				}
-			});
-			template = template.replace("{keyLi}", StringUtils.join(keyLi.toArray(), ","));
-			template = template.replace("{valueLi}", StringUtils.join(valueLi.toArray(), ","));
-			insertLi.add(template);
-		}
+				insertLi.add("\n\n\n");
+			}
+		});
+
 
 		return StringUtils.join(insertLi.toArray());
 	}

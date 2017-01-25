@@ -396,6 +396,9 @@ PTriggerField.prototype._syncDisplayValue = function() {
     var li = newValue.split(",");
     var valueLi = [];
     for (var i = 0; i < li.length; i++) {
+    	if (!li[i]) {
+    		continue;
+    	}
     	var value = "";
     	var relationItem = relationManager.getRelationBo(selectorName, li[i]);
     	if (!relationItem) {

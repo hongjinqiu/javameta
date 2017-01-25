@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <list-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template 
+	https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd"> -->
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>SysUserSelector</id>
+	<data-source-model-id>SysUser</data-source-model-id>
+
+	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
+	<description>系统用户列表</description>
+	<scripts></scripts>
+	<view-template view="model/selectorSchema.jsp" />
+	<!-- <security byUnit="true" /> -->
+
+	<toolbar name="toolbar" export="true">
+		<!-- <button text="新增" mode="url" handler="/console/formschema?@name=SysUser" iconCls="but_box" /> <button text="删除" mode="fn" handler="g_deleteRecords" iconCls="but_box"> </button> -->
+	</toolbar>
+
+	<data-provider name="queryDataSetA" size="10">
+		<sql>
+			select * from pub_sysuser
+			where 1=1
+		</sql>
+		<query-parameters dataSetId="A">
+			<query-parameter name="id" auto="true" text="" editor="hiddenfield"></query-parameter>
+			<query-parameter name="code" auto="true" text="">
+			</query-parameter>
+			<query-parameter name="name" auto="true" text=""></query-parameter>
+			<!-- <query-parameter name="type" auto="true" text=""></query-parameter> <query-parameter name="status" auto="true" text=""> </query-parameter> -->
+			<query-parameter name="nick" auto="true" text=""></query-parameter>
+		</query-parameters>
+	</data-provider>
+
+	<column-model name="A_1" text="系统用户列表" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行账户" selectionTemplate="{code},{name}" sqlOrderBy="code">
+		<checkbox-column name="checkboxSelect" hideable="false">
+			<expression></expression>
+		</checkbox-column>
+		<id-column name="id" text="编号" hideable="true" />
+
+		<virtual-column name="FUN_C_SELECTOR" text="操作" width="40">
+			<buttons>
+				<button name="btn_view" text="查看" iconCls="img_look" mode="url!" handler="/console/formschema/?@name=SysUser&amp;id={id}&amp;formStatus=view">
+				</button>
+			</buttons>
+		</virtual-column>
+
+		<auto-column name="code" />
+		<auto-column name="name" />
+		<!-- <auto-column name="type" /> <auto-column name="status" /> -->
+		<auto-column name="nick" />
+	</column-model>
+
+</form-template>

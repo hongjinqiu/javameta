@@ -819,6 +819,9 @@ public class FormTemplateFactory {
 			}
 			String selectorId = (String) item.get("selectorId");
 			String valueField = (String) item.get("valueField");
+			if (StringUtils.isEmpty(valueField)) {
+				valueField = "id";
+			}
 			FormTemplate selectorTemplate = getFormTemplate(selectorId, FormTemplateEnum.SELECTOR);
 			// 选择器只有一个data-provider,一个column-model,因此,直接取一个即可
 			ColumnModel columnModel = selectorTemplate.getColumnModel().get(0);

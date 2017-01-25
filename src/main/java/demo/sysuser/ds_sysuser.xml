@@ -6,7 +6,7 @@
 	<id>SysUser</id>
 	<displayName>系统用户</displayName>
 	<inUsedDenyEdit>false</inUsedDenyEdit>
-	<tableName></tableName>
+	<tableName>pub_sysuser</tableName>
 	<masterData>
 		<id>A</id>
 		<displayName>主数据集</displayName>

@@ -669,6 +669,32 @@ public class SchemaController extends ControllerSupport {
 		}
 		return cookieData;
 	}
+	
+	@RequestMapping("/relation")
+	@ResponseBody
+	public JSONObject relation(HttpServletRequest request) {
+		String selectorId = request.getParameter("selectorId");
+		String id = request.getParameter("id");
+		
+		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
+		List<Map<String, Object>> relationLi = New.arrayList();
+		Map<String, Object> relation = New.hashMap();
+		relation.put("selectorId", selectorId);
+		relation.put("relationId", id);
+		relationLi.add(relation);
+		
+		Map<String, Object> relationBo = formTemplateFactory.getRelationBo(relationLi);
+		JSONObject result = new JSONObject();
+		if (relationBo.get(selectorId) != null) {
+			Map<String, Object> selRelationBo = (Map<String, Object>)relationBo.get(selectorId);
+			if (selRelationBo.get(id) != null) {
+				result.put("result", selRelationBo.get(id));
+				result.put("url", selRelationBo.get("url"));
+			}
+		}
+		
+		return result;
+	}
 
 	@RequestMapping("/testDB")
 	@ResponseBody

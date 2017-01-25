@@ -9,7 +9,7 @@
 
 	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
 	<description>银行账户列表</description>
-	<scripts>js/ds_listtoolbar.js</scripts>
+	<scripts>model/js/ds_listtoolbar.js</scripts>
 	<view-template view="model/listSchema.jsp" />
 
 	<!-- <security byUnit="true" /> -->
@@ -24,10 +24,11 @@
 
 	<data-provider name="queryDataSetA" size="10">
 		<sql>
-			select * from bank_account
+			select * from pub_bankaccount
 			where 1=1
 		</sql>
 		<query-parameters dataSetId="A">
+			<query-parameter name="id" auto="true" editor="hiddenfield" text=""></query-parameter>
 			<query-parameter name="code" auto="true" text=""></query-parameter>
 			<query-parameter name="name" auto="true" text=""></query-parameter>
 			<query-parameter name="mnemonicNo" auto="true" text=""></query-parameter>
@@ -52,7 +53,7 @@
 		</query-parameters>
 	</data-provider>
 
-	<column-model name="A_1" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行账户" selectionTemplate="{code},{name}" sqlOrderBy="code">
+	<column-model name="A_1" text="银行账户列表" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行账户" selectionTemplate="{code},{name}" sqlOrderBy="code">
 		<checkbox-column name="checkboxSelect" hideable="false">
 			<expression></expression>
 		</checkbox-column>
