@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.Unmarshaller;
 
 import net.sf.json.JSONObject;
 
@@ -26,10 +25,14 @@ import com.javameta.model.FormTemplateEnum;
 import com.javameta.model.FormTemplateFactory;
 import com.javameta.model.datasource.Datasource;
 import com.javameta.model.datasource.DatasourceInfo;
+import com.javameta.model.datasource.Field;
 import com.javameta.model.handler.UsedCheck;
+import com.javameta.model.iterate.DatasourceIterator;
 import com.javameta.model.iterate.FormTemplateIterator;
+import com.javameta.model.iterate.IDatasourceFieldIterate;
 import com.javameta.model.iterate.IFormTemplateDataProviderIterate;
 import com.javameta.model.iterate.IFormTemplateQueryParameterIterate;
+import com.javameta.model.template.Column;
 import com.javameta.model.template.ColumnModel;
 import com.javameta.model.template.DataProvider;
 import com.javameta.model.template.FormTemplate;
@@ -110,7 +113,7 @@ public class SchemaController extends ControllerSupport {
 		request.setAttribute("formTemplateJsonData", formTemplateJsonData);
 		request.setAttribute("dataBoJson", dataBoJson);
 
-		{
+		/*{
 			FormTemplate gatheringFormTemplate = formTemplateFactory.getFormTemplate("GatheringBillForm", FormTemplateEnum.FORM);
 			String gatheringFormTemplateJsonData = JSONObject.fromObject(gatheringFormTemplate).toString();
 			gatheringFormTemplateJsonData = CommonUtil.filterJsonEmptyAttr(gatheringFormTemplateJsonData);
@@ -122,7 +125,7 @@ public class SchemaController extends ControllerSupport {
 			String datasourceJson = JSONObject.fromObject(gathering).toString();
 			datasourceJson = CommonUtil.filterJsonEmptyAttr(datasourceJson);
 			request.setAttribute("datasourceJson", datasourceJson);
-		}
+		}*/
 
 		String view = formTemplate.getViewTemplate().getView();
 		if (view.endsWith(".jsp")) {
@@ -706,14 +709,6 @@ public class SchemaController extends ControllerSupport {
 		
 		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
 		FormTemplate formTemplate = formTemplateFactory.getFormTemplate(schemaName, FormTemplateEnum.FORM);
-		/*
-result := map[string]interface{}{
-		"formTemplate": formTemplate,
-		"id":           strId,
-		"formStatus":   formStatus,
-		"copyFlag":     copyFlag,
-	}
-		 */
 		Map<String, Object> result = New.hashMap();
 		result.put("formTemplate", formTemplate);
 		result.put("id", id);
@@ -741,7 +736,36 @@ result := map[string]interface{}{
 		result.put("relationBo", relationBo);
 		
 		// 主数据集的后台渲染
-		// TODO
+		result.put("masterRenderLi", getMasterRenderLi(formTemplate));
+		
+		Map<String, Object> layerBo = formTemplateFactory.getDictionaryForFormTemplate(formTemplate);
+
+		Map<String, Object> iLayerBo = (Map<String, Object>) layerBo.get("dictionaryBo");
+		String layerBoJson = JSONObject.fromObject(iLayerBo).toString();
+		layerBoJson = CommonUtil.filterJsonEmptyAttr(layerBoJson);
+
+		Map<String, Object> iLayerBoLi = (Map<String, Object>) layerBo.get("dictionaryBoLi");
+		String layerBoLiJson = JSONObject.fromObject(iLayerBoLi).toString();
+		layerBoLiJson = CommonUtil.filterJsonEmptyAttr(layerBoLiJson);
+		
+		String formTemplateJsonData = JSONObject.fromObject(formTemplate).toString();
+		formTemplateJsonData = CommonUtil.filterJsonEmptyAttr(formTemplateJsonData);
+		result.put("formTemplateJsonData", formTemplateJsonData);
+		
+		String dataBoJson = JSONObject.fromObject(dataBo).toString();
+		dataBoJson = CommonUtil.filterJsonEmptyAttr(dataBoJson);
+		result.put("dataBoJson", dataBoJson);
+		
+		result.put("layerBoJson", layerBoJson);
+		result.put("layerBoLiJson", layerBoLiJson);
+		
+		String relationBoJson = JSONObject.fromObject(relationBo).toString();
+		relationBoJson = CommonUtil.filterJsonEmptyAttr(relationBoJson);
+		result.put("relationBoJson", relationBoJson);
+		
+		for (String key: result.keySet()) {
+			request.setAttribute(key, result.get(key));
+		}
 
 		String view = formTemplate.getViewTemplate().getView();
 		if (view.endsWith(".jsp")) {
@@ -750,13 +774,98 @@ result := map[string]interface{}{
 		return new ModelAndView(view);
 	}
 	
-//	func (c Console) getMasterRenderLi(formTemplate FormTemplate) map[string]interface{} {
 	private Map<String, Object> getMasterRenderLi(FormTemplate formTemplate) {
 		if (StringUtils.isEmpty(formTemplate.getDatasourceModelId())) {
 			return null;
 		}
-//		result := map[string]interface{}{}
 		Map<String, Object> result = New.hashMap();
+		
+		DatasourceFactory datasourceFactory = new DatasourceFactory();
+		Datasource datasource = datasourceFactory.getDatasource(formTemplate.getDatasourceModelId());
+		for (int i = 0; i < formTemplate.getColumnModel().size(); i++) {
+			if (formTemplate.getColumnModel().get(i).getDataSetId().equals("A")) {
+				final ObjectHolder<Integer> lineColSpan = new ObjectHolder<Integer>();
+				lineColSpan.obj = formTemplate.getColumnModel().get(i).getColSpan();
+				if (lineColSpan.obj == null) {
+					lineColSpan.obj = 1;
+				}
+				final List<List<Map<String, Object>>> container = New.arrayList();
+				final List<Map<String, Object>> containerItem = New.arrayList();
+				final ObjectHolder<Integer> lineColSpanSum = new ObjectHolder<Integer>();
+				lineColSpanSum.obj = 0;
+				
+				for (final Column column: formTemplate.getColumnModel().get(i).getColumnList()) {
+					final ObjectHolder<Boolean> isModelField = new ObjectHolder<Boolean>();
+					isModelField.obj = false;
+					DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+						@Override
+						public void iterate(Field field) {
+							if (field.isMasterField() && field.getId().equals(column.getName())) {
+								isModelField.obj = true;
+//								if column.Hideable != "true" && column.ManualRender != "true" {
+								if ((column.getHideable() == null || column.getHideable() == false)) {
+									Integer columnColSpan = column.getColSpan();
+									if (columnColSpan == null) {
+										columnColSpan = 1;
+									}
+									Map<String, Object> renderItem = New.hashMap();
+									renderItem.put("isHtml", "false");
+									boolean required = false;
+									if (field.getAllowEmpty() != null && !field.getAllowEmpty()) {
+										required = true;
+									}
+									renderItem.put("required", required);
+									renderItem.put("label", column.getText());
+									renderItem.put("name", column.getName());
+									renderItem.put("columnWidth", column.getColumnWidth());
+									renderItem.put("columnSpan", columnColSpan - 1);
+									renderItem.put("labelWidth", column.getLabelWidth());
+									containerItem.add(renderItem);
+									
+									lineColSpanSum.obj += columnColSpan;
+									if (lineColSpanSum.obj >= lineColSpan.obj) {
+										List<Map<String, Object>> containerItemCopy = New.arrayList();
+										containerItemCopy.addAll(containerItem);
+										container.add(containerItemCopy);
+										containerItem.clear();
+										lineColSpanSum.obj = lineColSpanSum.obj - lineColSpan.obj;
+									}
+								}
+							}
+						}
+					});
+					if (!isModelField.obj) {
+						if ((column.getHideable() == null || column.getHideable() == false)) {
+							Integer columnColSpan = column.getColSpan();
+							if (columnColSpan == null) {
+								columnColSpan = 1;
+							}
+							Map<String, Object> renderItem = New.hashMap();
+							renderItem.put("isHtml", "false");
+							renderItem.put("required", false);
+							renderItem.put("label", column.getText());
+							renderItem.put("name", column.getName());
+							renderItem.put("columnWidth", column.getColumnWidth());
+							renderItem.put("columnSpan", columnColSpan - 1);
+							renderItem.put("labelWidth", column.getLabelWidth());
+							containerItem.add(renderItem);
+							lineColSpanSum.obj += columnColSpan;
+							if (lineColSpanSum.obj >= lineColSpan.obj) {
+								List<Map<String, Object>> containerItemCopy = New.arrayList();
+								containerItemCopy.addAll(containerItem);
+								container.add(containerItemCopy);
+								containerItem.clear();
+								lineColSpanSum.obj = lineColSpanSum.obj - lineColSpan.obj;
+							}
+						}
+					}
+				}
+				if (0 < lineColSpanSum.obj && lineColSpanSum.obj < lineColSpan.obj) {
+					container.add(containerItem);
+				}
+				result.put(formTemplate.getColumnModel().get(i).getName(), container);
+			}
+		}
 		
 		return result;
 	}

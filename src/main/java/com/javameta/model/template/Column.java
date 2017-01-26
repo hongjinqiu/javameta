@@ -15,5 +15,7 @@ public abstract class Column {
 	public abstract void setZeroShowEmpty(Boolean value);
 	public abstract String getXmlName();
 	public abstract void setXmlName(String xmlName);
-	
+	public abstract Integer getColSpan();
+	public abstract String getColumnWidth();
+	public abstract String getLabelWidth();
 }
