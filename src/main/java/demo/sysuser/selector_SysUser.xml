@@ -12,7 +12,7 @@
 	<!-- <security byUnit="true" /> -->
 
 	<toolbar name="toolbar" export="true">
-		<!-- <button text="新增" mode="url" handler="/console/formschema?@name=SysUser" iconCls="but_box" /> <button text="删除" mode="fn" handler="g_deleteRecords" iconCls="but_box"> </button> -->
+		<!-- <button text="新增" mode="url" handler="/schema/formschema?@name=SysUser" iconCls="but_box" /> <button text="删除" mode="fn" handler="g_deleteRecords" iconCls="but_box"> </button> -->
 	</toolbar>
 
 	<data-provider name="queryDataSetA" size="10">
@@ -38,7 +38,7 @@
 
 		<virtual-column name="FUN_C_SELECTOR" text="操作" width="40">
 			<buttons>
-				<button name="btn_view" text="查看" iconCls="img_look" mode="url!" handler="/console/formschema/?@name=SysUser&amp;id={id}&amp;formStatus=view">
+				<button name="btn_view" text="查看" iconCls="img_look" mode="url!" handler="/schema/formschema/?@name=SysUser&amp;id={id}&amp;formStatus=view">
 				</button>
 			</buttons>
 		</virtual-column>

@@ -697,6 +697,70 @@ public class SchemaController extends ControllerSupport {
 		return result;
 	}
 	
+	@RequestMapping("/formschema")
+	public ModelAndView formschema(HttpServletRequest request, HttpServletResponse response) {
+		String schemaName = request.getParameter("@name");
+		String id = request.getParameter("id");
+		String formStatus = request.getParameter("formStatus");
+		String copyFlag = request.getParameter("copyFlag");
+		
+		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
+		FormTemplate formTemplate = formTemplateFactory.getFormTemplate(schemaName, FormTemplateEnum.FORM);
+		/*
+result := map[string]interface{}{
+		"formTemplate": formTemplate,
+		"id":           strId,
+		"formStatus":   formStatus,
+		"copyFlag":     copyFlag,
+	}
+		 */
+		Map<String, Object> result = New.hashMap();
+		result.put("formTemplate", formTemplate);
+		result.put("id", id);
+		result.put("formStatus", formStatus);
+		result.put("copyFlag", copyFlag);
+
+		if (StringUtils.isNotEmpty(formTemplate.getDatasourceModelId())) {
+			// 光有formTemplate不行,还要有model的内容,才可以渲染数据
+			DatasourceFactory datasourceFactory = new DatasourceFactory();
+			Datasource datasource = datasourceFactory.getDatasource(formTemplate.getDatasourceModelId());
+			result.put("datasource", datasource);
+			String datasourceJson = JSONObject.fromObject(datasource).toString();
+			datasourceJson = CommonUtil.filterJsonEmptyAttr(datasourceJson);
+			result.put("datasourceJson", datasourceJson);
+		}
+		//toolbarBo
+		Map<String, Object> toolbarBo = New.hashMap();
+		for (Toolbar toolbar: formTemplate.getToolbar()) {
+			toolbarBo.put(toolbar.getName(), formTemplateFactory.getToolbarBo(toolbar));
+		}
+		result.put("toolbarBo", toolbarBo);
+		Map<String, Object> dataBo = New.hashMap();
+		Map<String, Object> relationBo = New.hashMap();
+		result.put("dataBo", dataBo);
+		result.put("relationBo", relationBo);
+		
+		// 主数据集的后台渲染
+		// TODO
+
+		String view = formTemplate.getViewTemplate().getView();
+		if (view.endsWith(".jsp")) {
+			view = view.replace(".jsp", "");
+		}
+		return new ModelAndView(view);
+	}
+	
+//	func (c Console) getMasterRenderLi(formTemplate FormTemplate) map[string]interface{} {
+	private Map<String, Object> getMasterRenderLi(FormTemplate formTemplate) {
+		if (StringUtils.isEmpty(formTemplate.getDatasourceModelId())) {
+			return null;
+		}
+//		result := map[string]interface{}{}
+		Map<String, Object> result = New.hashMap();
+		
+		return result;
+	}
+	
 	@RequestMapping("/xml")
 	@ResponseBody
 	public void xml(HttpServletRequest request, HttpServletResponse response) throws IOException {

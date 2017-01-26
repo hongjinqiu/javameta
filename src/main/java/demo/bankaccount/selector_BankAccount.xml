@@ -15,11 +15,11 @@
 	<!-- <security byUnit="true" /> -->
 
 	<toolbar name="toolbar" export="true">
-		<button text="新增" mode="url" handler="/console/formschema?@name=BankAccount" iconCls="but_box" />
+		<button text="新增" mode="url" handler="/schema/formschema?@name=BankAccount" iconCls="but_box" />
 
 		<button text="删除" mode="fn" handler="g_deleteRecords" iconCls="but_box">
 		</button>
-		<button text="查看配置" mode="url^" handler="/console/rawxmlcontent?@name=BankAccount&amp;type=Component" iconCls="but_box">
+		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent?@name=BankAccount&amp;type=Component" iconCls="but_box">
 		</button>	</toolbar>
 
 	<data-provider name="queryDataSetA" size="10">
@@ -61,13 +61,13 @@
 
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
-				<button text="编辑" iconCls="img_edit" mode="url" handler="/console/formschema/?@name=BankAccount&amp;id={id}">
+				<button text="编辑" iconCls="img_edit" mode="url" handler="/schema/formschema/?@name=BankAccount&amp;id={id}">
 				</button>
-				<button text="复制" iconCls="img_add" mode="url" handler="/console/formschema/?@name=BankAccount&amp;id={id}&amp;copyFlag=true">
+				<button text="复制" iconCls="img_add" mode="url" handler="/schema/formschema/?@name=BankAccount&amp;id={id}&amp;copyFlag=true">
 				</button>
 				<button name="btn_delete" text="删除" iconCls="img_delete" mode="fn" handler="g_deleteRecord">
 				</button>
-				<button name="btn_view" text="查看" iconCls="img_look" mode="url" handler="/console/formschema/?@name=BankAccount&amp;id={id}&amp;formStatus=view">
+				<button name="btn_view" text="查看" iconCls="img_look" mode="url" handler="/schema/formschema/?@name=BankAccount&amp;id={id}&amp;formStatus=view">
 				</button>
 			</buttons>
 		</virtual-column>
