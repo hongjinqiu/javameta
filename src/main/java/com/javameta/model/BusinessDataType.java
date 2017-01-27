@@ -36,8 +36,8 @@ import com.javameta.value.ValueTime;
 import com.javameta.value.ValueTimestamp;
 
 public class BusinessDataType {
-	public static ValueBusinessObject convertJSONObjectToValueBusinessObject(Datasource datasource, JSONObject o) {
-		final JSONObject o2 = o;
+	public static ValueBusinessObject convertMapToValueBusinessObject(Datasource datasource, Map<String, Object> o) {
+		final Map<String, Object> o2 = o;
 		ValueBusinessObject valueBo = new ValueBusinessObject();
 
 		final Map<String, Value> masterDataVo = New.hashMap();
@@ -47,7 +47,7 @@ public class BusinessDataType {
 			public void iterate(List<Field> fieldLi) {
 				Field firstField = fieldLi.get(0);
 				if (firstField.isMasterField()) {
-					JSONObject masterObject = (JSONObject)o2.get(firstField.getDataSetId());
+					Map<String, Object> masterObject = (Map<String, Object>)o2.get(firstField.getDataSetId());
 					for (Field field: fieldLi) {
 						String value = ObjectUtils.toString(masterObject.get(field.getFieldName()), "");
 						masterDataVo.put(field.getFieldName(), convertStringToValue(field, value));
@@ -58,10 +58,10 @@ public class BusinessDataType {
 						detailDataVo.put(firstField.getFieldName(), new ArrayList<Map<String, Value>>());
 					}
 					List<Map<String, Value>> detailDataVoLi = detailDataVo.get(firstField.getFieldName());
-					JSONArray detailObject = (JSONArray)o2.get(firstField.getDataSetId());
+					List<Map<String, Object>> detailObject = (List<Map<String, Object>>)o2.get(firstField.getDataSetId());
 					for (int i = 0; i < detailObject.size(); i++) {
 						Map<String, Value> detailData = New.hashMap();
-						JSONObject detailLineObject = detailObject.getJSONObject(i);
+						Map<String, Object> detailLineObject = detailObject.get(i);
 						for (Field field: fieldLi) {
 							String value = ObjectUtils.toString(detailLineObject.get(field.getFieldName()), "");
 							detailData.put(field.getFieldName(), convertStringToValue(field, value));
@@ -113,8 +113,8 @@ public class BusinessDataType {
 		return result;
 	}
 	
-	private static void putExtraField(Map<String, Value> vo, JSONObject object) {
-		for (Iterator<String> it = object.keys(); it.hasNext(); ) {
+	private static void putExtraField(Map<String, Value> vo, Map<String, Object> object) {
+		for (Iterator<String> it = object.keySet().iterator(); it.hasNext(); ) {
 			String key = it.next();
 			if (vo.get(key) == null) {
 				String value = ObjectUtils.toString(object.get(key), "");

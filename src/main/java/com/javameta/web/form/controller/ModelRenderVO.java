@@ -1,16 +1,64 @@
 package com.javameta.web.form.controller;
 
+import java.util.Map;
+
+import com.javameta.model.ValueBusinessObject;
+import com.javameta.model.datasource.Datasource;
+import com.javameta.model.template.FormTemplate;
+
 public class ModelRenderVO {
-/*
- * type ModelRenderVO struct {
-	UserId       int
-	Bo           map[string]interface{}
-	RelationBo   map[string]interface{}
-	UsedCheckBo  map[string]interface{}
-	DataSource   DataSource
-	FormTemplate FormTemplate
-}
- */
 	private int userId;
-	
+	private ValueBusinessObject bo;
+	private Map<String, Object> relationBo;
+	private Map<String, Object> usedCheckBo;
+	private Datasource datasource;
+	private FormTemplate formTemplate;
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+
+	public Map<String, Object> getRelationBo() {
+		return relationBo;
+	}
+
+	public void setRelationBo(Map<String, Object> relationBo) {
+		this.relationBo = relationBo;
+	}
+
+	public Map<String, Object> getUsedCheckBo() {
+		return usedCheckBo;
+	}
+
+	public void setUsedCheckBo(Map<String, Object> usedCheckBo) {
+		this.usedCheckBo = usedCheckBo;
+	}
+
+	public Datasource getDatasource() {
+		return datasource;
+	}
+
+	public void setDatasource(Datasource datasource) {
+		this.datasource = datasource;
+	}
+
+	public FormTemplate getFormTemplate() {
+		return formTemplate;
+	}
+
+	public void setFormTemplate(FormTemplate formTemplate) {
+		this.formTemplate = formTemplate;
+	}
+
+	public ValueBusinessObject getBo() {
+		return bo;
+	}
+
+	public void setBo(ValueBusinessObject bo) {
+		this.bo = bo;
+	}
 }
