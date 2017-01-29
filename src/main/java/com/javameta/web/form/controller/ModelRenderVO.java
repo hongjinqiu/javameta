@@ -8,7 +8,7 @@ import com.javameta.model.template.FormTemplate;
 
 public class ModelRenderVO {
 	private int userId;
-	private ValueBusinessObject bo;
+	private Map<String, Object> bo;
 	private Map<String, Object> relationBo;
 	private Map<String, Object> usedCheckBo;
 	private Datasource datasource;
@@ -54,11 +54,12 @@ public class ModelRenderVO {
 		this.formTemplate = formTemplate;
 	}
 
-	public ValueBusinessObject getBo() {
+	public Map<String, Object> getBo() {
 		return bo;
 	}
 
-	public void setBo(ValueBusinessObject bo) {
+	public void setBo(Map<String, Object> bo) {
 		this.bo = bo;
 	}
+
 }

@@ -61,7 +61,7 @@ public class FormTemplateDao extends DaoSupport {
 	}
 	
 	/**
-	 * 取得查询权限
+	 * 取得查询权限,只能用threadLocal的方式来从session中读取数据
 	 * @param security
 	 * @return
 	 */

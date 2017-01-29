@@ -1,6 +1,7 @@
 package com.javameta.model;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,8 +50,7 @@ public class BusinessDataType {
 				if (firstField.isMasterField()) {
 					Map<String, Object> masterObject = (Map<String, Object>)o2.get(firstField.getDataSetId());
 					for (Field field: fieldLi) {
-						String value = ObjectUtils.toString(masterObject.get(field.getFieldName()), "");
-						masterDataVo.put(field.getFieldName(), convertStringToValue(field, value));
+						masterDataVo.put(field.getFieldName(), convertObjectToValue(field, masterObject.get(field.getFieldName())));
 					}
 					putExtraField(masterDataVo, masterObject);
 				} else {
@@ -63,8 +63,7 @@ public class BusinessDataType {
 						Map<String, Value> detailData = New.hashMap();
 						Map<String, Object> detailLineObject = detailObject.get(i);
 						for (Field field: fieldLi) {
-							String value = ObjectUtils.toString(detailLineObject.get(field.getFieldName()), "");
-							detailData.put(field.getFieldName(), convertStringToValue(field, value));
+							detailData.put(field.getFieldName(), convertObjectToValue(field, detailLineObject.get(field.getFieldName())));
 						}
 						putExtraField(detailData, detailLineObject);
 						detailDataVoLi.add(detailData);
@@ -121,6 +120,125 @@ public class BusinessDataType {
 				vo.put(key, ValueString.get(value));
 			}
 		}
+	}
+	
+	public static Value convertObjectToValue(Field field, Object value) {
+		if (value == null) {
+			return ValueNull.INSTANCE;
+		}
+		if (field.getFieldType().equalsIgnoreCase("FLOAT")) {
+			if (value instanceof Float) {
+				return ValueFloat.get((Float)value);
+			}
+			String text = ObjectUtils.toString(value, "");
+			return ValueFloat.get(Float.parseFloat(text));
+		}
+		if (field.getFieldType().equalsIgnoreCase("DOUBLE")) {
+			if (value instanceof Double) {
+				return ValueDouble.get((Double)value);
+			}
+			String text = ObjectUtils.toString(value, "");
+			return ValueDouble.get(Double.parseDouble(text));
+		}
+		if (field.getFieldType().equalsIgnoreCase("DECIMAL")) {
+			if (value instanceof BigDecimal) {
+				return ValueDecimal.get((BigDecimal)value);
+			}
+			String text = ObjectUtils.toString(value, "");
+			return ValueDecimal.get(new BigDecimal(text));
+		}
+		if (field.getFieldType().equalsIgnoreCase("SHORT")) {
+			if (value instanceof Short) {
+				return ValueShort.get((Short)value);
+			}
+			if (value instanceof Integer) {
+				int iValue = (Integer)value;
+				return ValueShort.get((short)iValue);
+			}
+			String text = ObjectUtils.toString(value, "");
+			return ValueShort.get(Short.parseShort(text));
+		}
+		if (field.getFieldType().equalsIgnoreCase("INT")) {
+			if (value instanceof Integer) {
+				return ValueInt.get((Integer)value);
+			}
+			String text = ObjectUtils.toString(value, "");
+			return ValueInt.get(Integer.parseInt(text));
+		}
+		if (field.getFieldType().equalsIgnoreCase("LONG")) {
+			if (value instanceof Long) {
+				return ValueLong.get((Long)value);
+			}
+			String text = ObjectUtils.toString(value, "");
+			return ValueLong.get(Long.parseLong(text));
+		}
+		if (field.getFieldType().equalsIgnoreCase("NULL")) {
+			return ValueNull.INSTANCE;
+		}
+		if (field.getFieldType().equalsIgnoreCase("STRING")) {
+			if (value instanceof String) {
+				return ValueString.get((String)value);
+			}
+			String text = ObjectUtils.toString(value, "");
+			return ValueString.get(text);
+		}
+		if (field.getFieldType().equalsIgnoreCase("DATE")) {
+			if (value instanceof Date) {
+				return ValueDate.get((Date)value);
+			}
+			String text = ObjectUtils.toString(value, "");
+			String tmpValue = text;
+			tmpValue = tmpValue.replaceAll("-|/", "");
+			SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+			try {
+				Date date = format.parse(tmpValue);
+				return ValueDate.get(date);
+			} catch (ParseException e) {
+				throw new JavametaException(e);
+			}
+		}
+		if (field.getFieldType().equalsIgnoreCase("TIME")) {
+			if (value instanceof Date) {
+				return ValueTime.get((Date)value);
+			}
+			String text = ObjectUtils.toString(value, "");
+			String tmpValue = text;
+			tmpValue = tmpValue.replaceAll("-|/|:", "");
+			if (tmpValue.length() == 6) {
+				tmpValue = "20010203" + tmpValue;
+			}
+			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+			try {
+				Date date = format.parse(tmpValue);
+				return ValueTime.get(date);
+			} catch (ParseException e) {
+				throw new JavametaException(e);
+			}
+		}
+		if (field.getFieldType().equalsIgnoreCase("TIMESTAMP")) {
+			if (value instanceof Timestamp) {
+				return ValueTimestamp.get((Timestamp)value);
+			}
+			String text = ObjectUtils.toString(value, "");
+			String tmpValue = text;
+			tmpValue = tmpValue.replaceAll("-|/|:| ", "");
+			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+			try {
+				Date date = format.parse(tmpValue);
+				return ValueTimestamp.get(date);
+			} catch (ParseException e) {
+				throw new JavametaException(e);
+			}
+		}
+		if (field.getFieldType().equalsIgnoreCase("BYTES")) {
+			if (value instanceof String) {
+				return ValueBytes.get(((String)value).getBytes());
+			}
+			String text = ObjectUtils.toString(value, "");
+			return ValueBytes.get(text.getBytes());
+		}
+		String text = ObjectUtils.toString(value, "");
+		return ValueString.get(text);
 	}
 
 	public static Value convertStringToValue(Field field, String value) {

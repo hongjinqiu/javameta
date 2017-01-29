@@ -598,6 +598,19 @@ public class DatasourceFactory {
 		});
 	}
 	
+//	func (o ModelTemplateFactory) GetStrId(bo map[string]interface{}) string {
+	public String getStrId(Map<String, Object> bo) {
+		if (bo.get("id") != null) {
+			return bo.get("id").toString();
+		} else {
+			Map<String, Object> masterData = (Map<String, Object>)bo.get("A");
+			if (masterData.get("id") != null) {
+				return masterData.get("id").toString();
+			}
+		}
+		return "";
+	}
+	
 	public Datasource unmarshal(String path) {
 		try {
 			Unmarshaller unmarshaller = context.createUnmarshaller();

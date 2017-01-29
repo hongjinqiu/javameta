@@ -55,7 +55,7 @@ public abstract class AFormAction extends ControllerSupport {
 
 		String format = request.getParameter("format");
 		if (format.equals("json")) {
-			result.put("bo", BusinessDataType.convertValueBusinessObjectToJSONStringObject(modelRenderVO.getBo()));
+			result.put("bo", modelRenderVO.getBo());
 			result.put("relationBo", modelRenderVO.getRelationBo());
 			result.put("usedCheckBo", modelRenderVO.getUsedCheckBo());
 		}
