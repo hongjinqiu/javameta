@@ -7,9 +7,11 @@ import java.util.Map;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.javameta.JavametaException;
 import com.javameta.expression.ExpressionParser;
 import com.javameta.model.BusinessDataType;
 import com.javameta.model.DatasourceFactory;
@@ -18,33 +20,113 @@ import com.javameta.model.datasource.Datasource;
 import com.javameta.model.datasource.DetailData;
 import com.javameta.model.datasource.Field;
 import com.javameta.model.handler.DiffDataRow;
+import com.javameta.model.handler.UsedCheck;
 import com.javameta.model.iterate.DatasourceIterator;
+import com.javameta.model.iterate.IDatasourceDiffLineDataIterate;
 import com.javameta.model.iterate.IDatasourceFieldDataIterate;
 import com.javameta.model.iterate.IDatasourceFieldIterate;
+import com.javameta.model.iterate.IDatasourceLineDataIterate;
+import com.javameta.util.ApplicationContextUtil;
 import com.javameta.util.New;
 import com.javameta.value.Value;
 import com.javameta.value.ValueNull;
+import com.javameta.web.form.dao.FormDao;
 import com.javameta.web.support.DaoSupport;
 import com.javameta.web.support.ServiceSupport;
 
 @Service
 @Transactional
 public class FormSaveService extends ServiceSupport {
-	private DaoSupport daoSupport;
+	@Autowired
+	private FormDao formDao;
 
 	//	func (o FinanceService) SaveData(sessionId int, dataSource DataSource, bo *map[string]interface{}) *[]DiffDataRow {
-	public List<DiffDataRow> saveData(Datasource datasource, ValueBusinessObject valueBo) {
+	public List<DiffDataRow> saveData(final Datasource datasource, final ValueBusinessObject valueBo) {
 		//		modelTemplateFactory := ModelTemplateFactory{}
 		DatasourceFactory datasourceFactory = new DatasourceFactory();
-		int id = valueBo.getMasterData().get("id").getInt();// TODO 需要验证空,
+		Value idValue = valueBo.getMasterData().get("id");
+		int id = 0;
+		if (idValue != null && !idValue.equals(ValueNull.INSTANCE)) {
+			id = idValue.getInt();
+		}
 		// 主数据集和分录数据校验
 		//		message := o.validateBO(sessionId, dataSource, (*bo))
+		String message = validateBO(datasource, valueBo);
+		if (StringUtils.isNotEmpty(message)) {
+			throw new JavametaException(message);
+		}
+		if (id == 0) {// 新增
+			// 写数据库,使主数据集和分录id赋值,
+			insert(datasource, valueBo);
+			// 被用过帐
+			UsedCheck usedCheck = (UsedCheck)ApplicationContextUtil.getApplicationContext().getBean("usedCheck");
+			final List<DiffDataRow> diffDataRowLi = New.arrayList();
+			DatasourceIterator.iterateLineValueBo(datasource, valueBo, new IDatasourceLineDataIterate() {
+				@Override
+				public void iterate(List<Field> fieldLi, Map<String, Value> data, int rowIndex) {
+					DiffDataRow diffDataRow = new DiffDataRow();
+					diffDataRow.setFieldLi(fieldLi);
+					diffDataRow.setDestBo(valueBo);
+					diffDataRow.setDestData(data);
+					diffDataRow.setSrcData(null);
+					diffDataRow.setSrcBo(null);
+					diffDataRowLi.add(diffDataRow);
+				}
+			});
+			for (int i = 0; i < diffDataRowLi.size(); i++) {
+				usedCheck.insert(diffDataRowLi.get(i).getFieldLi(), valueBo, diffDataRowLi.get(i).getDestData());
+			}
+			return diffDataRowLi;
+		}
+		// 找出srcBo,
+		Map<String, Object> param = New.hashMap();
+		param.put("id", id);
+		final ValueBusinessObject srcValueBo = this.formDao.getValueBoFromDb(datasource, param);
+		final List<DiffDataRow> diffDataRowLi = New.arrayList();
+		DatasourceIterator.iterateDiffValueBo(datasource, valueBo, srcValueBo, new IDatasourceDiffLineDataIterate() {
+			@Override
+			public void iterate(List<Field> fieldLi, Map<String, Value> destData, Map<String, Value> srcData) {
+				// 分录+id
+				if (destData != null) {
+					Value idValue = destData.get("id");
+					if (idValue == null || idValue.equals(ValueNull.INSTANCE) || idValue.getInt() == 0) {
+						formDao.insert(datasource, fieldLi, valueBo, destData);
+					}
+				}
+				DiffDataRow diffDataRow = new DiffDataRow();
+				diffDataRow.setFieldLi(fieldLi);
+				diffDataRow.setDestBo(valueBo);
+				diffDataRow.setDestData(destData);
+				diffDataRow.setSrcData(srcData);
+				diffDataRow.setSrcBo(srcValueBo);
+				diffDataRowLi.add(diffDataRow);
+			}
+		});
+
+		UsedCheck usedCheck = (UsedCheck)ApplicationContextUtil.getApplicationContext().getBean("usedCheck");
+		// 删除的分录行数据的被用判断
+		for (DiffDataRow diffDataRow: diffDataRowLi) {
+			if (usedCheck.checkDeleteDetailRecordUsed(datasource, valueBo, diffDataRow)) {
+				throw new JavametaException("部分分录数据已被用，不可删除");
+			}
+		}
+		
+		// 被用差异行处理,
+		
 
 		// TODO
 		return null;
 	}
+	
+	private void insert(Datasource datasource, ValueBusinessObject valueBo) {
+		this.formDao.insert(datasource, valueBo);
+	}
+	
+//	func (o FinanceService) setDataId(db *mgo.Database, dataSource DataSource, fieldGroup *FieldGroup, bo *map[string]interface{}, data *map[string]interface{}) {
+	private void setDataId(Datasource datasource, Field field, ValueBusinessObject valueBo, Map<String, Value> data) {
+		// mysql auto increment, do nothing,
+	}
 
-	//	func (o FinanceService) validateBO(sessionId int, dataSource DataSource, bo map[string]interface{}) string {
 	private String validateBO(final Datasource datasource, ValueBusinessObject valueBo) {
 		final List<String> messageLi = New.arrayList();
 		DatasourceIterator.iterateFieldValueBo(datasource, valueBo, new IDatasourceFieldDataIterate() {
@@ -93,18 +175,13 @@ public class FormSaveService extends ServiceSupport {
 		return StringUtils.join(messageLi.toArray(), "<br />");
 	}
 	
-//	func (o FinanceService) validateBODuplicate(sessionId int, dataSource DataSource, bo map[string]interface{}) string {
 	private String validateBODuplicate(Datasource datasource, ValueBusinessObject valueBo) {
 		String result = "";
-//		result += o.validateMasterDataDuplicate(sessionId, dataSource, bo)
-/*
-		if result != "" {
-			result += "<br />"
+		result += validateMasterDataDuplicate(datasource, valueBo);
+		if (StringUtils.isNotEmpty(result)) {
+			result += "<br />";
 		}
-		result += o.validateDetailDataDuplicate(sessionId, dataSource, bo)
-		return result
-*/
-		
+		result += validateDetailDataDuplicate(datasource, valueBo);
 		return result;
 	}
 	
@@ -145,7 +222,7 @@ public class FormSaveService extends ServiceSupport {
 				queryParam.put(idField.getCalcFieldName(), strId);
 			}
 			sb.append(" limit 1 ");
-			int count = this.daoSupport.getNamedParameterJdbcTemplate().queryForInt(sb.toString(), queryParam);
+			int count = this.formDao.getNamedParameterJdbcTemplate().queryForInt(sb.toString(), queryParam);
 			if (count > 0) {
 				message = StringUtils.join(andFieldNameLi, "+") + "不允许重复";
 			}
@@ -154,20 +231,60 @@ public class FormSaveService extends ServiceSupport {
 		return message;
 	}
 	
-//	func (o FinanceService) validateDetailDataDuplicate(sessionId int, dataSource DataSource, bo map[string]interface{}) string {
-	private String validateDetailDataDuplicate(Datasource datasource, ValueBusinessObject valueBo) {
-//		messageLi := []string{}
-		List<String> messageLi = New.arrayList();
-		/*
-		 * duplicateFieldIdLi := []string{}
-	duplicateFieldNameLi := []string{}
-		 */
-		List<String> duplicateFieldIdLi = New.arrayList();
-		List<String> duplicateFieldNameLi = New.arrayList();
+	private String validateDetailDataDuplicate(final Datasource datasource, final ValueBusinessObject valueBo) {
+		final List<String> messageLi = New.arrayList();
+		final List<String> duplicateFieldIdLi = New.arrayList();
+		final List<String> duplicateFieldNameLi = New.arrayList();
 		DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
 			@Override
 			public void iterate(Field field) {
-				
+				if (!field.isMasterField()) {
+					if (field.getAllowDuplicate() != null && field.getAllowDuplicate() == false && !field.getId().equals("id")) {
+						duplicateFieldIdLi.add(field.getId());
+						duplicateFieldNameLi.add(field.getDisplayName());
+					}
+				}
+			}
+		});
+		if (duplicateFieldIdLi.size() == 0) {
+			return "";
+		}
+		final String duplicateFieldNameJoin = StringUtils.join(duplicateFieldNameLi.toArray(), "+") + "不允许重复";
+		DatasourceIterator.iterateLineValueBo(datasource, valueBo, new IDatasourceLineDataIterate() {
+			@Override
+			public void iterate(List<Field> fieldLi, final Map<String, Value> data, final int rowIndex) {
+				DatasourceIterator.iterateLineValueBo(datasource, valueBo, new IDatasourceLineDataIterate() {
+					@Override
+					public void iterate(List<Field> innerFieldLi, Map<String, Value> innerData, int innerRowIndex) {
+						if (innerRowIndex > rowIndex) {
+							boolean isDuplicate = true;
+							if (duplicateFieldIdLi.size() == 0) {
+								isDuplicate = false;
+							}
+							for (String item: duplicateFieldIdLi) {
+								if (innerData.get(item) == null && data.get(item) != null) {
+									isDuplicate = false;
+									break;
+								}
+								if (innerData.get(item) != null && data.get(item) == null) {
+									isDuplicate = false;
+									break;
+								}
+								if (innerData.get(item) != null && data.get(item) != null && !innerData.get(item).equals(data.get(item))) {
+									isDuplicate = false;
+									break;
+								}
+							}
+							if (isDuplicate) {
+								for (DetailData detailData : datasource.getDetailData()) {
+									if (innerFieldLi.get(0).getDataSetId().equals(detailData.getId())) {
+										messageLi.add("分录:"+detailData.getDisplayName()+"序号为"+(rowIndex+1)+","+(innerRowIndex+1)+"的数据，"+duplicateFieldNameJoin);
+									}
+								}
+							}
+						}
+					}
+				});
 			}
 		});
 		
@@ -248,7 +365,12 @@ public class FormSaveService extends ServiceSupport {
 		return messageLi;
 	}
 
-	public void setDaoSupport(DaoSupport daoSupport) {
-		this.daoSupport = daoSupport;
+	public FormDao getFormDao() {
+		return formDao;
 	}
+
+	public void setFormDao(FormDao formDao) {
+		this.formDao = formDao;
+	}
+
 }

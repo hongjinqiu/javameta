@@ -102,6 +102,15 @@ public class Datasource implements Serializable {
 		}
 		return null;
     }
+    
+    public DetailData getDetailDataByDataSetId(String dataSetId) {
+    	for (DetailData detailData: getDetailData()) {
+			if (detailData.getId().equals(dataSetId)) {
+				return detailData;
+			}
+    	}
+    	return null;
+    }
 
     /**
      * Gets the value of the id property.

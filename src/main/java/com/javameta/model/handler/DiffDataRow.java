@@ -3,6 +3,7 @@ package com.javameta.model.handler;
 import java.util.List;
 import java.util.Map;
 
+import com.javameta.model.ValueBusinessObject;
 import com.javameta.model.datasource.Field;
 import com.javameta.value.Value;
 
@@ -14,9 +15,9 @@ public class DiffDataRow {
 	public static final int DELETE = 4;
 
 	private List<Field> fieldLi;
-	private Map<String, Value> destBo;
+	private ValueBusinessObject destBo;
 	private Map<String, Value> destData;// 页面上传入
-	private Map<String, Value> srcBo;
+	private ValueBusinessObject srcBo;
 	private Map<String, Value> srcData;// 数据库中
 
 	public List<Field> getFieldLi() {
@@ -27,14 +28,6 @@ public class DiffDataRow {
 		this.fieldLi = fieldLi;
 	}
 
-	public Map<String, Value> getDestBo() {
-		return destBo;
-	}
-
-	public void setDestBo(Map<String, Value> destBo) {
-		this.destBo = destBo;
-	}
-
 	public Map<String, Value> getDestData() {
 		return destData;
 	}
@@ -43,20 +36,28 @@ public class DiffDataRow {
 		this.destData = destData;
 	}
 
-	public Map<String, Value> getSrcBo() {
-		return srcBo;
-	}
-
-	public void setSrcBo(Map<String, Value> srcBo) {
-		this.srcBo = srcBo;
-	}
-
 	public Map<String, Value> getSrcData() {
 		return srcData;
 	}
 
 	public void setSrcData(Map<String, Value> srcData) {
 		this.srcData = srcData;
+	}
+
+	public ValueBusinessObject getDestBo() {
+		return destBo;
+	}
+
+	public void setDestBo(ValueBusinessObject destBo) {
+		this.destBo = destBo;
+	}
+
+	public ValueBusinessObject getSrcBo() {
+		return srcBo;
+	}
+
+	public void setSrcBo(ValueBusinessObject srcBo) {
+		this.srcBo = srcBo;
 	}
 
 }

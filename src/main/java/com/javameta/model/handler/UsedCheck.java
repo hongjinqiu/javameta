@@ -151,7 +151,7 @@ public class UsedCheck {
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
 		String createTime = format.format(new Date());
 		DatasourceFactory datasourceFactory = new DatasourceFactory();
-		Datasource datasource = datasourceFactory.getDatasource(fieldLi.get(0).getDatasourceId());
+		Datasource datasource = datasourceFactory.getDatasource("ReferenceLog");
 		for (Field field: fieldLi) {
 			if (field.isRelationField()) {
 				RelationItem relationItem = datasourceFactory.parseRelationExpr(field, bo, data);

@@ -1,6 +1,5 @@
 package com.javameta.web.form.service;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,13 +37,14 @@ import com.javameta.value.Value;
 import com.javameta.value.ValueInt;
 import com.javameta.value.ValueTimestamp;
 import com.javameta.web.form.controller.ModelRenderVO;
-import com.javameta.web.support.DaoSupport;
+import com.javameta.web.form.dao.FormDao;
 import com.javameta.web.support.ServiceSupport;
 
 @Service
 @Transactional
 public abstract class AFormService extends ServiceSupport {
-	public abstract DaoSupport getDaoSupport();
+	@Autowired
+	private FormDao formDao;
 
 	public ValueBusinessObject getValueBoFromDb(FormTemplate formTemplate, Datasource datasource, Map<String, Object> param) {
 		Map<String, Object> bo = getBoFromDb(formTemplate, datasource, param);
@@ -93,34 +94,7 @@ public abstract class AFormService extends ServiceSupport {
 	}
 	
 	public ValueBusinessObject getValueBoFromDb(Datasource datasource, Map<String, Object> param) {
-		Map<String, Object> bo = getBoFromDb(datasource, param);
-		return BusinessDataType.convertMapToValueBusinessObject(datasource, bo);
-	}
-
-	private Map<String, Object> getBoFromDb(Datasource datasource, Map<String, Object> param) {
-		Map<String, Object> result = New.hashMap();
-		Map<String, String> query = New.hashMap();
-		query.put("id", ObjectUtils.toString(param.get("id")));
-		String idField = datasource.getMasterData().getFixField().getPrimaryKey().getCalcFieldName();
-		String sql = "select * from {tableName} where 1=1 and {idField}=?";
-		sql = sql.replace("{tableName}", datasource.getCalcTableName());
-		sql = sql.replace("{idField}", idField);
-		Map<String, Object> mainData = this.getDaoSupport().getJdbcTemplate().queryForMap(sql, param.get("id"));
-		mainData.put("id", mainData.get(idField));
-		result.put(datasource.getMasterData().getId(), mainData);
-
-		for (DetailData detailData : datasource.getDetailData()) {
-			String detailSql = "select * from {tableName} where 1=1 and {parentFieldId}=?";
-			detailSql = detailSql.replace("{tableName}", datasource.getCalcDetailTableName(detailData.getId()));
-			detailSql = detailSql.replace("{parentFieldId}", detailData.getParentFieldId());
-			String detailIdField = detailData.getFixField().getPrimaryKey().getCalcFieldName();
-			List<Map<String, Object>> items = this.getDaoSupport().getJdbcTemplate().queryForList(detailSql, param.get("id"));
-			for (Map<String, Object> item: items) {
-				item.put("id", item.get(detailIdField));
-			}
-			result.put(detailData.getId(), items);
-		}
-		return result;
+		return formDao.getValueBoFromDb(datasource, param);
 	}
 
 	public ModelRenderVO newDataCommon(HttpServletRequest request, HttpServletResponse response) {
@@ -310,7 +284,7 @@ public abstract class AFormService extends ServiceSupport {
 		String sql = "select * from {tableName} where 1=1 and {idField}=?";
 		sql = sql.replace("{tableName}", sysUserTableName);
 		sql = sql.replace("{idField}", sysUserIdField);
-		final Map<String, Object> sysUserMaster = this.getDaoSupport().getJdbcTemplate().queryForMap(sql, userId);
+		final Map<String, Object> sysUserMaster = this.formDao.getJdbcTemplate().queryForMap(sql, userId);
 
 		DatasourceIterator.iterateLineValueBo(sysUserDatasource, valueBo, new IDatasourceLineDataIterate() {
 			@Override
@@ -334,7 +308,7 @@ public abstract class AFormService extends ServiceSupport {
 		String sql = "select * from {tableName} where 1=1 and {idField}=?";
 		sql = sql.replace("{tableName}", sysUserTableName);
 		sql = sql.replace("{idField}", sysUserIdField);
-		final Map<String, Object> sysUserMaster = this.getDaoSupport().getJdbcTemplate().queryForMap(sql, userId);
+		final Map<String, Object> sysUserMaster = this.formDao.getJdbcTemplate().queryForMap(sql, userId);
 
 		Map<String, Object> param = New.hashMap();
 		param.put("id", valueBo.getMasterData().get("id").getInt());
@@ -447,5 +421,13 @@ public abstract class AFormService extends ServiceSupport {
 
 	public void afterRefreshData(HttpServletRequest request, HttpServletResponse response, Datasource datasource, FormTemplate formTemplate, ValueBusinessObject valueBo) {
 
+	}
+
+	public FormDao getFormDao() {
+		return formDao;
+	}
+
+	public void setFormDao(FormDao formDao) {
+		this.formDao = formDao;
 	}
 }
