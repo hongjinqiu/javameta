@@ -192,7 +192,7 @@ function unCancelData() {
 /*
 function getData() {
 	ajaxRequest({
-		url: "/ActionTest/GetData?format=json"
+		url: "/ActionTest/getData?format=json"
 		,params: {
 			"id": 26,
 			"datasourceModelId": "ActionTest"

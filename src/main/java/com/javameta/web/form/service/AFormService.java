@@ -239,7 +239,7 @@ public abstract class AFormService extends ServiceSupport {
 		return modelRenderVO;
 	}
 
-	public ModelRenderVO saveCommon(HttpServletRequest request, HttpServletResponse response) {
+	public ModelRenderVO saveDataCommon(HttpServletRequest request, HttpServletResponse response) {
 		String datasourceModelId = request.getParameter("datasourceModelId");
 		String formTemplateId = request.getParameter("formTemplateId");
 		String jsonData = request.getParameter("jsonData");
@@ -329,7 +329,6 @@ public abstract class AFormService extends ServiceSupport {
 		return modelRenderVO;
 	}
 	
-//	func (c BaseDataAction) DeleteDataCommon(w http.ResponseWriter, r *http.Request) ModelRenderVO {
 	public ModelRenderVO deleteDataCommon(HttpServletRequest request, HttpServletResponse response) {
 		String datasourceModelId = request.getParameter("datasourceModelId");
 		String formTemplateId = request.getParameter("formTemplateId");

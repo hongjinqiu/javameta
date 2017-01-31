@@ -6,7 +6,7 @@ function main(Y) {
 		if (g_id) {
 			if (g_copyFlag == "true") {// 复制
 				ajaxRequest({
-					url: "/" + g_dataSourceJson.Id + "/CopyData?format=json"
+					url: "/" + g_dataSourceJson.Id + "/copyData?format=json"
 					,params: {
 						"dataSourceModelId": g_dataSourceJson.Id,
 						"formTemplateId": g_formTemplateJsonData.Id,
@@ -22,7 +22,7 @@ function main(Y) {
 				});
 			} else {
 				ajaxRequest({
-					url: "/" + g_dataSourceJson.Id + "/GetData?format=json"
+					url: "/" + g_dataSourceJson.Id + "/getData?format=json"
 					,params: {
 						"dataSourceModelId": g_dataSourceJson.Id,
 						"formTemplateId": g_formTemplateJsonData.Id,
@@ -38,7 +38,7 @@ function main(Y) {
 			}
 		} else {
 			ajaxRequest({
-				url: "/" + g_dataSourceJson.Id + "/NewData?format=json"
+				url: "/" + g_dataSourceJson.Id + "/newData?format=json"
 				,params: {
 					"dataSourceModelId": g_dataSourceJson.Id,
 					"formTemplateId": g_formTemplateJsonData.Id
