@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.javameta.JavametaException;
 import com.javameta.expression.ExpressionParser;
 import com.javameta.model.BusinessDataType;
-import com.javameta.model.DatasourceFactory;
 import com.javameta.model.ValueBusinessObject;
 import com.javameta.model.datasource.Datasource;
 import com.javameta.model.datasource.DetailData;
@@ -31,7 +30,6 @@ import com.javameta.util.New;
 import com.javameta.value.Value;
 import com.javameta.value.ValueNull;
 import com.javameta.web.form.dao.FormDao;
-import com.javameta.web.support.DaoSupport;
 import com.javameta.web.support.ServiceSupport;
 
 @Service
@@ -40,17 +38,13 @@ public class FormSaveService extends ServiceSupport {
 	@Autowired
 	private FormDao formDao;
 
-	//	func (o FinanceService) SaveData(sessionId int, dataSource DataSource, bo *map[string]interface{}) *[]DiffDataRow {
 	public List<DiffDataRow> saveData(final Datasource datasource, final ValueBusinessObject valueBo) {
-		//		modelTemplateFactory := ModelTemplateFactory{}
-		DatasourceFactory datasourceFactory = new DatasourceFactory();
 		Value idValue = valueBo.getMasterData().get("id");
 		int id = 0;
 		if (idValue != null && !idValue.equals(ValueNull.INSTANCE)) {
 			id = idValue.getInt();
 		}
 		// 主数据集和分录数据校验
-		//		message := o.validateBO(sessionId, dataSource, (*bo))
 		String message = validateBO(datasource, valueBo);
 		if (StringUtils.isNotEmpty(message)) {
 			throw new JavametaException(message);
@@ -83,11 +77,12 @@ public class FormSaveService extends ServiceSupport {
 		param.put("id", id);
 		final ValueBusinessObject srcValueBo = this.formDao.getValueBoFromDb(datasource, param);
 		final List<DiffDataRow> diffDataRowLi = New.arrayList();
+		final UsedCheck usedCheck = (UsedCheck)ApplicationContextUtil.getApplicationContext().getBean("usedCheck");
 		DatasourceIterator.iterateDiffValueBo(datasource, valueBo, srcValueBo, new IDatasourceDiffLineDataIterate() {
 			@Override
 			public void iterate(List<Field> fieldLi, Map<String, Value> destData, Map<String, Value> srcData) {
-				// 分录+id
-				if (destData != null) {
+				// 新增,分录+id
+				if (destData != null && srcData == null) {
 					Value idValue = destData.get("id");
 					if (idValue == null || idValue.equals(ValueNull.INSTANCE) || idValue.getInt() == 0) {
 						formDao.insert(datasource, fieldLi, valueBo, destData);
@@ -100,33 +95,37 @@ public class FormSaveService extends ServiceSupport {
 				diffDataRow.setSrcData(srcData);
 				diffDataRow.setSrcBo(srcValueBo);
 				diffDataRowLi.add(diffDataRow);
+
+				// 删除,被用判断
+				if (usedCheck.checkDeleteDetailRecordUsed(datasource, valueBo, diffDataRow)) {
+					throw new JavametaException("部分分录数据已被用，不可删除");
+				}
+				if (destData == null && srcData != null) {
+					formDao.delete(datasource, fieldLi, srcValueBo, srcData);
+				}
+				
+				// 修改
+				if (destData != null && srcData != null) {
+					formDao.update(datasource, fieldLi, valueBo, destData);
+				}
 			}
 		});
 
-		UsedCheck usedCheck = (UsedCheck)ApplicationContextUtil.getApplicationContext().getBean("usedCheck");
-		// 删除的分录行数据的被用判断
-		for (DiffDataRow diffDataRow: diffDataRowLi) {
-			if (usedCheck.checkDeleteDetailRecordUsed(datasource, valueBo, diffDataRow)) {
-				throw new JavametaException("部分分录数据已被用，不可删除");
-			}
-		}
-		
 		// 被用差异行处理,
-		
+		for (int i = 0; i < diffDataRowLi.size(); i++) {
+			List<Field> fieldLi = diffDataRowLi.get(i).getFieldLi();
+			Map<String, Value> destData = diffDataRowLi.get(i).getDestData();
+			Map<String, Value> srcData = diffDataRowLi.get(i).getSrcData();
+			usedCheck.update(fieldLi, valueBo, destData, srcData);
+		}
 
-		// TODO
-		return null;
+		return diffDataRowLi;
 	}
 	
 	private void insert(Datasource datasource, ValueBusinessObject valueBo) {
 		this.formDao.insert(datasource, valueBo);
 	}
 	
-//	func (o FinanceService) setDataId(db *mgo.Database, dataSource DataSource, fieldGroup *FieldGroup, bo *map[string]interface{}, data *map[string]interface{}) {
-	private void setDataId(Datasource datasource, Field field, ValueBusinessObject valueBo, Map<String, Value> data) {
-		// mysql auto increment, do nothing,
-	}
-
 	private String validateBO(final Datasource datasource, ValueBusinessObject valueBo) {
 		final List<String> messageLi = New.arrayList();
 		DatasourceIterator.iterateFieldValueBo(datasource, valueBo, new IDatasourceFieldDataIterate() {

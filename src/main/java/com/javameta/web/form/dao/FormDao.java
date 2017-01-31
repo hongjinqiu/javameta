@@ -139,7 +139,7 @@ public class FormDao extends DaoSupport {
 				valueDict.put(field.getId(), valueBo.getMasterData().get("id").getInt());
 			} else {
 				if (data.get(field.getId()) != null) {
-					valueDict.put(field.getId(), data.get(field.getId()));
+					valueDict.put(field.getId(), data.get(field.getId()).getObject());
 				} else {
 					valueDict.put(field.getId(), null);
 				}
@@ -158,6 +158,65 @@ public class FormDao extends DaoSupport {
 		int id = getNamedParameterJdbcTemplate().queryForInt("select LAST_INSERT_ID()", new HashMap<String, Object>());
 		data.put("id", ValueInt.get(id));
 		return id;
+	}
+	
+	public void update(Datasource datasource, List<Field> fieldLi, ValueBusinessObject valueBo, Map<String, Value> data) {
+		String dataSetId = fieldLi.get(0).getDataSetId();
+		DetailData detailData = null;
+		String idFieldName = null;
+		String tableName = null;
+		if (fieldLi.get(0).isMasterField()) {
+			tableName = datasource.getCalcTableName();
+			idFieldName = datasource.getMasterData().getFixField().getPrimaryKey().getCalcFieldName();
+		} else {
+			detailData = datasource.getDetailDataByDataSetId(dataSetId);
+			tableName = datasource.getCalcDetailTableName(dataSetId);
+			idFieldName = datasource.getDetailDataByDataSetId(fieldLi.get(0).getDataSetId()).getFixField().getPrimaryKey().getCalcFieldName();
+		}
+		String updateSql = "update {tableName} set {keyValueLi} where 1=1 and {idFieldName}=:{idFieldName}";
+		updateSql = updateSql.replace("{tableName}", tableName);
+		updateSql = updateSql.replace("{idFieldName}", idFieldName);
+		final List<String> keyValueLi = New.arrayList();
+		final Map<String, Object> valueDict = New.hashMap();
+		valueDict.put(idFieldName, data.get("id").getObject());
+		
+		for (Field field: fieldLi) {
+			String keyValue = "{fieldName}=:{fieldName}";
+			String fieldName = field.getCalcFieldName();
+			keyValue = keyValue.replace("{fieldName}", fieldName);
+			keyValueLi.add(keyValue);
+			
+			if (detailData != null && field.getId().equals(detailData.getParentFieldId())) {
+				valueDict.put(fieldName, valueBo.getMasterData().get("id").getInt());
+			} else {
+				if (data.get(field.getId()) != null) {
+					valueDict.put(fieldName, data.get(field.getId()).getObject());
+				} else {
+					valueDict.put(fieldName, null);
+				}
+			}
+		}
+
+		updateSql = updateSql.replace("{keyValueLi}", StringUtils.join(keyValueLi.toArray(), ","));
+		getNamedParameterJdbcTemplate().update(updateSql, valueDict);
+	}
+	
+	public void delete(Datasource datasource, List<Field> fieldLi, ValueBusinessObject srcValueBo, Map<String, Value> srcData) {
+		String deleteSql = "delete from {tableName} where 1=1 and {idFieldName}=:{idFieldName}";
+		String idFieldName = null;
+		String tableName = null;
+		if (fieldLi.get(0).isMasterField()) {
+			tableName = datasource.getCalcTableName();
+			idFieldName = datasource.getMasterData().getFixField().getPrimaryKey().getCalcFieldName();
+		} else {
+			tableName = datasource.getCalcDetailTableName(fieldLi.get(0).getDataSetId());
+			idFieldName = datasource.getDetailDataByDataSetId(fieldLi.get(0).getDataSetId()).getFixField().getPrimaryKey().getCalcFieldName();
+		}
+		deleteSql = deleteSql.replace("{tableName}", tableName);
+		deleteSql = deleteSql.replace("{idFieldName}", idFieldName);
+		Map<String, Object> param = New.hashMap();
+		param.put(idFieldName, srcData.get("id").getObject());
+		this.getNamedParameterJdbcTemplate().update(deleteSql, param);
 	}
 
 	public ValueBusinessObject getValueBoFromDb(Datasource datasource, Map<String, Object> param) {

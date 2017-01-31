@@ -45,6 +45,8 @@ import com.javameta.web.support.ServiceSupport;
 public abstract class AFormService extends ServiceSupport {
 	@Autowired
 	private FormDao formDao;
+	@Autowired
+	private FormSaveService formSaveService;
 
 	public ValueBusinessObject getValueBoFromDb(FormTemplate formTemplate, Datasource datasource, Map<String, Object> param) {
 		Map<String, Object> bo = getBoFromDb(formTemplate, datasource, param);
@@ -263,13 +265,30 @@ public abstract class AFormService extends ServiceSupport {
 		}
 		beforeSaveData(request, response, datasource, formTemplate, valueBo);
 		
-//		List<DiffDataRow> diffDateRowLi
-//		financeService := FinanceService{}
-//		diffDataRowLi := financeService.SaveData(sessionId, dataSource, &bo)
+		List<DiffDataRow> diffDataRowLi = formSaveService.saveData(datasource, valueBo);
 				
-//		afterSaveData(request, response, datasource, formTemplate, valueBo, diffDateRowLi);
+		afterSaveData(request, response, datasource, formTemplate, valueBo, diffDataRowLi);
+		
+		// 从数据库里重新读取一遍
+		Map<String, Object> param = New.hashMap();
+		param.put("id", valueBo.getMasterData().get("id").getObject());
+		valueBo = formDao.getValueBoFromDb(datasource, param);
+		
+		UsedCheck usedCheck = (UsedCheck) ApplicationContextUtil.getApplicationContext().getBean("usedCheck");
+		Map<String, Object> usedCheckBo = usedCheck.getFormUsedCheck(datasource, valueBo);
+
+		bo = (Map<String, Object>) BusinessDataType.convertValueBusinessObjectToJSONStringObject(valueBo);
+		Map<String, Object> columnModelData = formTemplateFactory.getColumnModelDataForFormTemplate(formTemplate, bo);
+		bo = (Map<String, Object>) columnModelData.get("bo");
+		Map<String, Object> relationBo = (Map<String, Object>) columnModelData.get("relationBo");
 
 		ModelRenderVO modelRenderVO = new ModelRenderVO();
+		modelRenderVO.setUserId(getUserId(request));
+		modelRenderVO.setBo(bo);
+		modelRenderVO.setRelationBo(relationBo);
+		modelRenderVO.setUsedCheckBo(usedCheckBo);
+		modelRenderVO.setDatasource(datasource);
+		modelRenderVO.setFormTemplate(formTemplate);
 		return modelRenderVO;
 	}
 
@@ -429,5 +448,13 @@ public abstract class AFormService extends ServiceSupport {
 
 	public void setFormDao(FormDao formDao) {
 		this.formDao = formDao;
+	}
+
+	public FormSaveService getFormSaveService() {
+		return formSaveService;
+	}
+
+	public void setFormSaveService(FormSaveService formSaveService) {
+		this.formSaveService = formSaveService;
 	}
 }
