@@ -218,6 +218,23 @@ public class FormDao extends DaoSupport {
 		param.put(idFieldName, srcData.get("id").getObject());
 		this.getNamedParameterJdbcTemplate().update(deleteSql, param);
 	}
+	
+	public void delete(Datasource datasource, ValueBusinessObject valueBo) {
+		Object id = valueBo.getMasterData().get("id").getObject();
+		
+		String idField = datasource.getMasterData().getFixField().getPrimaryKey().getCalcFieldName();
+		String sql = "delete from {tableName} where 1=1 and {idField}=?";
+		sql = sql.replace("{tableName}", datasource.getCalcTableName());
+		sql = sql.replace("{idField}", idField);
+		this.getJdbcTemplate().update(sql, id);
+		
+		for (DetailData detailData : datasource.getDetailData()) {
+			String detailSql = "delete from {tableName} where 1=1 and {parentFieldId}=?";
+			detailSql = detailSql.replace("{tableName}", datasource.getCalcDetailTableName(detailData.getId()));
+			detailSql = detailSql.replace("{parentFieldId}", detailData.getParentFieldId());
+			this.getJdbcTemplate().update(detailSql, id);
+		}
+	}
 
 	public ValueBusinessObject getValueBoFromDb(Datasource datasource, Map<String, Object> param) {
 		Map<String, Object> bo = getBoFromDb(datasource, param);

@@ -291,6 +291,148 @@ public abstract class AFormService extends ServiceSupport {
 		modelRenderVO.setFormTemplate(formTemplate);
 		return modelRenderVO;
 	}
+	
+	public ModelRenderVO giveUpDataCommon(HttpServletRequest request, HttpServletResponse response) {
+		String datasourceModelId = request.getParameter("datasourceModelId");
+		String formTemplateId = request.getParameter("formTemplateId");
+		String id = request.getParameter("id");
+
+		Map<String, Object> queryMap = New.hashMap();
+		queryMap.put("id", id);
+		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
+		FormTemplate formTemplate = formTemplateFactory.getFormTemplate(formTemplateId, FormTemplateEnum.FORM);
+
+		DatasourceFactory datasourceFactory = new DatasourceFactory();
+		Datasource datasource = datasourceFactory.getDatasource(datasourceModelId);
+
+		ValueBusinessObject valueBo = getValueBoFromDb(formTemplate, datasource, queryMap);
+		beforeGiveUpData(request, response, datasource, formTemplate, valueBo);
+		afterGiveUpData(request, response, datasource, formTemplate, valueBo);
+		
+		UsedCheck usedCheck = (UsedCheck) ApplicationContextUtil.getApplicationContext().getBean("usedCheck");
+		Map<String, Object> usedCheckBo = usedCheck.getFormUsedCheck(datasource, valueBo);
+
+		Map<String, Object> bo = (Map<String, Object>) BusinessDataType.convertValueBusinessObjectToJSONStringObject(valueBo);
+		Map<String, Object> columnModelData = formTemplateFactory.getColumnModelDataForFormTemplate(formTemplate, bo);
+		bo = (Map<String, Object>) columnModelData.get("bo");
+		Map<String, Object> relationBo = (Map<String, Object>) columnModelData.get("relationBo");
+
+		//		modelTemplateFactory.ConvertDataType(dataSource, &bo)	// 根据field type,转换值,传给客户端的都是string,这个地方先不用管
+
+		ModelRenderVO modelRenderVO = new ModelRenderVO();
+		modelRenderVO.setUserId(getUserId(request));
+		modelRenderVO.setBo(bo);
+		modelRenderVO.setRelationBo(relationBo);
+		modelRenderVO.setUsedCheckBo(usedCheckBo);
+		modelRenderVO.setDatasource(datasource);
+		modelRenderVO.setFormTemplate(formTemplate);
+		return modelRenderVO;
+	}
+	
+//	func (c BaseDataAction) DeleteDataCommon(w http.ResponseWriter, r *http.Request) ModelRenderVO {
+	public ModelRenderVO deleteDataCommon(HttpServletRequest request, HttpServletResponse response) {
+		String datasourceModelId = request.getParameter("datasourceModelId");
+		String formTemplateId = request.getParameter("formTemplateId");
+		String id = request.getParameter("id");
+		
+		Map<String, Object> queryMap = New.hashMap();
+		queryMap.put("id", id);
+		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
+		FormTemplate formTemplate = null;
+		if (StringUtils.isNotEmpty(formTemplateId)) {
+			formTemplate = formTemplateFactory.getFormTemplate(formTemplateId, FormTemplateEnum.FORM);
+		}
+		
+		DatasourceFactory datasourceFactory = new DatasourceFactory();
+		Datasource datasource = datasourceFactory.getDatasource(datasourceModelId);
+		// 列表页也调用这个删除方法,但是列表页又没有传递formTemplateId,只有 gatheringBill等要做赤字判断,走与form相同的逻辑,才会传 formTemplateId,
+		ValueBusinessObject valueBo = getValueBoFromDb(formTemplate, datasource, queryMap);
+		beforeDeleteData(request, response, datasource, formTemplate, valueBo);
+		
+		final UsedCheck usedCheck = (UsedCheck) ApplicationContextUtil.getApplicationContext().getBean("usedCheck");
+		Map<String, Object> bo = (Map<String, Object>) BusinessDataType.convertValueBusinessObjectToJSONStringObject(valueBo);
+		if (usedCheck.checkUsed(datasource, bo)) {
+			throw new JavametaException("已被用，不能删除");
+		}
+		
+		DatasourceIterator.iterateLineValueBo(datasource, valueBo, new IDatasourceLineDataIterate() {
+			@Override
+			public void iterate(List<Field> fieldLi, Map<String, Value> data, int rowIndex) {
+				usedCheck.deleteAll(fieldLi, data);
+			}
+		});
+		formDao.delete(datasource, valueBo);
+		
+		afterDeleteData(request, response, datasource, formTemplate, valueBo);
+		
+		// 列表页也调用这个删除方法,但是列表页又没有传递formTemplateId
+		Map<String, Object> relationBo = New.hashMap();
+		if (StringUtils.isNotEmpty(formTemplateId)) {
+			Map<String, Object> columnModelData = formTemplateFactory.getColumnModelDataForFormTemplate(formTemplate, bo);
+			bo = (Map<String, Object>) columnModelData.get("bo");
+			relationBo = (Map<String, Object>) columnModelData.get("relationBo");
+		}
+		
+		ModelRenderVO modelRenderVO = new ModelRenderVO();
+		modelRenderVO.setUserId(getUserId(request));
+		modelRenderVO.setBo(bo);
+		modelRenderVO.setRelationBo(relationBo);
+		modelRenderVO.setDatasource(datasource);
+		modelRenderVO.setFormTemplate(formTemplate);
+		return modelRenderVO;
+	}
+	
+	public ModelRenderVO refreshDataCommon(HttpServletRequest request, HttpServletResponse response) {
+		String datasourceModelId = request.getParameter("datasourceModelId");
+		String formTemplateId = request.getParameter("formTemplateId");
+		String id = request.getParameter("id");
+
+		Map<String, Object> queryMap = New.hashMap();
+		queryMap.put("id", id);
+		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
+		FormTemplate formTemplate = formTemplateFactory.getFormTemplate(formTemplateId, FormTemplateEnum.FORM);
+
+		DatasourceFactory datasourceFactory = new DatasourceFactory();
+		Datasource datasource = datasourceFactory.getDatasource(datasourceModelId);
+		ValueBusinessObject valueBo = getValueBoFromDb(formTemplate, datasource, queryMap);
+		beforeRefreshData(request, response, datasource, formTemplate, valueBo);
+		afterRefreshData(request, response, datasource, formTemplate, valueBo);
+
+		UsedCheck usedCheck = (UsedCheck) ApplicationContextUtil.getApplicationContext().getBean("usedCheck");
+		Map<String, Object> usedCheckBo = usedCheck.getFormUsedCheck(datasource, valueBo);
+
+		Map<String, Object> bo = (Map<String, Object>) BusinessDataType.convertValueBusinessObjectToJSONStringObject(valueBo);
+		Map<String, Object> columnModelData = formTemplateFactory.getColumnModelDataForFormTemplate(formTemplate, bo);
+		bo = (Map<String, Object>) columnModelData.get("bo");
+		Map<String, Object> relationBo = (Map<String, Object>) columnModelData.get("relationBo");
+
+		//		modelTemplateFactory.ConvertDataType(dataSource, &bo)	// 根据field type,转换值,传给客户端的都是string,这个地方先不用管
+
+		ModelRenderVO modelRenderVO = new ModelRenderVO();
+		modelRenderVO.setUserId(getUserId(request));
+		modelRenderVO.setBo(bo);
+		modelRenderVO.setRelationBo(relationBo);
+		modelRenderVO.setUsedCheckBo(usedCheckBo);
+		modelRenderVO.setDatasource(datasource);
+		modelRenderVO.setFormTemplate(formTemplate);
+		return modelRenderVO;
+	}
+	
+	public Map<String, Object> logListCommon(HttpServletRequest request, HttpServletResponse response) {
+		String datasourceModelId = request.getParameter("datasourceModelId");
+		String id = request.getParameter("id");
+		
+		int pageNo = 1;
+		int pageSize = 10;
+		String orderBy = "";
+		Map<String, Object> query = New.hashMap();
+		query.put("be_ref_datasource_id", datasourceModelId);
+		query.put("be_ref_dataset_id", "A");
+		query.put("be_ref_field_id", "id");
+		query.put("be_ref_field_id_value", id);
+		UsedCheck usedCheck = (UsedCheck) ApplicationContextUtil.getApplicationContext().getBean("usedCheck");
+		return usedCheck.queryReference(query, pageNo, pageSize, orderBy);
+	}
 
 	public void setCreateFixFieldValue(HttpServletRequest request, Datasource datasource, ValueBusinessObject valueBo) {
 		final int userId = getUserId(request);

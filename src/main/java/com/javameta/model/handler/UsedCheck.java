@@ -553,6 +553,39 @@ public class UsedCheck {
 		
 		return sourceRefMap;
 	}
+	
+	public Map<String, Object> queryReference(Map<String, Object> param, int pageNo, int pageSize, String orderBy) {
+		Map<String, Object> paramMap = New.hashMap();
+		paramMap.putAll(param);
+		int offset = (pageNo - 1) * pageSize;
+		paramMap.put("offset", offset);
+		paramMap.put("pageSize", pageSize);
+		
+		StringBuilder bodySb = new StringBuilder();
+		bodySb.append(" from PUB_REFERENCE_LOG ");
+		bodySb.append(" where 1=1 ");
+		bodySb.append(" and be_ref_datasource_id=:be_ref_datasource_id ");
+		bodySb.append(" and be_ref_dataset_id=:be_ref_dataset_id ");
+		bodySb.append(" and be_ref_field_id=:be_ref_field_id ");
+		bodySb.append(" and be_ref_field_id_value=:be_ref_field_id_value ");
+		bodySb.append(" limit :offset,:pageSize ");
+		
+		if (StringUtils.isNotEmpty(orderBy)) {
+			bodySb.append(" order by :orderBy ");
+			paramMap.put("orderBy", orderBy);
+		}
+		
+		String countSql = "select count(*) " + bodySb.toString();
+		int totalResults = this.formTemplateDao.getNamedParameterJdbcTemplate().queryForInt(countSql, paramMap);
+		
+		String selectSql = "select * " + bodySb.toString();
+		List<Map<String, Object>> items = this.formTemplateDao.getNamedParameterJdbcTemplate().queryForList(selectSql, paramMap);
+
+		Map<String, Object> result = New.hashMap();
+		result.put("totalResults", totalResults);
+		result.put("items", items);
+		return result;
+	}
 
 	public FormTemplateDao getFormTemplateDao() {
 		return formTemplateDao;
