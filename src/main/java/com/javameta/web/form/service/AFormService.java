@@ -150,7 +150,7 @@ public abstract class AFormService extends ServiceSupport {
 		bo = (Map<String, Object>) columnModelData.get("bo");
 		Map<String, Object> relationBo = (Map<String, Object>) columnModelData.get("relationBo");
 
-		//		modelTemplateFactory.ConvertDataType(dataSource, &bo)	// 根据field type,转换值,传给客户端的都是string,这个地方先不用管
+		//		modelTemplateFactory.ConvertDataType(datasource, &bo)	// 根据field type,转换值,传给客户端的都是string,这个地方先不用管
 
 		ModelRenderVO modelRenderVO = new ModelRenderVO();
 		modelRenderVO.setUserId(getUserId(request));
@@ -317,7 +317,7 @@ public abstract class AFormService extends ServiceSupport {
 		bo = (Map<String, Object>) columnModelData.get("bo");
 		Map<String, Object> relationBo = (Map<String, Object>) columnModelData.get("relationBo");
 
-		//		modelTemplateFactory.ConvertDataType(dataSource, &bo)	// 根据field type,转换值,传给客户端的都是string,这个地方先不用管
+		//		modelTemplateFactory.ConvertDataType(datasource, &bo)	// 根据field type,转换值,传给客户端的都是string,这个地方先不用管
 
 		ModelRenderVO modelRenderVO = new ModelRenderVO();
 		modelRenderVO.setUserId(getUserId(request));
@@ -405,7 +405,7 @@ public abstract class AFormService extends ServiceSupport {
 		bo = (Map<String, Object>) columnModelData.get("bo");
 		Map<String, Object> relationBo = (Map<String, Object>) columnModelData.get("relationBo");
 
-		//		modelTemplateFactory.ConvertDataType(dataSource, &bo)	// 根据field type,转换值,传给客户端的都是string,这个地方先不用管
+		//		modelTemplateFactory.ConvertDataType(datasource, &bo)	// 根据field type,转换值,传给客户端的都是string,这个地方先不用管
 
 		ModelRenderVO modelRenderVO = new ModelRenderVO();
 		modelRenderVO.setUserId(getUserId(request));

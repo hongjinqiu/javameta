@@ -359,3 +359,7 @@ function openTabOrJump(url) {
 		location.href = url;
 	}
 }
+
+function firstLower(id) {
+	return id.substring(0,1).toLowerCase() + id.substring(1);
+}

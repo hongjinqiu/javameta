@@ -132,6 +132,15 @@
 				<jsp:include page="${item.rendererTemplate}"></jsp:include>
 			</c:if>
 		</c:if>
+		<c:if test="${item.dataSetId == 'A'}">
+			<c:set var="itemStatusJsp" value="${itemStatus}" scope="request"></c:set>
+			<c:if test="${empty item.rendererTemplate}">
+				<jsp:include page="/webpage/model/render/columnModel_form.jsp"></jsp:include>
+			</c:if>
+			<c:if test="${not empty item.rendererTemplate}">
+				<jsp:include page="${item.rendererTemplate}"></jsp:include>
+			</c:if>
+		</c:if>
 	</c:if>
 </c:forEach>
 
