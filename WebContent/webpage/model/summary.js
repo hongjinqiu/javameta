@@ -40,6 +40,51 @@ function doRefretor(name) {
 	*/
 }
 
+function getGenerateController() {
+	var li = g_gridPanelDict["Datasource"].dt.datagrid("getSelections");
+	if (li.length == 0) {
+		showError("请选择一条记录");
+		return;
+	}
+	if (li.length > 1) {
+		showError("只能单选，不能多选");
+		return;
+	}
+	var data = li[0];
+	var url = webRoot + "/schema/getGenerateController.do?@name=" + data.id;
+	window.open(url);
+}
+
+function getGenerateService() {
+	var li = g_gridPanelDict["Datasource"].dt.datagrid("getSelections");
+	if (li.length == 0) {
+		showError("请选择一条记录");
+		return;
+	}
+	if (li.length > 1) {
+		showError("只能单选，不能多选");
+		return;
+	}
+	var data = li[0];
+	var url = webRoot + "/schema/getGenerateService.do?@name=" + data.id;
+	window.open(url);
+}
+
+function getGenerateDao() {
+	var li = g_gridPanelDict["Datasource"].dt.datagrid("getSelections");
+	if (li.length == 0) {
+		showError("请选择一条记录");
+		return;
+	}
+	if (li.length > 1) {
+		showError("只能单选，不能多选");
+		return;
+	}
+	var data = li[0];
+	var url = webRoot + "/schema/getGenerateDao.do?@name=" + data.id;
+	window.open(url);
+}
+
 function main() {
 	$('#tt').tabs({
 	    border:false

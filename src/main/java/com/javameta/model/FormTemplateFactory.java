@@ -336,9 +336,13 @@ public class FormTemplateFactory {
 			Map<String, Object> loopItem = New.hashMap();
 
 			CheckboxColumn checkboxColumn = columnModel.getCheckboxColumn();
-			JSONObject recordJson = JSONObject.fromObject(record);
-			loopItem.put(checkboxColumn.getName(), parseExpressionBoolean(recordJson, checkboxColumn.getExpression()));
-			loopItem.put(columnModel.getIdColumn().getName(), record.get(columnModel.getIdColumn().getName()));
+			if (checkboxColumn != null) {// form页面的column-model有可能没有checkbox,
+				JSONObject recordJson = JSONObject.fromObject(record);
+				loopItem.put(checkboxColumn.getName(), parseExpressionBoolean(recordJson, checkboxColumn.getExpression()));
+			}
+			if (columnModel.getIdColumn() != null) {// form页面的column-model有可能没有id-column,
+				loopItem.put(columnModel.getIdColumn().getName(), record.get(columnModel.getIdColumn().getName()));
+			}
 			for (Column column : columnLi) {
 				getColumnModelDataForColumnItem(column, bo, record, relationBo, loopItem);
 			}

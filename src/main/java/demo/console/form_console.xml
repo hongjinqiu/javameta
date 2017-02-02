@@ -102,6 +102,12 @@
 	<toolbar name="DatasourceToolbar">
 		<button text="重构模型" mode="fn" handler="doRefretorDatasource" iconCls="but_box">
 		</button>
+		<button text="生成Controller" mode="fn" handler="getGenerateController" iconCls="but_box">
+		</button>
+		<button text="生成Service" mode="fn" handler="getGenerateService" iconCls="but_box">
+		</button>
+		<button text="生成Dao" mode="fn" handler="getGenerateDao" iconCls="but_box">
+		</button>
 	</toolbar>
 
 	<column-model name="Datasource" text="datasource模型列表" selectionMode="radio">

@@ -1,12 +1,14 @@
 package com.javameta.web.model.service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,6 @@ import com.javameta.model.datasource.Datasource;
 import com.javameta.model.datasource.DetailData;
 import com.javameta.model.datasource.Field;
 import com.javameta.model.iterate.DatasourceIterator;
-import com.javameta.model.iterate.IDatasourceFieldIterate;
 import com.javameta.model.iterate.IDatasourceLineFieldIterate;
 import com.javameta.util.New;
 import com.javameta.web.model.dao.SchemaDao;
@@ -154,7 +155,7 @@ public class SchemaService extends ServiceSupport {
 
 		return result.toString();
 	}
-
+	
 	public String getGenerateInsertSql(final Datasource datasource, final int count) {
 		final List<String> insertLi = New.arrayList();
 
@@ -250,6 +251,42 @@ public class SchemaService extends ServiceSupport {
 
 
 		return StringUtils.join(insertLi.toArray());
+	}
+	
+	public String getGenerateController(String datasourceName) throws IOException {
+		String path = "com/javameta/web/model/tpl/TemplateController.tpl";
+		return getGenerateCommon(path, datasourceName);
+	}
+	
+	public String getGenerateService(String datasourceName) throws IOException {
+		String path = "com/javameta/web/model/tpl/TemplateService.tpl";
+		return getGenerateCommon(path, datasourceName);
+	}
+	
+	public String getGenerateDao(String datasourceName) throws IOException {
+		String path = "com/javameta/web/model/tpl/TemplateDao.tpl";
+		return getGenerateCommon(path, datasourceName);
+	}
+	
+	public String getGenerateCommon(String path, String datasourceName) throws IOException {
+		InputStream in = null;
+		try {
+			in = this.getClass().getClassLoader().getResourceAsStream(path);
+			ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+			byte[] buffer = new byte[4 * 1024];
+			int read = -1;
+			while ((read = in.read(buffer)) > -1) {
+				bOut.write(buffer, 0, read);
+			}
+			String content = bOut.toString("UTF-8");
+			content = content.replace("{lowerTemplate}", datasourceName.substring(0, 1).toLowerCase() + datasourceName.substring(1));
+			content = content.replace("{template}", datasourceName);
+			return content;
+		} finally {
+			if (in != null) {
+				in.close();
+			}
+		}
 	}
 
 	public Map<String, Object> testObject() {

@@ -245,6 +245,45 @@ public class SchemaController extends ControllerSupport {
 
 		response.getOutputStream().write(content.getBytes());
 	}
+	
+	@RequestMapping("/getGenerateController")
+	@ResponseBody
+	public void getGenerateController(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.addHeader("Content-Type", "text/html;charset=UTF-8");
+		String datasourceName = request.getParameter("@name");
+		String content = schemaService.getGenerateController(datasourceName);
+
+		content = content.replace("\n", "<br />");
+//		content = content.replace(";", ";<br />");
+
+		response.getOutputStream().write(content.getBytes());
+	}
+	
+	@RequestMapping("/getGenerateService")
+	@ResponseBody
+	public void getGenerateService(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.addHeader("Content-Type", "text/html;charset=UTF-8");
+		String datasourceName = request.getParameter("@name");
+		String content = schemaService.getGenerateService(datasourceName);
+
+		content = content.replace("\n", "<br />");
+//		content = content.replace(";", ";<br />");
+
+		response.getOutputStream().write(content.getBytes());
+	}
+	
+	@RequestMapping("/getGenerateDao")
+	@ResponseBody
+	public void getGenerateDao(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.addHeader("Content-Type", "text/html;charset=UTF-8");
+		String datasourceName = request.getParameter("@name");
+		String content = schemaService.getGenerateDao(datasourceName);
+
+		content = content.replace("\n", "<br />");
+//		content = content.replace(";", ";<br />");
+
+		response.getOutputStream().write(content.getBytes());
+	}
 
 	@RequestMapping("/refretor")
 	@ResponseBody
