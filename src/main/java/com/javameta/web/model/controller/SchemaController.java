@@ -813,6 +813,42 @@ public class SchemaController extends ControllerSupport {
 		return new ModelAndView(view);
 	}
 	
+	/**
+	 * 
+	 * @param formTemplate
+	 * @return {
+	 * 	"A_1": [
+	 * 	[{
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }, {
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }, {
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }]
+	 * 	, [{
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }, {
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }, {
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }]
+	 * 	, [
+	 * 
+	 * 	]]
+	 * }
+	 */
 	private Map<String, Object> getMasterRenderLi(FormTemplate formTemplate) {
 		if (StringUtils.isEmpty(formTemplate.getDatasourceModelId())) {
 			return null;
@@ -853,6 +889,7 @@ public class SchemaController extends ControllerSupport {
 									if (field.getAllowEmpty() != null && !field.getAllowEmpty()) {
 										required = true;
 									}
+									renderItem.put("column", column);
 									renderItem.put("required", required);
 									renderItem.put("label", column.getText());
 									renderItem.put("name", column.getName());
@@ -881,6 +918,7 @@ public class SchemaController extends ControllerSupport {
 							}
 							Map<String, Object> renderItem = New.hashMap();
 							renderItem.put("isHtml", "false");
+							renderItem.put("column", column);
 							renderItem.put("required", false);
 							renderItem.put("label", column.getText());
 							renderItem.put("name", column.getName());

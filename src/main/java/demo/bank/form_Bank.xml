@@ -39,6 +39,7 @@
 	<column-model name="A_1" dataSetId="A" colSpan="4" dataProvider="queryDataSetA">
 		<id-column name="id" text="编号" hideable="true" />
 
+		<date-column name="aa" dbPattern="yyyy" displayPattern="yyyy"></date-column>
 		<auto-column name="code" colSpan="2" labelWidth="15%" columnWidth="35%" />
 		<auto-column name="name" colSpan="2" labelWidth="15%" columnWidth="35%" />
 	</column-model>
