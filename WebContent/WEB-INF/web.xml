@@ -40,6 +40,15 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     
+    <filter>
+        <filter-name>SessionFilter</filter-name>
+        <filter-class>com.javameta.web.session.SessionFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SessionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
     <!-- Spring view分发器 -->
     <servlet>
         <servlet-name>dispatcher</servlet-name>

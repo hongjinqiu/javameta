@@ -2,14 +2,11 @@ var modelExtraInfo = {
 		
 };
 
-function main(Y) {
-	if (true) {
-		return;
-	}
+function main() {
 	if (g_id) {
 		if (g_copyFlag == "true") {// 复制
 			ajaxRequest({
-				url: "/" + firstLower(g_datasourceJson.id) + "/copyData?format=json"
+				url: "/" + firstLower(g_datasourceJson.id) + "/copyData.do?format=json"
 				,params: {
 					"datasourceModelId": g_datasourceJson.id,
 					"formTemplateId": g_formTemplateJsonData.id,
@@ -25,7 +22,7 @@ function main(Y) {
 			});
 		} else {
 			ajaxRequest({
-				url: "/" + firstLower(g_datasourceJson.id) + "/getData?format=json"
+				url: "/" + firstLower(g_datasourceJson.id) + "/getData.do?format=json"
 				,params: {
 					"datasourceModelId": g_datasourceJson.id,
 					"formTemplateId": g_formTemplateJsonData.id,
@@ -41,7 +38,7 @@ function main(Y) {
 		}
 	} else {
 		ajaxRequest({
-			url: "/" + firstLower(g_datasourceJson.id) + "/newData?format=json"
+			url: "/" + firstLower(g_datasourceJson.id) + "/newData.do?format=json"
 			,params: {
 				"datasourceModelId": g_datasourceJson.id,
 				"formTemplateId": g_formTemplateJsonData.id

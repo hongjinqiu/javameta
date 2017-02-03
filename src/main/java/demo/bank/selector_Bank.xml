@@ -29,7 +29,7 @@
 	</data-provider>
 	
 	<toolbar name="toolbar" export="true">
-		<button text="新增" mode="url!" handler="/schema/formschema?@name=Bank" iconCls="but_box" />
+		<button text="新增" mode="url!" handler="/schema/formschema.do?@name=Bank" iconCls="but_box" />
 	</toolbar>
 	
 	<column-model name="A_1" text="银行资料列表" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行资料" selectionTemplate="{code},{name}" sqlOrderBy="code">
@@ -40,7 +40,7 @@
 
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
-				<button name="btn_view" text="查看" iconCls="img_look" mode="url" handler="/schema/formschema/?@name=Bank&amp;id={id}&amp;formStatus=view">
+				<button name="btn_view" text="查看" iconCls="img_look" mode="url" handler="/schema/formschema.do?@name=Bank&amp;id={id}&amp;formStatus=view">
 				</button>
 			</buttons>
 		</virtual-column>

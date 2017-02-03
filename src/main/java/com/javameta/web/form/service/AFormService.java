@@ -503,7 +503,7 @@ public abstract class AFormService extends ServiceSupport {
 	}
 
 	private int getUserId(HttpServletRequest request) {
-		String userIdString = request.getParameter("userId");
+		String userIdString = ObjectUtils.toString(request.getSession().getAttribute("userId"), "");
 		int userId = 0;
 		if (StringUtils.isNotEmpty(userIdString)) {
 			userId = Integer.valueOf(userIdString);

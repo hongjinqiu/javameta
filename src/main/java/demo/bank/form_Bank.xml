@@ -13,7 +13,7 @@
 	<!-- <security byUnit="true" /> -->
 
 	<toolbar name="toolbar">
-		<button name="listBtn" text="列表页" mode="url" handler="/schema/listschema?@name=Bank" iconCls="but_box"></button>
+		<button name="listBtn" text="列表页" mode="url" handler="/schema/listschema.do?@name=Bank" iconCls="but_box"></button>
 		<button name="newBtn" text="新增" mode="fn" handler="newData" iconCls="but_box"></button>
 		<button name="copyBtn" text="复制" mode="fn" handler="copyData" iconCls="but_box"></button>
 		<button name="editBtn" text="修改" mode="fn" handler="editData" iconCls="but_box"></button>
@@ -22,8 +22,8 @@
 		<button name="delBtn" text="删除" mode="fn" handler="deleteData" iconCls="but_box"></button>
 		<button name="refreshBtn" text="刷新" mode="fn" handler="refreshData" iconCls="but_box"></button>
 		<button name="usedQueryBtn" text="被用查询" mode="fn" handler="logList" iconCls="but_box"></button>
-		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent?@name=Bank&amp;type=Form" iconCls="but_box"></button>
-		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent?@name=Bank&amp;type=Form" iconCls="but_box"></button>
+		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent.do?@name=Bank&amp;type=Form" iconCls="but_box"></button>
+		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent.do?@name=Bank&amp;type=Form" iconCls="but_box"></button>
 	</toolbar>
 	
 	<data-provider name="queryDataSetA" size="10" sqlIntercept="com.geeboo.cm.pub.query.CmMbQuerySqlIntercept">
@@ -39,7 +39,6 @@
 	<column-model name="A_1" dataSetId="A" colSpan="4" dataProvider="queryDataSetA">
 		<id-column name="id" text="编号" hideable="true" />
 
-		<date-column name="aa" dbPattern="yyyy" displayPattern="yyyy"></date-column>
 		<auto-column name="code" colSpan="2" labelWidth="15%" columnWidth="35%" />
 		<auto-column name="name" colSpan="2" labelWidth="15%" columnWidth="35%" />
 	</column-model>
@@ -55,7 +54,8 @@
 	</column-model>
 
 	<column-model name="A_3" dataSetId="A" colSpan="4" dataProvider="queryDataSetA">
-		<auto-column name="createBy" colSpan="2" labelWidth="15%" columnWidth="35%" />
+		<auto-column name="createBy" colSpan="2" labelWidth="15%" columnWidth="35%">
+		</auto-column>
 		<auto-column name="createTime" colSpan="2" labelWidth="15%" />
 		<auto-column name="modifyBy" colSpan="2" />
 		<auto-column name="modifyTime" colSpan="2" />
@@ -63,7 +63,7 @@
 
 	<column-model name="A_4" dataSetId="A" colSpan="2" dataProvider="queryDataSetA">
 		<auto-column name="remark" colSpan="2" labelWidth="15%">
-			<column-attribute name="editor" value="textareafield" />
+			<editor name="textareafield"></editor>
 		</auto-column>
 	</column-model>
 

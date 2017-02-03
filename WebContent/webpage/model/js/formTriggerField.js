@@ -467,6 +467,10 @@ PTriggerField.prototype.set = function(key, value) {
 	}
 	
 	if (key == "readonly") {
+		var formManager = new FormManager();
+		if (formManager.isReadonlyForEver(self)) {
+			value = true;
+		}
 		if (value) {
 			$("#" + self.config.id).attr("readonly", "readonly");
 			$("#" + self.config.id + "_select").hide();
@@ -480,7 +484,7 @@ PTriggerField.prototype.set = function(key, value) {
 			if (!multi) {
 				$("#" + self.config.id + "_view").show();
 			}
-			*/
+			 */
 			$("#" + self.config.id + "_delete").show();
 		}
 		return;

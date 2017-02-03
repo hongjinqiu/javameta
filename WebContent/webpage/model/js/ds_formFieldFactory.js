@@ -10,7 +10,7 @@ FormFieldFactory.prototype.getFormField = function(id, name, dataSetId) {
 		if (formElem.xmlName == "column-model") {
 			if (formElem.dataSetId == dataSetId) {
 				var flag = false;
-				if (formElem.idColumn.name == name) {
+				if (formElem.idColumn && formElem.idColumn.name == name) {
 					field = new PHiddenField({
 						id: id,
 						name : name,

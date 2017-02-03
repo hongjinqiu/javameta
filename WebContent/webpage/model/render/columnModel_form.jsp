@@ -47,3 +47,6 @@
 		</c:if>
 	</c:forEach>
 </div>
+<script type="text/javascript">
+	$("#${columnModelForJsp.name}_${columnModelForJsp.dataSetId}_${itemStatusJsp.index}").css("visibility", "");
+</script>

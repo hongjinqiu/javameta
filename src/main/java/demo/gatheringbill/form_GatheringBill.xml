@@ -14,7 +14,7 @@
 	<after-query-data></after-query-data>
 
 	<toolbar name="toolbar" rendererTemplate="">
-		<button name="listBtn" text="列表页" mode="url" handler="/schema/listschema?@name=GatheringBill" iconCls="but_box" rendererTemplate=""></button>
+		<button name="listBtn" text="列表页" mode="url" handler="/schema/listschema.do?@name=GatheringBill" iconCls="but_box" rendererTemplate=""></button>
 		<button name="newBtn" text="新增" mode="fn" handler="newData" iconCls="but_box"></button>
 		<button name="copyBtn" text="复制" mode="fn" handler="copyData" iconCls="but_box"></button>
 		<button name="editBtn" text="修改" mode="fn" handler="editData" iconCls="but_box"></button>
@@ -25,7 +25,7 @@
 		<button name="unCancelBtn" text="反作废" mode="fn" handler="limitControlUnCancelData" iconCls="but_box"></button>
 		<button name="refreshBtn" text="刷新" mode="fn" handler="refreshData" iconCls="but_box"></button>
 		<button name="usedQueryBtn" text="被用查询" mode="fn" handler="logList" iconCls="but_box"></button>
-		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent?@name=GatheringBill&amp;type=Form" iconCls="but_box"></button>
+		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent.do?@name=GatheringBill&amp;type=Form" iconCls="but_box"></button>
 	</toolbar>
 	
 	<data-provider name="queryDataSetA" size="10" sqlIntercept="com.geeboo.cm.pub.query.CmMbQuerySqlIntercept">

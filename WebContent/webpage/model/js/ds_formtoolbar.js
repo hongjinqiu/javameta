@@ -6,7 +6,7 @@ function editData() {//修改
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + getIdUrl(g_datasourceJson.id) + "/editData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/editData.do?format=json"
 		,params: {
 			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id,
@@ -29,7 +29,7 @@ function saveData() {//保存
 		showError(validateResult.message);
 	} else {
 		ajaxRequest({
-			url: "/" + getIdUrl(g_datasourceJson.id) + "/saveData?format=json"
+			url: "/" + getIdUrl(g_datasourceJson.id) + "/saveData.do?format=json"
 			,params: {
 				"datasourceModelId": g_datasourceJson.id,
 				"formTemplateId": g_formTemplateJsonData.id,
@@ -49,7 +49,7 @@ function newData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + getIdUrl(g_datasourceJson.id) + "/newData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/newData.do?format=json"
 		,params: {
 			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id
@@ -67,7 +67,7 @@ function copyData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + getIdUrl(g_datasourceJson.id) + "/copyData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/copyData.do?format=json"
 		,params: {
 			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id,
@@ -90,7 +90,7 @@ function giveUpData() {
 			location.href = webRoot + "/schema/listschema.do?@name=" + g_datasourceJson.id;
 		} else {
 			ajaxRequest({
-				url: "/" + getIdUrl(g_datasourceJson.id) + "/giveUpData?format=json"
+				url: "/" + getIdUrl(g_datasourceJson.id) + "/giveUpData.do?format=json"
 				,params: {
 					"datasourceModelId": g_datasourceJson.id,
 					"formTemplateId": g_formTemplateJsonData.id,
@@ -111,7 +111,7 @@ function deleteData() {
 		var formManager = new FormManager();
 		var bo = formManager.getBo();
 		ajaxRequest({
-			url: "/" + getIdUrl(g_datasourceJson.id) + "/deleteData?format=json"
+			url: "/" + getIdUrl(g_datasourceJson.id) + "/deleteData.do?format=json"
 			,params: {
 				"datasourceModelId": g_datasourceJson.id,
 				"formTemplateId": g_formTemplateJsonData.id,
@@ -128,7 +128,7 @@ function refreshData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + getIdUrl(g_datasourceJson.id) + "/refreshData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/refreshData.do?format=json"
 		,params: {
 			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id,
@@ -155,7 +155,7 @@ function cancelData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + getIdUrl(g_datasourceJson.id) + "/cancelData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/cancelData.do?format=json"
 		,params: {
 			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id,
@@ -174,7 +174,7 @@ function unCancelData() {
 	var formManager = new FormManager();
 	var bo = formManager.getBo();
 	ajaxRequest({
-		url: "/" + getIdUrl(g_datasourceJson.id) + "/unCancelData?format=json"
+		url: "/" + getIdUrl(g_datasourceJson.id) + "/unCancelData.do?format=json"
 		,params: {
 			"datasourceModelId": g_datasourceJson.id,
 			"formTemplateId": g_formTemplateJsonData.id,
@@ -192,7 +192,7 @@ function unCancelData() {
 /*
 function getData() {
 	ajaxRequest({
-		url: "/ActionTest/getData?format=json"
+		url: "/ActionTest/getData.do?format=json"
 		,params: {
 			"id": 26,
 			"datasourceModelId": "ActionTest"

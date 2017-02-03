@@ -6,6 +6,7 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -305,7 +306,7 @@ public class FormSaveService extends ServiceSupport {
 				return messageLi;
 			}
 		}
-		String fieldValue = data.get(field.getId()).getString();
+		String fieldValue = ObjectUtils.toString(data.get(field.getId()).getString(), "");
 		if (field.getValidateExpr() != null) {
 			String mode = field.getValidateExpr().getMode();
 			String value = field.getValidateExpr().getValue();

@@ -50,20 +50,20 @@ public class BusinessDataType {
 				if (firstField.isMasterField()) {
 					Map<String, Object> masterObject = (Map<String, Object>)o2.get(firstField.getDataSetId());
 					for (Field field: fieldLi) {
-						masterDataVo.put(field.getFieldName(), convertObjectToValue(field, masterObject.get(field.getFieldName())));
+						masterDataVo.put(field.getId(), convertObjectToValue(field, masterObject.get(field.getId())));
 					}
 					putExtraField(masterDataVo, masterObject);
 				} else {
 					if (detailDataVo.get(firstField.getDataSetId()) == null) {
-						detailDataVo.put(firstField.getFieldName(), new ArrayList<Map<String, Value>>());
+						detailDataVo.put(firstField.getDataSetId(), new ArrayList<Map<String, Value>>());
 					}
-					List<Map<String, Value>> detailDataVoLi = detailDataVo.get(firstField.getFieldName());
+					List<Map<String, Value>> detailDataVoLi = detailDataVo.get(firstField.getDataSetId());
 					List<Map<String, Object>> detailObject = (List<Map<String, Object>>)o2.get(firstField.getDataSetId());
 					for (int i = 0; i < detailObject.size(); i++) {
 						Map<String, Value> detailData = New.hashMap();
 						Map<String, Object> detailLineObject = detailObject.get(i);
 						for (Field field: fieldLi) {
-							detailData.put(field.getFieldName(), convertObjectToValue(field, detailLineObject.get(field.getFieldName())));
+							detailData.put(field.getId(), convertObjectToValue(field, detailLineObject.get(field.getId())));
 						}
 						putExtraField(detailData, detailLineObject);
 						detailDataVoLi.add(detailData);
@@ -123,7 +123,7 @@ public class BusinessDataType {
 	}
 	
 	public static Value convertObjectToValue(Field field, Object value) {
-		if (value == null) {
+		if (value == null || StringUtils.isEmpty(value.toString())) {
 			return ValueNull.INSTANCE;
 		}
 		if (field.getFieldType().equalsIgnoreCase("FLOAT")) {

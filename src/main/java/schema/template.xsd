@@ -713,7 +713,17 @@
 			<sequence>
 				<element name="editor_attribute" minOccurs="0" maxOccurs="unbounded">
 					<complexType>
-						<attribute name="name" use="required"></attribute>
+						<attribute name="name" use="required">
+							<simpleType>
+								<restriction base="string">
+									<enumeration value="observe" />
+									<enumeration value="fieldCls" />
+									<enumeration value="style" />
+									<enumeration value="labelWidth" />
+									<enumeration value="columnWidth" />
+								</restriction>
+							</simpleType>
+						</attribute>
 						<attribute name="value" use="required"></attribute>
 					</complexType>
 				</element>

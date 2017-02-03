@@ -41,14 +41,22 @@ public class FormTemplateDao extends DaoSupport {
 		DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
 			@Override
 			public void iterate(Field field) {
-				String fieldName = field.getCalcFieldName();
-				keyLi.add(fieldName);
-				valueLi.add(":" + field.getId());
-				
 				if (data.get(field.getId()) != null) {
+					String fieldName = field.getCalcFieldName();
+					keyLi.add(fieldName);
+					valueLi.add(":" + field.getId());
 					valueDict.put(field.getId(), data.get(field.getId()));
 				} else {
-					valueDict.put(field.getId(), null);
+					/*	放null,jdbc template会报异常,不知道是不是mysql的问题,但是也可以插入,但是控制台不想出现错误信息,因此,null的就暂时不赋值,直接写到sql里面去,
+[org.springframework.jdbc.core.StatementCreatorUtils]Setting SQL statement parameter value: column index 6, parameter value [null], value class [null], SQL type unknown
+[org.springframework.jdbc.core.StatementCreatorUtils]Could not check database or driver name
+java.sql.SQLException: Parameter metadata not available for the given statement
+					 */
+					String fieldName = field.getCalcFieldName();
+					keyLi.add(fieldName);
+					valueLi.add("null");
+//					valueLi.add(":" + field.getId());
+//					valueDict.put(field.getId(), null);
 				}
 			}
 		});

@@ -19,6 +19,7 @@ import com.javameta.model.iterate.IDatasourceLineDataIterate;
 import com.javameta.util.New;
 import com.javameta.value.Value;
 import com.javameta.value.ValueInt;
+import com.javameta.value.ValueNull;
 import com.javameta.web.support.DaoSupport;
 
 @Scope("prototype")
@@ -131,17 +132,29 @@ public class FormDao extends DaoSupport {
 		final Map<String, Object> valueDict = New.hashMap();
 		
 		for (Field field: fieldLi) {
-			String fieldName = field.getCalcFieldName();
-			keyLi.add(fieldName);
-			valueLi.add(":" + field.getId());
 			
 			if (detailData != null && field.getId().equals(detailData.getParentFieldId())) {
+				String fieldName = field.getCalcFieldName();
+				keyLi.add(fieldName);
+				valueLi.add(":" + field.getId());
 				valueDict.put(field.getId(), valueBo.getMasterData().get("id").getInt());
 			} else {
-				if (data.get(field.getId()) != null) {
+				if (data.get(field.getId()) != null && !data.get(field.getId()).equals(ValueNull.INSTANCE)) {
+					String fieldName = field.getCalcFieldName();
+					keyLi.add(fieldName);
+					valueLi.add(":" + field.getId());
 					valueDict.put(field.getId(), data.get(field.getId()).getObject());
 				} else {
-					valueDict.put(field.getId(), null);
+					/*	放null,jdbc template会报异常,不知道是不是mysql的问题,但是也可以插入,但是控制台不想出现错误信息,因此,null的就暂时不赋值,直接写到sql里面去,
+					[org.springframework.jdbc.core.StatementCreatorUtils]Setting SQL statement parameter value: column index 6, parameter value [null], value class [null], SQL type unknown
+					[org.springframework.jdbc.core.StatementCreatorUtils]Could not check database or driver name
+					java.sql.SQLException: Parameter metadata not available for the given statement
+					 */
+					String fieldName = field.getCalcFieldName();
+					keyLi.add(fieldName);
+					valueLi.add("null");
+//					valueLi.add(":" + field.getId());
+//					valueDict.put(field.getId(), null);
 				}
 			}
 		}
@@ -181,18 +194,31 @@ public class FormDao extends DaoSupport {
 		valueDict.put(idFieldName, data.get("id").getObject());
 		
 		for (Field field: fieldLi) {
-			String keyValue = "{fieldName}=:{fieldName}";
-			String fieldName = field.getCalcFieldName();
-			keyValue = keyValue.replace("{fieldName}", fieldName);
-			keyValueLi.add(keyValue);
 			
 			if (detailData != null && field.getId().equals(detailData.getParentFieldId())) {
+				String keyValue = "{fieldName}=:{fieldName}";
+				String fieldName = field.getCalcFieldName();
+				keyValue = keyValue.replace("{fieldName}", fieldName);
+				keyValueLi.add(keyValue);
 				valueDict.put(fieldName, valueBo.getMasterData().get("id").getInt());
 			} else {
-				if (data.get(field.getId()) != null) {
+				if (data.get(field.getId()) != null && !data.get(field.getId()).equals(ValueNull.INSTANCE)) {
+					String keyValue = "{fieldName}=:{fieldName}";
+					String fieldName = field.getCalcFieldName();
+					keyValue = keyValue.replace("{fieldName}", fieldName);
+					keyValueLi.add(keyValue);
 					valueDict.put(fieldName, data.get(field.getId()).getObject());
 				} else {
-					valueDict.put(fieldName, null);
+					/*	放null,jdbc template会报异常,不知道是不是mysql的问题,但是也可以插入,但是控制台不想出现错误信息,因此,null的就暂时不赋值,直接写到sql里面去,
+					[org.springframework.jdbc.core.StatementCreatorUtils]Setting SQL statement parameter value: column index 6, parameter value [null], value class [null], SQL type unknown
+					[org.springframework.jdbc.core.StatementCreatorUtils]Could not check database or driver name
+					java.sql.SQLException: Parameter metadata not available for the given statement
+					 */
+					String keyValue = "{fieldName}=null";
+					String fieldName = field.getCalcFieldName();
+					keyValue = keyValue.replace("{fieldName}", fieldName);
+					keyValueLi.add(keyValue);
+//					valueDict.put(fieldName, null);
 				}
 			}
 		}

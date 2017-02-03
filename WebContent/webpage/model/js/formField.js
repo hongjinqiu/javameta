@@ -144,6 +144,10 @@ function formFieldCommonSet(self, key, value) {
 		return;
 	}
 	if (key == "readonly") {
+		var formManager = new FormManager();
+		if (formManager.isReadonlyForEver(self)) {
+			value = true;
+		}
 		if (value) {
 			$("#" + self.config.id).attr("readonly", "readonly");
 		} else {
@@ -244,7 +248,11 @@ PTextField.prototype.set = function(key, value) {
 	var self = this;
 	
 	if (key == "readonly") {
-	    $("#" + self.config.id).textbox("readonly", value);
+		var formManager = new FormManager();
+		if (formManager.isReadonlyForEver(self)) {
+			value = true;
+		}
+		$("#" + self.config.id).textbox("readonly", value);
 		return;
 	}
 	if (key == "required") {
@@ -366,7 +374,11 @@ PSelectField.prototype.set = function(key, value) {
 	var self = this;
 
 	if (key == "readonly") {
-	    $("#" + self.config.id).combobox("readonly", value);
+		var formManager = new FormManager();
+		if (formManager.isReadonlyForEver(self)) {
+			value = true;
+		}
+		$("#" + self.config.id).combobox("readonly", value);
 		return;
 	}
 	if (key == "required") {
@@ -454,7 +466,11 @@ PChoiceField.prototype.set = function(key, value) {
 	var self = this;
 
 	if (key == "readonly") {
-	    $("#" + self.config.id).combobox("readonly", value);
+		var formManager = new FormManager();
+		if (formManager.isReadonlyForEver(self)) {
+			value = true;
+		}
+		$("#" + self.config.id).combobox("readonly", value);
 		return;
 	}
 	if (key == "required") {
@@ -549,7 +565,11 @@ PNumberField.prototype.set = function(key, value) {
 	var self = this;
 
 	if (key == "readonly") {
-	    $("#" + self.config.id).numberbox("readonly", value);
+		var formManager = new FormManager();
+		if (formManager.isReadonlyForEver(self)) {
+			value = true;
+		}
+		$("#" + self.config.id).numberbox("readonly", value);
 		return;
 	}
 	if (key == "required") {
@@ -754,6 +774,10 @@ PDateField.prototype.set = function(key, value) {
 	var self = this;
 	
 	if (key == "readonly") {
+		var formManager = new FormManager();
+		if (formManager.isReadonlyForEver(self)) {
+			value = true;
+		}
 		var dbPattern = self.get("dbPattern");
 		if (dbPattern == "yyyyMMdd") {
 			$("#" + self.config.id).datebox("readonly", value);
@@ -765,6 +789,7 @@ PDateField.prototype.set = function(key, value) {
 			$("#" + self.config.id).timespinner("readonly", value);
 			return;
 		}
+		return;
 	}
 	if (key == "required") {
 		var dbPattern = self.get("dbPattern");
@@ -907,7 +932,11 @@ PTextareaField.prototype.set = function(key, value) {
 	var self = this;
 
 	if (key == "readonly") {
-	    $("#" + self.config.id).validatebox("readonly", value);
+		var formManager = new FormManager();
+		if (formManager.isReadonlyForEver(self)) {
+			value = true;
+		}
+		$("#" + self.config.id).validatebox("readonly", value);
 		return;
 	}
 	if (key == "required") {

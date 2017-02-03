@@ -45,22 +45,22 @@ FormManager.prototype.getDataIsUsedForFormObj = function(formObj) {
 }
 
 /**
- * 返回	false	表示formObj readonly,不可编辑
+ * 返回	true	表示formObj readonly == true,不可修改readonly的值
  * @param formObj
  * @param val
  * @returns {Boolean}
  */
-FormManager.prototype.validateReadonly = function(formObj) {
+FormManager.prototype.isReadonlyForEver = function(formObj) {
 	var self = formObj;
 	var formTemplateIterator = new FormTemplateIterator();
 	var result = "";
 	var dataSetId = self.get("dataSetId");
-	var validateResult = false;
+	var readonlyForEver = false;
 	
 	formTemplateIterator.iterateAnyTemplateColumn(dataSetId, result, function(column, result){
 		if (column.name == self.get("name")) {
 			if (column.fixReadOnly) {
-				validateResult = true;
+				readonlyForEver = true;
 			}
 			return true;
 		}
@@ -68,7 +68,7 @@ FormManager.prototype.validateReadonly = function(formObj) {
 	});
 
 	// 验证被用
-	if (!validateResult) {
+	if (!readonlyForEver) {
 		var datasourceIterator = new DatasourceIterator();
 		var result = "";
 		datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){
@@ -77,14 +77,14 @@ FormManager.prototype.validateReadonly = function(formObj) {
 				var isUsed = usedFormManager.getDataIsUsedForFormObj(formObj);
 				if (isUsed) {
 					if (fieldGroup.denyEditInUsed) {
-						validateResult = true;
+						readonlyForEver = true;
 					}
 				}
 			}
 		});
 	}
 	
-	return validateResult;
+	return readonlyForEver;
 }
 
 FormManager.prototype.initializeAttr = function(formObj) {
@@ -171,7 +171,7 @@ FormManager.prototype.updateAllFieldAttr4GlobalParam = function() {
 	var self = this;
 	for (var key in g_masterFormFieldDict) {
 		var formObj = g_masterFormFieldDict[key];
-		self.updateSingleFieldAttr4GlobalParam(formObj, Y);
+		self.updateSingleFieldAttr4GlobalParam(formObj);
 	}
 }
 

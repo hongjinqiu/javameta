@@ -18,6 +18,10 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.javameta.model.template.Editor.EditorAttribute;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -130,6 +134,28 @@ public class DictionaryColumn extends Column implements Serializable {
     
     @XmlTransient
     private String xmlName = "dictionary-column";
+    
+    public String getEditorFieldCls() {
+    	if (editor != null) {
+    		for (EditorAttribute editorAttribute: editor.getEditorAttribute()) {
+    			if (editorAttribute.getName().equals("fieldCls")) {
+    				return editorAttribute.getValue();
+    			}
+    		}
+    	}
+    	return "";
+    }
+    
+	public String getEditorStyle() {
+		if (editor != null) {
+    		for (EditorAttribute editorAttribute: editor.getEditorAttribute()) {
+    			if (editorAttribute.getName().equals("style")) {
+    				return editorAttribute.getValue();
+    			}
+    		}
+    	}
+    	return "";
+	}
 
     /**
      * Gets the value of the editor property.

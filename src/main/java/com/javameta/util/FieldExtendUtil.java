@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -217,10 +217,12 @@ public class FieldExtendUtil {
 			if (defaultValueExpr != null) {
 				com.javameta.model.datasource.Field.DefaultValueExpr expr = new com.javameta.model.datasource.Field.DefaultValueExpr();
 				try {
-					BeanUtils.copyProperties(expr, defaultValueExpr);
+					PropertyUtils.copyProperties(expr, defaultValueExpr);
 				} catch (IllegalAccessException e) {
 					throw new JavametaException(e);
 				} catch (InvocationTargetException e) {
+					throw new JavametaException(e);
+				} catch (NoSuchMethodException e) {
 					throw new JavametaException(e);
 				}
 				return expr;
@@ -262,10 +264,12 @@ public class FieldExtendUtil {
 			if (defaultValueExpr != null) {
 				com.javameta.model.datasource.Field.CalcValueExpr expr = new com.javameta.model.datasource.Field.CalcValueExpr();
 				try {
-					BeanUtils.copyProperties(expr, defaultValueExpr);
+					PropertyUtils.copyProperties(expr, defaultValueExpr);
 				} catch (IllegalAccessException e) {
 					throw new JavametaException(e);
 				} catch (InvocationTargetException e) {
+					throw new JavametaException(e);
+				} catch (NoSuchMethodException e) {
 					throw new JavametaException(e);
 				}
 				return expr;
@@ -306,10 +310,12 @@ public class FieldExtendUtil {
 			if (defaultValueExpr != null) {
 				com.javameta.model.datasource.Field.FormatExpr expr = new com.javameta.model.datasource.Field.FormatExpr();
 				try {
-					BeanUtils.copyProperties(expr, defaultValueExpr);
+					PropertyUtils.copyProperties(expr, defaultValueExpr);
 				} catch (IllegalAccessException e) {
 					throw new JavametaException(e);
 				} catch (InvocationTargetException e) {
+					throw new JavametaException(e);
+				} catch (NoSuchMethodException e) {
 					throw new JavametaException(e);
 				}
 				return expr;
@@ -430,10 +436,12 @@ public class FieldExtendUtil {
 		dRelationItem.setRelationDataSetId(relationItem.getRelationDataSetId());
 		com.javameta.model.datasource.Field.RelationDS.RelationItem.RelationExpr expr = new com.javameta.model.datasource.Field.RelationDS.RelationItem.RelationExpr();
 		try {
-			BeanUtils.copyProperties(expr, relationItem.getRelationExpr());
+			PropertyUtils.copyProperties(expr, relationItem.getRelationExpr());
 		} catch (IllegalAccessException e) {
 			throw new JavametaException(e);
 		} catch (InvocationTargetException e) {
+			throw new JavametaException(e);
+		} catch (NoSuchMethodException e) {
 			throw new JavametaException(e);
 		}
 		dRelationItem.setRelationExpr(expr);
@@ -505,10 +513,12 @@ public class FieldExtendUtil {
 			if (defaultRelationExpr != null) {
 				com.javameta.model.datasource.Field.RelationDS.RelationItem.RelationExpr expr = new com.javameta.model.datasource.Field.RelationDS.RelationItem.RelationExpr();
 				try {
-					BeanUtils.copyProperties(expr, defaultRelationExpr);
+					PropertyUtils.copyProperties(expr, defaultRelationExpr);
 				} catch (IllegalAccessException e) {
 					throw new JavametaException(e);
 				} catch (InvocationTargetException e) {
+					throw new JavametaException(e);
+				} catch (NoSuchMethodException e) {
 					throw new JavametaException(e);
 				}
 				return expr;

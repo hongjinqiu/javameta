@@ -3,6 +3,7 @@ package com.javameta.model.adapter;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.javameta.JavametaException;
@@ -487,7 +488,8 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 			column = getColumn(field);
 			String origXmlName = column.getXmlName();
 			try {
-				BeanUtils.copyProperties(column, oldColumn);
+//				BeanUtils.copyProperties(column, oldColumn);// BeanUtils.copyProperties会将Boolean默认设为false,引起一些问题,因此使用PropertyUtils.copyProperties
+				PropertyUtils.copyProperties(column, oldColumn);
 			} catch (Exception e) {
 				throw new JavametaException(e);
 			}

@@ -15,7 +15,7 @@ function firstLowerCase(text) {
 
 function g_deleteRecord(o) {
 	showConfirm("确认删除？", function(){
-		var url = "/" + firstLowerCase(listTemplate.datasourceModelId) + "/deleteData?format=json";
+		var url = "/" + firstLowerCase(listTemplate.datasourceModelId) + "/deleteData.do?format=json";
 		ajaxRequest({
 			url: url
 			,params: {
@@ -36,7 +36,7 @@ function g_deleteRecords() {
 		showConfirm("确认删除？", function(){
 			var errorMsgLi = [];
 			
-			var url = "/" + firstLowerCase(listTemplate.datasourceModelId) + "/deleteData?format=json";
+			var url = "/" + firstLowerCase(listTemplate.datasourceModelId) + "/deleteData.do?format=json";
 			for (var i = 0; i < selectRecords.length; i++) {
 				ajaxRequest({
 					url: url
