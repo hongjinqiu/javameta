@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+ -->
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>CurrencyTypeSelector</id>
+	<data-source-model-id>CurrencyType</data-source-model-id>
+
+	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
+	<description>币别列表</description>
+	<scripts></scripts>
+	<view-template view="model/selectorSchema.jsp" />
+
+	<!-- <security byUnit="true" /> -->
+
+	<data-provider name="queryDataSetA" size="10">
+		<sql>
+			select * from PUB_CURRENCYTYPE
+			where 1=1
+ 		</sql>
+ 		<query-parameters dataSetId="A">
+		<query-parameter name="code" auto="true" text="">
+		</query-parameter>
+		<query-parameter name="name" auto="true" text=""></query-parameter>
+		<query-parameter name="currencyTypeSign" auto="true" text=""></query-parameter>
+		<query-parameter name="roundingWay" auto="true" text="">
+		</query-parameter>
+		<query-parameter name="amtDecimals" auto="true" text=""></query-parameter>
+		<query-parameter name="upDecimals" auto="true" text=""></query-parameter>
+	</query-parameters>
+	</data-provider>
+
+	<column-model name="A_1" text="币别列表" selectionMode="checkbox" rownumber="true" selectionTitle="已选币别" selectionTemplate="{code},{name}" sqlOrderBy="code" dataSetId="A" dataProvider="queryDataSetA">
+		<checkbox-column name="checkboxSelect" hideable="false">
+			<expression></expression>
+		</checkbox-column>
+		<id-column name="id" text="编号" hideable="true" />
+
+		<virtual-column name="FUN_C_SELECTOR" text="操作" width="40">
+			<buttons>
+				<button name="btn_view" text="查看" iconCls="img_look" mode="url!" handler="/schema/formschema.do?@name=CurrencyType&amp;id={id}&amp;formStatus=view">
+				</button>
+			</buttons>
+		</virtual-column>
+
+		<auto-column name="code" />
+		<auto-column name="name" />
+		<auto-column name="currencyTypeSign" />
+		<auto-column name="roundingWay" />
+		<auto-column name="amtDecimals" />
+		<auto-column name="upDecimals" />
+	</column-model>
+
+</form-template>

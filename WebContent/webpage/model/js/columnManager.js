@@ -80,7 +80,7 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 					for (var j = 0; j < virtualColumn.buttons.button.length; j++) {
 						var btnTemplate = null;
 						if (virtualColumn.buttons.button[j].mode == "fn") {
-							btnTemplate = "<a title='{value}' onclick='doVirtualColumnBtnAction(\"{columnModelName}\", \"{id}\", {handler})' class='{class}' href='javascript:void(0);' style='margin-left:3px;'>{value}</a>";
+							btnTemplate = "<a title='{value}' onclick='doVirtualColumnBtnAction(\"{dataSetIdOrcolumnModelName}\", \"{id}\", {handler})' class='{class}' href='javascript:void(0);' style='margin-left:3px;'>{value}</a>";
 						} else if (virtualColumn.buttons.button[j].mode == "url") {
 							btnTemplate = "<a title='{value}' onclick='location.href=\"{href}\"' class='{class}' href='javascript:void(0);' style='margin-left:3px;'>{value}</a>";
 						} else if (virtualColumn.buttons.button[j].mode == "url!") {
@@ -113,7 +113,7 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 								btnTemplate = btnTemplate.replace(/{handler}/g, handler);
 								btnTemplate = btnTemplate.replace(/{class}/g, virtualColumn.buttons.button[j].iconCls);
 								btnTemplate = btnTemplate.replace(/{href}/g, href);
-								btnTemplate = btnTemplate.replace(/{columnModelName}/g, columnModelName);
+								btnTemplate = btnTemplate.replace(/{dataSetIdOrcolumnModelName}/g, columnModel.dataSetId || columnModelName);
 								htmlLi.push(btnTemplate);
 							}
 						}

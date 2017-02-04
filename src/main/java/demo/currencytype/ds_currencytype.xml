@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/datasource https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/datasource.xsd">
+ -->
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>CurrencyType</id>
+	<displayName>币别</displayName>
+	<inUsedDenyEdit>false</inUsedDenyEdit>
+	<tableName>PUB_CURRENCYTYPE</tableName>
+	<masterData>
+		<id>A</id>
+		<displayName>主数据集</displayName>
+		<allowCopy>true</allowCopy>
+		<fixField>
+			<primaryKey id="id" extends="PRIMARY_KEY" />
+			<createBy id="createBy" extends="CREATE_BY" />
+			<createTime id="createTime" extends="CREATE_TIME" />
+			<createUnit id="createUnit" extends="CREATE_UNIT" />
+			<modifyBy id="modifyBy" extends="MODIFY_BY" />
+			<modifyUnit id="modifyUnit" extends="MODIFY_UNIT" />
+			<modifyTime id="modifyTime" extends="MODIFY_TIME" />
+			<remark id="remark" extends="REMARK" />
+		</fixField>
+		<bizField>
+			<field id="" extends="code">
+			</field>
+			<field id="" extends="name">
+			</field>
+			<field id="" extends="currencyTypeSign">
+			</field>
+			<field id="" extends="roundingWay">
+				<fixReadOnly>true</fixReadOnly>
+			</field>
+			<field id="" extends="amtDecimals">
+			</field>
+			<field id="" extends="upDecimals">
+			</field>
+		</bizField>
+	</masterData>
+</datasource>

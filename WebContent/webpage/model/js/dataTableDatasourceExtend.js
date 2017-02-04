@@ -161,6 +161,7 @@ function g_selectRow(dataSetId, btnName) {
     				if (window.s_dialog) {
     					window.s_dialog.hide();
     				}
+    				dialog.dialog("destroy");
     				window.s_dialog = null;
     				window.s_selectFunc = null;
     				window.s_queryFunc = null;

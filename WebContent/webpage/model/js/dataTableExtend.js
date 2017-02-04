@@ -50,7 +50,7 @@ DataTableManager.prototype.createDataGridForColumnModel = function(columnModelNa
 					param["datasourceJson"] = g_datasourceJson;
 				}
 				dataTableManager.createDataGrid(param);
-				g_gridPanelDict[columnModelName] = dataTableManager;
+				g_gridPanelDict[columnModel.dataSetId || columnModelName] = dataTableManager;
 			} else {
 				// renderForm,不实现,放到主数据集中处理
 				console.log("detailDataSet which dataSetId is:" + columnModelName + " can't render to form,");
@@ -71,12 +71,12 @@ DataTableManager.prototype.createColumnModelToolbar = function(columnModel) {
 			config.text = button.text;
 			config.iconCls = button.iconCls;
 			if (button.mode == "fn") {
-				config.handler = function(button) {
+				config.handler = function(button, columnModel) {
 					return function(){
 						var param = button.name || "";
-						eval(button.handler)(param);
+						eval(button.handler)(columnModel.dataSetId, param);
 					}
-				}(button);
+				}(button, columnModel);
 			} else if (button.mode == "url") {
 				config.handler = function(button) {
 					return function(){
@@ -149,10 +149,10 @@ DataTableManager.prototype.getSelectRecordLi = function() {
 	return this.dt.datagrid("getSelections");
 }
 
-function doVirtualColumnBtnAction(columnModelName, id, fn){
-	var self = g_gridPanelDict[columnModelName];
+function doVirtualColumnBtnAction(dataSetIdOrcolumnModelName, id, fn){
+	var self = g_gridPanelDict[dataSetIdOrcolumnModelName];
 	var dt = self.dt;
 	var index = dt.datagrid("getRowIndex", id);
 	var dataLi = dt.datagrid("getRows");
-	fn(dataLi[index], columnModelName);
+	fn(dataLi[index], dataSetIdOrcolumnModelName);
 }

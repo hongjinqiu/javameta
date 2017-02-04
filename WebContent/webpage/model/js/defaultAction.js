@@ -68,7 +68,8 @@ function selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, inpu
 		dataLi.push(data);
 	}
 	// 允许重复的判断,
-	var gridDataLi = g_gridPanelDict[dataSetId].dt.datagrid("getData");
+	//var gridDataLi = g_gridPanelDict[dataSetId].dt.datagrid("getData");// getData返回{"total": 0, rows: []},getRows返回当前页的数据,由于没有分页，因此，用getRows
+	var gridDataLi = g_gridPanelDict[dataSetId].dt.datagrid("getRows");
 	var notAllowDuplicateColumn = [];
 	var datasourceIterator = new DatasourceIterator();
 	datasourceIterator.iterateAllField(g_datasourceJson, result, function(fieldGroup, result){

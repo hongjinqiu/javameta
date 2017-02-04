@@ -87,7 +87,7 @@ function createGridWithUrl(config, datagridConfig) {
 	}
 	
 	dtInst = dataTableManager.createDataGrid(param, datagridConfig);
-	g_gridPanelDict[listColumnModel.name] = dtInst;
+	g_gridPanelDict[listColumnModel.dataSetId || listColumnModel.name] = dtInst;
 }
 
 function listMain() {

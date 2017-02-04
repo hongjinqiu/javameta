@@ -7,9 +7,9 @@
 	<data-source-model-id>BankAccount</data-source-model-id>
 	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
 	<description>银行账户表单</description>
-	<scripts>bankaccount/bankAccountModel.js</scripts>
-	<view-template view="Console/FormSchema.html" />
-	<security byUnit="true" />
+	<scripts>demo/bankaccount/bankAccountModel.js</scripts>
+	<view-template view="model/formSchema.jsp"/>
+	<!-- <security byUnit="true" /> -->
 
 	<toolbar name="toolbar">
 		<button name="listBtn" text="列表页" mode="url" handler="/schema/listschema.do?@name=BankAccount" iconCls="but_box"></button>

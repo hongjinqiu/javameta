@@ -1,11 +1,12 @@
-function getFirstColumnModelName() {
+function getFirstDataSetIdOrColumnModelName() {
 	var formTemplateIterator = new FormTemplateIterator();
-	var firstColumnModelName = "";
+	var firstDataSetIdOrColumnModelName = "";
+	var result = "";
 	formTemplateIterator.iterateAnyTemplateColumnModel(result, function(columnModel, result) {
-		firstColumnModelName = columnModel.name;
+		firstDataSetIdOrColumnModelName = columnModel.dataSetId || columnModel.name;
 		return true;
 	});
-	return firstColumnModelName;
+	return firstDataSetIdOrColumnModelName;
 }
 
 function syncSelection(record) {
@@ -214,5 +215,5 @@ function selectorMain() {
 	// 同步g_selectionBo到选择区域,
 	syncCallbackSelection();
 	
-	//g_gridPanelDict[getFirstColumnModelName()].dt.datagrid("load");
+	//g_gridPanelDict[getFirstDataSetIdOrColumnModelName()].dt.datagrid("load");
 }

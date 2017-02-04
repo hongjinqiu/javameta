@@ -1,12 +1,12 @@
-function getFirstColumnModelName() {
+function getFirstDataSetIdOrColumnModelName() {
 	var formTemplateIterator = new FormTemplateIterator();
-	var firstColumnModelName = "";
+	var firstDataSetIdOrColumnModelName = "";
 	var result = "";
 	formTemplateIterator.iterateAnyTemplateColumnModel(result, function(columnModel, result) {
-		firstColumnModelName = columnModel.name;
+		firstDataSetIdOrColumnModelName = columnModel.dataSetId || columnModel.name;
 		return true;
 	});
-	return firstColumnModelName;
+	return firstDataSetIdOrColumnModelName;
 }
 
 function firstLowerCase(text) {
@@ -24,14 +24,14 @@ function g_deleteRecord(o) {
 			},
 			callback: function(o) {
 //			showSuccess("删除数据成功");
-				g_gridPanelDict[getFirstColumnModelName()].dt.datagrid("reload");
+				g_gridPanelDict[getFirstDataSetIdOrColumnModelName()].dt.datagrid("reload");
 			}
 		});
 	});
 }
 
 function g_deleteRecords() {
-	var selectRecords = g_gridPanelDict[getFirstColumnModelName()].getSelectRecordLi();
+	var selectRecords = g_gridPanelDict[getFirstDataSetIdOrColumnModelName()].getSelectRecordLi();
 	if (selectRecords.length > 0) {
 		showConfirm("确认删除？", function(){
 			var errorMsgLi = [];
@@ -45,7 +45,7 @@ function g_deleteRecords() {
 						"datasourceModelId": listTemplate.datasourceModelId
 					},
 					callback: function(o) {
-						//g_gridPanelDict[getFirstColumnModelName()].dt.datagrid("reload");
+						//g_gridPanelDict[getFirstDataSetIdOrColumnModelName()].dt.datagrid("reload");
 					},
 					failCallback: function(o) {
 						var message = "记录" + selectRecords[i].code;
@@ -57,7 +57,7 @@ function g_deleteRecords() {
 			if (errorMsgLi.length > 0) {
 				showError(errorMsgLi.join("<br />"));
 			}
-			g_gridPanelDict[getFirstColumnModelName()].dt.datagrid("reload");
+			g_gridPanelDict[getFirstDataSetIdOrColumnModelName()].dt.datagrid("reload");
 		});
 	} else {
 		showAlert("请选择记录！");
