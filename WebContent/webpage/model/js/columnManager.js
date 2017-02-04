@@ -104,14 +104,15 @@ ColumnManager.prototype.createVirtualColumn = function(columnModelName, columnMo
 									regExp.global = true;
 									handler = handler.replace(regExp, row[key]);
 								}
-								if (!handler.startsWith("http")) {
-									handler = webRoot + handler;
+								var href = handler;
+								if (!href.startsWith("http")) {
+									href = webRoot + href;
 								}
 								btnTemplate = btnTemplate.replace(/{id}/g, row[id]);
 								btnTemplate = btnTemplate.replace(/{value}/g, virtualColumn.buttons.button[j].text);
 								btnTemplate = btnTemplate.replace(/{handler}/g, handler);
 								btnTemplate = btnTemplate.replace(/{class}/g, virtualColumn.buttons.button[j].iconCls);
-								btnTemplate = btnTemplate.replace(/{href}/g, handler);
+								btnTemplate = btnTemplate.replace(/{href}/g, href);
 								btnTemplate = btnTemplate.replace(/{columnModelName}/g, columnModelName);
 								htmlLi.push(btnTemplate);
 							}

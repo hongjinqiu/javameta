@@ -19,7 +19,7 @@ function g_deleteRecord(o) {
 		ajaxRequest({
 			url: url
 			,params: {
-				"id": o.get("id"),
+				"id": o.id,
 				"datasourceModelId": listTemplate.datasourceModelId
 			},
 			callback: function(o) {
@@ -41,14 +41,14 @@ function g_deleteRecords() {
 				ajaxRequest({
 					url: url
 					,params: {
-						"id": selectRecords[i].get("id"),
+						"id": selectRecords[i].id,
 						"datasourceModelId": listTemplate.datasourceModelId
 					},
 					callback: function(o) {
 						//g_gridPanelDict[getFirstColumnModelName()].dt.datagrid("reload");
 					},
 					failCallback: function(o) {
-						var message = "记录" + selectRecords[i].get("code");
+						var message = "记录" + selectRecords[i].code;
 						message += "：" + o.message+"；";
 						errorMsgLi.push(message);
 					}

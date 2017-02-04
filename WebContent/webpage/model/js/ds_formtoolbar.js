@@ -232,7 +232,7 @@ function setBorderTmp(btn, status) {
 
 ToolbarManager.prototype.enableDisableToolbarBtn = function() {
 	if (g_formStatus == "view") {
-		var viewEnableBtnLi = ["listBtn","newBtn","copyBtn","refreshBtn","usedQueryBtn"];
+		var viewEnableBtnLi = ["listBtn","newBtn","editBtn","copyBtn","refreshBtn","usedQueryBtn"];
 		var viewDisableBtnLi = ["saveBtn","giveUpBtn"];
 		
 		// delBtn,

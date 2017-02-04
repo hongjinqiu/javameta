@@ -345,7 +345,12 @@ public abstract class AFormService extends ServiceSupport {
 		DatasourceFactory datasourceFactory = new DatasourceFactory();
 		Datasource datasource = datasourceFactory.getDatasource(datasourceModelId);
 		// 列表页也调用这个删除方法,但是列表页又没有传递formTemplateId,只有 gatheringBill等要做赤字判断,走与form相同的逻辑,才会传 formTemplateId,
-		ValueBusinessObject valueBo = getValueBoFromDb(formTemplate, datasource, queryMap);
+		ValueBusinessObject valueBo = null;
+		if (formTemplate != null) {
+			valueBo = getValueBoFromDb(formTemplate, datasource, queryMap);
+		} else {
+			valueBo = getValueBoFromDb(datasource, queryMap);
+		}
 		beforeDeleteData(request, response, datasource, formTemplate, valueBo);
 		
 		final UsedCheck usedCheck = (UsedCheck) ApplicationContextUtil.getApplicationContext().getBean("usedCheck");

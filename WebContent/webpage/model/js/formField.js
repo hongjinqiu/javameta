@@ -23,11 +23,15 @@ function commonValidate(fieldElem, value, param) {
 	if (dataSetId == "A") {
 		var name = param[1];
 		var formObj = g_masterFormFieldDict[name];
+		// 传进来的value是控件显示出来的value,数据源模型验证,需要用formObj.get("value"),例如PTriggerField,显示[测试_9,测试_9],get("value")=10,
+		value = formObj.get("value");
 		return formManager.dsFormFieldValidator(value, formObj, param);
 	} else {
 		if (formManager.isMatchDetailEditor(dataSetId)) {
 			var name = param[1];
 			var formObj = g_popupFormField[name];
+			// 传进来的value是控件显示出来的value,数据源模型验证,需要用formObj.get("value"),例如PTriggerField,显示[测试_9,测试_9],get("value")=10,
+			value = formObj.get("value");
 			return formManager.dsFormFieldValidator(value, formObj, param);
 		}
 	}

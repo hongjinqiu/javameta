@@ -26,7 +26,7 @@
 		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent.do?@name=Bank&amp;type=Form" iconCls="but_box"></button>
 	</toolbar>
 	
-	<data-provider name="queryDataSetA" size="10" sqlIntercept="com.geeboo.cm.pub.query.CmMbQuerySqlIntercept">
+	<data-provider name="queryDataSetA" size="10">
 		<sql>
 			select * from pub_bank
 			where 1=1 

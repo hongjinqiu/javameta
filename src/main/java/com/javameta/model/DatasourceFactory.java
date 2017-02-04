@@ -398,7 +398,9 @@ public class DatasourceFactory {
 						content = ExpressionParser.parseModel(bo, jsonData, field.getCalcValueExpr().getValue());
 					}
 				}
-				applyFieldValueByString(field, data, content);
+				if (StringUtils.isNotEmpty(content)) {// 当content为空时,不重新计算,避免覆盖掉data中的已有值
+					applyFieldValueByString(field, data, content);
+				}
 			}
 		});
 	}

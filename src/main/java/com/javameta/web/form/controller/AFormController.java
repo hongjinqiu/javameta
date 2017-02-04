@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.javameta.JavametaException;
 import com.javameta.web.form.service.AFormService;
 import com.javameta.web.support.ControllerSupport;
 
@@ -23,22 +24,46 @@ public abstract class AFormController extends ControllerSupport {
 	@RequestMapping("/newData")
 	@ResponseBody
 	public JSONObject newData(HttpServletRequest request, HttpServletResponse response) {
-		ModelRenderVO modelRenderVO = getService().newDataCommon(request, response);
-		return renderCommon(request, response, modelRenderVO);
+		try {
+			ModelRenderVO modelRenderVO = getService().newDataCommon(request, response);
+			return renderCommon(request, response, modelRenderVO);
+		} catch (JavametaException e) {
+			logger.error(e.getMessage(), e);
+			JSONObject result = new JSONObject();
+			result.put("success", false);
+			result.put("message", e.getMessage());
+			return result;
+		}
 	}
 
 	@RequestMapping("/getData")
 	@ResponseBody
 	public JSONObject getData(HttpServletRequest request, HttpServletResponse response) {
-		ModelRenderVO modelRenderVO = getService().getDataCommon(request, response);
-		return renderCommon(request, response, modelRenderVO);
+		try {
+			ModelRenderVO modelRenderVO = getService().getDataCommon(request, response);
+			return renderCommon(request, response, modelRenderVO);
+		} catch (JavametaException e) {
+			logger.error(e.getMessage(), e);
+			JSONObject result = new JSONObject();
+			result.put("success", false);
+			result.put("message", e.getMessage());
+			return result;
+		}
 	}
 
 	@RequestMapping("/copyData")
 	@ResponseBody
 	public JSONObject copyData(HttpServletRequest request, HttpServletResponse response) {
-		ModelRenderVO modelRenderVO = getService().copyDataCommon(request, response);
-		return renderCommon(request, response, modelRenderVO);
+		try {
+			ModelRenderVO modelRenderVO = getService().copyDataCommon(request, response);
+			return renderCommon(request, response, modelRenderVO);
+		} catch (JavametaException e) {
+			logger.error(e.getMessage(), e);
+			JSONObject result = new JSONObject();
+			result.put("success", false);
+			result.put("message", e.getMessage());
+			return result;
+		}
 	}
 
 	/**
@@ -50,44 +75,92 @@ public abstract class AFormController extends ControllerSupport {
 	@RequestMapping("/editData")
 	@ResponseBody
 	public JSONObject editData(HttpServletRequest request, HttpServletResponse response) {
-		ModelRenderVO modelRenderVO = getService().editDataCommon(request, response);
-		return renderCommon(request, response, modelRenderVO);
+		try {
+			ModelRenderVO modelRenderVO = getService().editDataCommon(request, response);
+			return renderCommon(request, response, modelRenderVO);
+		} catch (JavametaException e) {
+			logger.error(e.getMessage(), e);
+			JSONObject result = new JSONObject();
+			result.put("success", false);
+			result.put("message", e.getMessage());
+			return result;
+		}
 	}
 
 	@RequestMapping("/saveData")
 	@ResponseBody
 	public JSONObject saveData(HttpServletRequest request, HttpServletResponse response) {
-		ModelRenderVO modelRenderVO = getService().saveDataCommon(request, response);
-		return renderCommon(request, response, modelRenderVO);
+		try {
+			ModelRenderVO modelRenderVO = getService().saveDataCommon(request, response);
+			return renderCommon(request, response, modelRenderVO);
+		} catch (JavametaException e) {
+			logger.error(e.getMessage(), e);
+			JSONObject result = new JSONObject();
+			result.put("success", false);
+			result.put("message", e.getMessage());
+			return result;
+		}
 	}
 
 	@RequestMapping("/giveUpData")
 	@ResponseBody
 	public JSONObject giveUpData(HttpServletRequest request, HttpServletResponse response) {
-		ModelRenderVO modelRenderVO = getService().giveUpDataCommon(request, response);
-		return renderCommon(request, response, modelRenderVO);
+		try {
+			ModelRenderVO modelRenderVO = getService().giveUpDataCommon(request, response);
+			return renderCommon(request, response, modelRenderVO);
+		} catch (JavametaException e) {
+			logger.error(e.getMessage(), e);
+			JSONObject result = new JSONObject();
+			result.put("success", false);
+			result.put("message", e.getMessage());
+			return result;
+		}
 	}
 
 	@RequestMapping("/deleteData")
 	@ResponseBody
 	public JSONObject deleteData(HttpServletRequest request, HttpServletResponse response) {
-		ModelRenderVO modelRenderVO = getService().deleteDataCommon(request, response);
-		return renderCommon(request, response, modelRenderVO);
+		try {
+			ModelRenderVO modelRenderVO = getService().deleteDataCommon(request, response);
+			return renderCommon(request, response, modelRenderVO);
+		} catch (JavametaException e) {
+			logger.error(e.getMessage(), e);
+			JSONObject result = new JSONObject();
+			result.put("success", false);
+			result.put("message", e.getMessage());
+			return result;
+		}
 	}
 
 	@RequestMapping("/refreshData")
 	@ResponseBody
 	public JSONObject refreshData(HttpServletRequest request, HttpServletResponse response) {
-		ModelRenderVO modelRenderVO = getService().refreshDataCommon(request, response);
-		return renderCommon(request, response, modelRenderVO);
+		try {
+			ModelRenderVO modelRenderVO = getService().refreshDataCommon(request, response);
+			return renderCommon(request, response, modelRenderVO);
+		} catch (JavametaException e) {
+			logger.error(e.getMessage(), e);
+			JSONObject result = new JSONObject();
+			result.put("success", false);
+			result.put("message", e.getMessage());
+			return result;
+		}
 	}
 
 	@RequestMapping("/logList")
 	@ResponseBody
 	public JSONObject logList(HttpServletRequest request, HttpServletResponse response) {
-		Map<String, Object> result = getService().logListCommon(request, response);
-		JSONObject obj = JSONObject.fromObject(result);
-		return obj;
+		try {
+			Map<String, Object> result = getService().logListCommon(request, response);
+			JSONObject obj = JSONObject.fromObject(result);
+			return obj;
+		} catch (JavametaException e) {
+			logger.error(e.getMessage(), e);
+			JSONObject result = new JSONObject();
+			result.put("success", false);
+			result.put("message", e.getMessage());
+			return result;
+		}
 	}
 
 	private JSONObject renderCommon(HttpServletRequest request, HttpServletResponse response, ModelRenderVO modelRenderVO) {

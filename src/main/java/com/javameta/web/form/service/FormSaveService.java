@@ -218,7 +218,7 @@ public class FormSaveService extends ServiceSupport {
 		if (andFieldNameLi.size() > 0) {
 			if (StringUtils.isNotEmpty(strId) && !strId.equals("0")) {
 				Field idField = datasource.getMasterData().getFixField().getPrimaryKey();
-				sb.append(" and {fieldName}=:{fieldName} ".replace("{fieldName}", idField.getCalcFieldName()));
+				sb.append(" and {fieldName}<>:{fieldName} ".replace("{fieldName}", idField.getCalcFieldName()));
 				queryParam.put(idField.getCalcFieldName(), strId);
 			}
 			sb.append(" limit 1 ");
