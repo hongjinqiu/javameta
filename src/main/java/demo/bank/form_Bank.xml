@@ -22,8 +22,6 @@
 		<button name="delBtn" text="删除" mode="fn" handler="deleteData" iconCls="but_box"></button>
 		<button name="refreshBtn" text="刷新" mode="fn" handler="refreshData" iconCls="but_box"></button>
 		<button name="usedQueryBtn" text="被用查询" mode="fn" handler="logList" iconCls="but_box"></button>
-		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent.do?@name=Bank&amp;type=Form" iconCls="but_box"></button>
-		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent.do?@name=Bank&amp;type=Form" iconCls="but_box"></button>
 	</toolbar>
 	
 	<data-provider name="queryDataSetA" size="10">

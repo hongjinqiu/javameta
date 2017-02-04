@@ -147,7 +147,7 @@ function logList() {
 	var bo = formManager.getBo();
 	var dialog = showModalDialog({
 		"title": "被用查询",
-		"url": webRoot + "/schema/listschema.do?@name=PubReferenceLog&beReferenceDatasourceModelId=" + g_datasourceJson.id + "&beReferenceId=" + bo["id"] + "&date=" + new Date()
+		"url": webRoot + "/schema/listschema.do?@name=ReferenceLog&be_ref_datasource_id=" + g_datasourceJson.id + "&be_ref_dataset_id=A&be_ref_field_id_value=" + bo["id"] + "&date=" + new Date()
 	});
 }
 

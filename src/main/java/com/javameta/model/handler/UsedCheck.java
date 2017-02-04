@@ -24,6 +24,7 @@ import com.javameta.model.iterate.DatasourceIterator;
 import com.javameta.model.iterate.IDatasourceFieldDataIterate;
 import com.javameta.util.New;
 import com.javameta.value.Value;
+import com.javameta.value.ValueNull;
 
 @Scope("prototype")
 @Service
@@ -154,6 +155,11 @@ public class UsedCheck {
 		Datasource datasource = datasourceFactory.getDatasource("ReferenceLog");
 		for (Field field: fieldLi) {
 			if (field.isRelationField()) {
+				Value value = data.get(field.getId());
+				if (value == null || value.equals(ValueNull.INSTANCE) || value.getInt() == 0) {
+					continue;
+				}
+				
 				RelationItem relationItem = datasourceFactory.parseRelationExpr(field, bo, data);
 				if (relationItem == null) {
 					throw new JavametaException("数据源:" + field.getDatasourceId() + ",数据集:" + field.getDataSetId() + ",字段:" + field.getId() + ",配置的关联模型列表,不存在返回true的记录");
@@ -200,6 +206,11 @@ public class UsedCheck {
 		if (fieldLi.get(0).isMasterField()) {
 			for (Field field: fieldLi) {
 				if (field.isRelationField()) {
+					Value value = data.get(field.getId());
+					if (value == null || value.equals(ValueNull.INSTANCE) || value.getInt() == 0) {
+						continue;
+					}
+					
 					String srcDatasourceId = field.getDatasourceId();
 					String srcDataSetId = field.getDataSetId();
 					String srcFieldName = field.getId();
@@ -209,12 +220,22 @@ public class UsedCheck {
 					sb.append(" delete from PUB_REFERENCE_LOG ");
 					sb.append(" where 1=1 ");
 					sb.append(" and ref_datasource_id=:ref_datasource_id ");
+					
+					sb.append(" and ref_dataset_id=:ref_dataset_id ");
+					sb.append(" and ref_field_id=:ref_field_id ");
+					sb.append(" and ref_field_id_value=:ref_field_id_value ");
+					
 					sb.append(" and ref_dataset_id_1=:ref_dataset_id_1 ");
 					sb.append(" and ref_field_id_1=:ref_field_id_1 ");
 					sb.append(" and ref_field_id_value_1=:ref_field_id_value_1 ");
 					
 					Map<String, Object> paramMap = New.hashMap();
 					paramMap.put("ref_datasource_id", srcDatasourceId);
+					
+					paramMap.put("ref_dataset_id", srcDataSetId);
+					paramMap.put("ref_field_id", "id");
+					paramMap.put("ref_field_id_value", data.get("id").getInt());
+					
 					paramMap.put("ref_dataset_id_1", srcDataSetId);
 					paramMap.put("ref_field_id_1", srcFieldName);
 					paramMap.put("ref_field_id_value_1", fieldValue);

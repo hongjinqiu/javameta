@@ -123,6 +123,7 @@ DataTableManager.prototype.createDataGrid = function(param, datagridConfig) {
 		checkOnSelect: true,
 		selectOnCheck: true,
 		fitColumns: true,
+		rownumbers: columnModel.rownumber == true,
 		total: totalResults,
 		pageSize: pageSize,
 		pagination: param.pagination || false,

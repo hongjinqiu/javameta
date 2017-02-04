@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+ -->
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>ReferenceLog</id>
+	<cookie name="ReferenceLog" />
+	<data-source-model-id>ReferenceLog</data-source-model-id>
+
+	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
+	<description>被用信息列表</description>
+	<scripts>model/js/ds_listtoolbar.js,demo/referencelog/pubReferenceLogListTemplate.js</scripts>
+	<view-template view="model/listSchema.jsp" />
+
+	<!-- <security byUnit="true" /> -->
+
+	<data-provider name="queryDataSetA" size="10">
+		<sql>
+			select * from pub_reference_log
+			where 1=1
+ 		</sql>
+ 		<query-parameters dataSetId="A">
+ 			<query-parameter name="id" auto="true" text="" editor="hiddenfield">
+			</query-parameter>
+			<query-parameter name="be_ref_datasource_id" text="" auto="true" restriction="eq" editor="hiddenfield"></query-parameter>
+			<query-parameter name="be_ref_dataset_id" text="" auto="true" restriction="eq" editor="hiddenfield"></query-parameter>
+			<query-parameter name="be_ref_field_id" text="" auto="true" restriction="eq" editor="hiddenfield"></query-parameter>
+			<query-parameter name="be_ref_field_id_value" text="" auto="true" restriction="eq" editor="hiddenfield"></query-parameter>
+		</query-parameters>
+	</data-provider>
+
+
+	<column-model name="A_1" text="被用信息列表" selectionMode="checkbox" rownumber="true" dataSetId="A" dataProvider="queryDataSetA">
+		<checkbox-column name="checkboxSelect" hideable="false">
+		</checkbox-column>
+		<id-column name="id" text="编号" hideable="true" />
+
+		<auto-column name="ref_datasource_id" />
+		<auto-column name="ref_dataset_id" />
+		<auto-column name="ref_field_id" />
+		<auto-column name="ref_field_id_value" />
+	</column-model>
+
+</form-template>

@@ -1,8 +1,14 @@
 var modelExtraInfo = {
-		
+	"A" : {
+		"code" : {
+			selectorName : "",// 可以为函数
+			listeners: {
+			}
+		}
+	}
 };
 
-function main(Y) {
+function main() {
 		if (g_id) {
 			if (g_copyFlag == "true") {// 复制
 				ajaxRequest({
