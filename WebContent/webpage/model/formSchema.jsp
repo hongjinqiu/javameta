@@ -106,7 +106,7 @@
 	var g_gridCommondDict = {};// 用于预先保存表格弹出表单元素渲染js函数,在表格dialog弹出渲染完html后,传{index},渲染到表格dialog中,
 	new FormManager().initGridCommondDict();// g_gridCommondDict = {B: [], C: []};
 	var g_popupFormField = {};// 用于表格弹出编辑时,存放弹出框控件数据引用,
-	
+	var g_popupGridEditDialog = null;// 表格弹出编辑dialog
 </script>
 </head>
 

@@ -4,7 +4,7 @@
 <c:set var="itemStatusJsp" value="${itemStatus}" scope="request"></c:set>
 <c:set var="columnModelForJsp" value="${item}" scope="request"></c:set>
  --%>
-<div id="${columnModelForJsp.dataSetId}_editor" style="margin-top: 10px; border: 1px solid red; display: ;">
+<div id="${columnModelForJsp.dataSetId}_editor" style="display: none;">
 	<div class="form-main">
 		<c:if test="${not empty columnModelForJsp.idColumn}">
 			<c:if test="${not empty columnModelForJsp.idColumn.hideable and columnModelForJsp.idColumn.hideable}">

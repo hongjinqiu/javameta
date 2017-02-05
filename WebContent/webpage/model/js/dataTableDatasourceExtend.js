@@ -86,6 +86,44 @@ dialog.callback = doPopupConfirm;
 
 DataTableManager.prototype.createAddRowGrid = function(inputDataLi) {
 	var self = this;
+	var dataSetId = self.param.columnModel.dataSetId;
+	var editorHtml = $("#" + dataSetId + "_editor").html();
+	editorHtml = editorHtml.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/mig, "");// 清除html中所有的<script type="text/javascript">...</script>内容,避免重复执行js,
+	var index = new DatasourceFactory().getSequenceNo();
+	editorHtml = editorHtml.replace(/{index}/g, index);
+	g_popupGridEditDialog = $(editorHtml).dialog({
+		title: self.param.columnModel.text,
+	    width: 800,
+	    height: 400,
+	    cache: false,
+	    modal: true,
+	    resizable:true,
+	    buttons:[{
+			text:'确定',
+			handler:function(){
+				g_popupGridEditDialog.dialog("destroy");
+			}
+		},{
+			text:'取消',
+			handler:function(){
+				g_popupGridEditDialog.dialog("destroy");
+			}
+		}],
+		onOpen: function() {
+			for (var i = 0; i < g_gridCommondDict[dataSetId].length; i++) {
+				var field = g_gridCommondDict[dataSetId][i](index);
+				g_popupFormField[field.get("name")] = field;
+			}
+		},
+		onClose: function() {
+			g_popupFormField = {};// 清空弹出控件引用,
+			g_popupGridEditDialog = null;
+		},
+		onDestroy: function() {
+			g_popupFormField = {};// 清空弹出控件引用,
+			g_popupGridEditDialog = null;
+		}
+	});
 }
 
 function doPluginVirtualColumnBtnAction(columnModelName, elem, fn){
@@ -177,7 +215,7 @@ function g_selectRow(dataSetId, btnName) {
 /**
  * 点击新增,新增一行
  */
-function g_addRow(dataSetId) {
+function g_addRow(dataSetId, btnName) {
 	var inputDataLi = [];
 	var formManager = new FormManager();
 	var data = formManager.getDataSetNewData(dataSetId);
@@ -188,7 +226,7 @@ function g_addRow(dataSetId) {
 /**
  * 点击删除,删除多行
  */
-function g_removeRow(dataSetId) {
+function g_removeRow(dataSetId, btnName) {
 	var selectRecordLi = g_gridPanelDict[dataSetId].getSelectRecordLi();
 	if (selectRecordLi.length == 0) {
 		showAlert("请先选择");

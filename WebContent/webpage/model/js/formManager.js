@@ -1,7 +1,7 @@
 function FormManager() {
 }
 
-FormManager.prototype.isMatchDetailEditor = function(dateSetId) {
+FormManager.prototype.isMatchDetailEditor = function(dataSetId) {
 	var isPopup = false;
 	if (g_popupFormField) {
 		for (var key in g_popupFormField) {
