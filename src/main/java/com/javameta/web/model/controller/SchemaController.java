@@ -37,6 +37,7 @@ import com.javameta.model.template.ColumnModel;
 import com.javameta.model.template.DataProvider;
 import com.javameta.model.template.FormTemplate;
 import com.javameta.model.template.FormTemplateInfo;
+import com.javameta.model.template.VirtualColumn;
 import com.javameta.model.template.QueryParameters.QueryParameter;
 import com.javameta.model.template.Toolbar;
 import com.javameta.util.ApplicationContextUtil;
@@ -776,6 +777,7 @@ public class SchemaController extends ControllerSupport {
 		
 		// 主数据集的后台渲染
 		result.put("masterRenderLi", getMasterRenderLi(formTemplate));
+		result.put("detailRenderLi", getDetailRenderLi(formTemplate));
 		
 		Map<String, Object> layerBo = formTemplateFactory.getDictionaryForFormTemplate(formTemplate);
 
@@ -862,7 +864,7 @@ public class SchemaController extends ControllerSupport {
 				final ObjectHolder<Integer> lineColSpan = new ObjectHolder<Integer>();
 				lineColSpan.obj = formTemplate.getColumnModel().get(i).getColSpan();
 				if (lineColSpan.obj == null) {
-					lineColSpan.obj = 1;
+					lineColSpan.obj = 6;
 				}
 				final List<List<Map<String, Object>>> container = New.arrayList();
 				final List<Map<String, Object>> containerItem = New.arrayList();
@@ -877,7 +879,6 @@ public class SchemaController extends ControllerSupport {
 						public void iterate(Field field) {
 							if (field.isMasterField() && field.getId().equals(column.getName())) {
 								isModelField.obj = true;
-//								if column.Hideable != "true" && column.ManualRender != "true" {
 								if ((column.getHideable() == null || column.getHideable() == false)) {
 									Integer columnColSpan = column.getColSpan();
 									if (columnColSpan == null) {
@@ -925,6 +926,152 @@ public class SchemaController extends ControllerSupport {
 							renderItem.put("columnWidth", column.getColumnWidth());
 							renderItem.put("columnSpan", columnColSpan - 1);
 							renderItem.put("labelWidth", column.getLabelWidth());
+							containerItem.add(renderItem);
+							lineColSpanSum.obj += columnColSpan;
+							if (lineColSpanSum.obj >= lineColSpan.obj) {
+								List<Map<String, Object>> containerItemCopy = New.arrayList();
+								containerItemCopy.addAll(containerItem);
+								container.add(containerItemCopy);
+								containerItem.clear();
+								lineColSpanSum.obj = lineColSpanSum.obj - lineColSpan.obj;
+							}
+						}
+					}
+				}
+				if (0 < lineColSpanSum.obj && lineColSpanSum.obj < lineColSpan.obj) {
+					container.add(containerItem);
+				}
+				result.put(formTemplate.getColumnModel().get(i).getName(), container);
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param formTemplate
+	 * @return {
+	 * 	"B_1": [
+	 * 	[{
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }, {
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }, {
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }]
+	 * 	, [{
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }, {
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }, {
+	 * 		required:
+	 * 		label:
+	 * 		name:
+	 * 	 }]
+	 * 	, [
+	 * 
+	 * 	]]
+	 * }
+	 */
+	private Map<String, Object> getDetailRenderLi(FormTemplate formTemplate) {
+		if (StringUtils.isEmpty(formTemplate.getDatasourceModelId())) {
+			return null;
+		}
+		Map<String, Object> result = New.hashMap();
+		
+		DatasourceFactory datasourceFactory = new DatasourceFactory();
+		Datasource datasource = datasourceFactory.getDatasource(formTemplate.getDatasourceModelId());
+		for (int i = 0; i < formTemplate.getColumnModel().size(); i++) {
+			final String dataSetId = formTemplate.getColumnModel().get(i).getDataSetId();
+			if (!dataSetId.equals("A")) {
+				final ObjectHolder<Integer> lineColSpan = new ObjectHolder<Integer>();
+				lineColSpan.obj = formTemplate.getColumnModel().get(i).getColSpan();
+				if (lineColSpan.obj == null) {
+					lineColSpan.obj = 6;
+				}
+				final List<List<Map<String, Object>>> container = New.arrayList();
+				final List<Map<String, Object>> containerItem = New.arrayList();
+				final ObjectHolder<Integer> lineColSpanSum = new ObjectHolder<Integer>();
+				lineColSpanSum.obj = 0;
+				
+				for (final Column column: formTemplate.getColumnModel().get(i).getColumnList()) {
+					final ObjectHolder<Boolean> isModelField = new ObjectHolder<Boolean>();
+					isModelField.obj = false;
+					DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+						@Override
+						public void iterate(Field field) {
+							if (field.getDataSetId().equals(dataSetId) && field.getId().equals(column.getName())) {
+								isModelField.obj = true;
+								if ((column.getHideable() == null || column.getHideable() == false)) {
+									Integer columnColSpan = column.getEditorColSpan();
+									if (columnColSpan == null || columnColSpan == 0) {
+										columnColSpan = 2;
+									}
+									Map<String, Object> renderItem = New.hashMap();
+									renderItem.put("isHtml", "false");
+									boolean required = false;
+									if (field.getAllowEmpty() != null && !field.getAllowEmpty()) {
+										required = true;
+									}
+									String columnWidth = column.getEditorColumnWidth();
+									String labelWidth = column.getEditorLabelWidth();
+									if (StringUtils.isEmpty(labelWidth)) {
+										labelWidth = "15%";
+									}
+									
+									renderItem.put("column", column);
+									renderItem.put("required", required);
+									renderItem.put("label", column.getText());
+									renderItem.put("name", column.getName());
+									renderItem.put("columnWidth", columnWidth);
+									renderItem.put("columnSpan", columnColSpan - 1);
+									renderItem.put("labelWidth", labelWidth);
+									containerItem.add(renderItem);
+									
+									lineColSpanSum.obj += columnColSpan;
+									if (lineColSpanSum.obj >= lineColSpan.obj) {
+										List<Map<String, Object>> containerItemCopy = New.arrayList();
+										containerItemCopy.addAll(containerItem);
+										container.add(containerItemCopy);
+										containerItem.clear();
+										lineColSpanSum.obj = lineColSpanSum.obj - lineColSpan.obj;
+									}
+								}
+							}
+						}
+					});
+					if (!isModelField.obj && !(column instanceof VirtualColumn)) {
+						if ((column.getHideable() == null || column.getHideable() == false)) {
+							Integer columnColSpan = column.getEditorColSpan();
+							if (columnColSpan == null || columnColSpan == 0) {
+								columnColSpan = 2;
+							}
+							String columnWidth = column.getEditorColumnWidth();
+							String labelWidth = column.getEditorLabelWidth();
+							if (StringUtils.isEmpty(labelWidth)) {
+								labelWidth = "15%";
+							}
+							
+							Map<String, Object> renderItem = New.hashMap();
+							renderItem.put("isHtml", "false");
+							renderItem.put("column", column);
+							renderItem.put("required", false);
+							renderItem.put("label", column.getText());
+							renderItem.put("name", column.getName());
+							renderItem.put("columnWidth", columnWidth);
+							renderItem.put("columnSpan", columnColSpan - 1);
+							renderItem.put("labelWidth", labelWidth);
 							containerItem.add(renderItem);
 							lineColSpanSum.obj += columnColSpan;
 							if (lineColSpanSum.obj >= lineColSpan.obj) {

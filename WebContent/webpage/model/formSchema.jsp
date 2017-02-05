@@ -103,7 +103,9 @@
 
 	var g_Y = null;
 	
-	var g_popupFormField = {};// 用于表格弹出时,存放弹出框控件数据引用,
+	var g_gridCommondDict = {};// 用于预先保存表格弹出表单元素渲染js函数,在表格dialog弹出渲染完html后,传{index},渲染到表格dialog中,
+	new FormManager().initGridCommondDict();// g_gridCommondDict = {B: [], C: []};
+	var g_popupFormField = {};// 用于表格弹出编辑时,存放弹出框控件数据引用,
 	
 </script>
 </head>
@@ -124,6 +126,7 @@
 	</c:if>
 	<c:if test="${item.xmlName == 'column-model'}">
 		<c:set var="columnModelForJsp" value="${item}" scope="request"></c:set>
+		<c:set var="itemStatusJsp" value="${itemStatus}" scope="request"></c:set>
 		<c:if test="${item.dataSetId != 'A'}">
 			<c:if test="${empty item.rendererTemplate}">
 				<jsp:include page="/webpage/model/render/columnModel_list.jsp"></jsp:include>
@@ -131,9 +134,16 @@
 			<c:if test="${not empty item.rendererTemplate}">
 				<jsp:include page="${item.rendererTemplate}"></jsp:include>
 			</c:if>
+			
+			<!-- 表格弹出dialog编辑器html -->
+			<c:if test="${empty item.editorRendererTemplate}">
+				<jsp:include page="/webpage/model/render/columnModel_list_editor.jsp"></jsp:include>
+			</c:if>
+			<c:if test="${not empty item.editorRendererTemplate}">
+				<jsp:include page="${item.editorRendererTemplate}"></jsp:include>
+			</c:if>
 		</c:if>
 		<c:if test="${item.dataSetId == 'A'}">
-			<c:set var="itemStatusJsp" value="${itemStatus}" scope="request"></c:set>
 			<c:if test="${empty item.rendererTemplate}">
 				<jsp:include page="/webpage/model/render/columnModel_form.jsp"></jsp:include>
 			</c:if>

@@ -113,13 +113,13 @@ FormManager.prototype.initializeAttr = function(formObj) {
     			if (column.zeroShowEmpty) {
     				self.set("zeroShowEmpty", true);
     			}
-    			if (column.fieldWidth != "") {
+    			if (column.fieldWidth) {
     				self.set("fieldWidth", column.fieldWidth);
     			}
-    			if (column.fieldHeight != "") {
+    			if (column.fieldHeight) {
     				self.set("fieldHeight", column.fieldHeight);
     			}
-    			if (column.fieldCls != "") {
+    			if (column.fieldCls) {
     				self.set("fieldCls", column.fieldCls);
     			}
     			return true;
@@ -307,7 +307,7 @@ FormManager.prototype.getBo = function() {
 		if (dataSetId != "A") {
 			var gridObj = g_gridPanelDict[dataSetId];
 			if (gridObj) {
-				bo[dataSetId] = gridObj.dt.datagrid("getData");
+				bo[dataSetId] = gridObj.dt.datagrid("getRows");// getData返回{total: xxx, rows: []},因此用getRows,直接返回[]
 			}
 		}
 	});
@@ -815,6 +815,18 @@ FormManager.prototype.setDetailIncId = function(datasource, bo) {
 		if (!fieldGroupLi[0].isMasterField()) {
 			if (data["id"] == "0" || data["id"] == "") {
 				data["id"] = datasourceFactory.getSequenceNo();
+			}
+		}
+	});
+}
+
+FormManager.prototype.initGridCommondDict = function() {
+	var formTemplateIterator = new FormTemplateIterator();
+	var result = "";
+	formTemplateIterator.iterateAllTemplateColumnModel(result, function(columnModel, result) {
+		if (columnModel.dataSetId != "A") {
+			if (!g_gridCommondDict[columnModel.dataSetId]) {
+				g_gridCommondDict[columnModel.dataSetId] = [];
 			}
 		}
 	});

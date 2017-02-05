@@ -23,8 +23,28 @@
 		<button name="usedQueryBtn" text="被用查询" mode="fn" handler="logList" iconCls="but_box"></button>
 		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent.do?@name=BankAccount&amp;type=Form" iconCls="but_box"></button>
 	</toolbar>
+	
+	<data-provider name="queryDataSetA" size="10">
+		<sql>
+			select * from pub_bankaccount
+			where 1=1 
+ 		</sql>
+ 		<query-parameters dataSetId="A">
+ 			<query-parameter name="id" auto="true" text=""></query-parameter>
+ 		</query-parameters>
+	</data-provider>
+	
+	<data-provider name="queryDataSetB" size="10">
+		<sql>
+			select * from pub_bankaccount_b
+			where 1=1 
+ 		</sql>
+ 		<query-parameters dataSetId="A">
+ 			<query-parameter name="id" columnName="bankaccount_id" auto="true" text=""></query-parameter>
+ 		</query-parameters>
+	</data-provider>
 
-	<column-model name="A_1" dataSetId="A" colSpan="6">
+	<column-model name="A_1" dataSetId="A" colSpan="6" dataProvider="queryDataSetA">
 		<id-column name="id" text="编号" hideable="true" />
 
 		<auto-column name="code" colSpan="2" labelWidth="13%" columnWidth="20%" />
@@ -32,7 +52,7 @@
 		<auto-column name="mnemonicNo" colSpan="2" labelWidth="13%" />
 	</column-model>
 
-	<column-model name="A_2" dataSetId="A" colSpan="6">
+	<column-model name="A_2" dataSetId="A" colSpan="6" dataProvider="queryDataSetA">
 		<auto-column name="bankId" colSpan="2" labelWidth="13%" columnWidth="20%" />
 		<!-- <auto-column name="bankAccount" colSpan="2" labelWidth="13%" columnWidth="20%" /> -->
 		<auto-column name="linkBy" colSpan="2" labelWidth="13%" columnWidth="20%" />
@@ -43,7 +63,7 @@
 		<auto-column name="accountProperty" colSpan="2" />
 	</column-model>
 
-	<column-model name="B_1" dataSetId="B">
+	<column-model name="B_1" dataSetId="B" colSpan="4" dataProvider="queryDataSetB">
 		<toolbar name="B_1_toolbar">
 			<button name="selectRowBtn" text="选择" mode="fn" handler="g_selectRow" iconCls="but_box">
 				<relationDS>
@@ -58,10 +78,12 @@
 			<button text="编辑" mode="fn" handler="g_editRow" iconCls="but_box"></button>
 			<button text="删除" mode="fn" handler="g_removeRow" iconCls="but_box"></button>
 		</toolbar>
+		<!-- 
 		<editor-toolbar name="B_1_editor-toolbar">
 			<button text="新增" mode="fn" handler="g_pluginAddRow" iconCls="but_box"></button>
 			<button text="删除" mode="fn" handler="g_pluginRemoveRow" iconCls="but_box"></button>
 		</editor-toolbar>
+		 -->
 		<checkbox-column name="checkboxSelect" hideable="false" />
 		<id-column name="id" text="编号" hideable="true" />
 		<virtual-column name="FUN_C" text="操作" width="60">
@@ -73,23 +95,27 @@
 		</virtual-column>
 		<!-- <virtual-column name="FUN_EDITOR" text="操作" use-in="editor" width="60"> <buttons> <button text="复制" mode="fn" handler="g_pluginCopyRow" iconCls="img_add"></button> <button text="删除" 
 			mode="fn" handler="g_pluginRemoveSingleRow" iconCls="img_delete"></button> </buttons> </virtual-column> -->
-		<auto-column name="currencyTypeId" />
+		<auto-column name="currencyTypeId">
+			<editor>
+				<editor_attribute name="colSpan" value="4"/>
+			</editor>
+		</auto-column>
 		<auto-column name="amtSecureBalance" />
 		<auto-column name="amtOriginalCurrencyBalance" />
 		<auto-column name="amtLimits" />
 		<auto-column name="limitsControl" />
 	</column-model>
 
-	<column-model name="A_3" dataSetId="A" colSpan="4">
+	<column-model name="A_3" dataSetId="A" colSpan="4" dataProvider="queryDataSetA">
 		<auto-column name="createBy" colSpan="2" labelWidth="15%" columnWidth="35%" />
 		<auto-column name="createTime" colSpan="2" labelWidth="15%" />
 		<auto-column name="modifyBy" colSpan="2" />
 		<auto-column name="modifyTime" colSpan="2" />
 	</column-model>
 
-	<column-model name="A_4" dataSetId="A" colSpan="2">
+	<column-model name="A_4" dataSetId="A" colSpan="2" dataProvider="queryDataSetA">
 		<auto-column name="remark" colSpan="2" labelWidth="15%">
-			<column-attribute name="editor" value="textareafield" />
+			<editor name="textareafield"></editor>
 		</auto-column>
 	</column-model>
 

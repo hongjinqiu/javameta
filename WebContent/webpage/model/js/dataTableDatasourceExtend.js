@@ -99,7 +99,7 @@ function doPluginVirtualColumnBtnAction(columnModelName, elem, fn){
 }
 
 /**
- * 插件表头新增,新增一行
+ * 插件表头新增,新增一行,表格的弹窗编辑改为form形式,这个方法暂没用了
  */
 function g_pluginAddRow(dataSetId) {
 	var formManager = new FormManager();
@@ -153,15 +153,15 @@ function g_selectRow(dataSetId, btnName) {
     			var displayField = relationItem.relationConfig.displayField;
     			url = url.replace("{DISPLAY_FIELD_VALUE}", displayField);
     			var selectorTitle = g_relationBo[selectorName].description;
-    			var dialog = showModalDialog({
+    			window.s_dialog = showModalDialog({
     				"title": selectorTitle,
     				"url": url
     			});
     			window.s_closeDialog = function() {
     				if (window.s_dialog) {
-    					window.s_dialog.hide();
+    					//window.s_dialog.hide();
+    					window.s_dialog.dialog("destroy");
     				}
-    				dialog.dialog("destroy");
     				window.s_dialog = null;
     				window.s_selectFunc = null;
     				window.s_queryFunc = null;
@@ -206,7 +206,7 @@ function g_removeRow(dataSetId) {
 			} else {
 				// g_gridPanelDict[dataSetId].dt.removeRow(selectRecordLi[i]);
 				// $('#tt').datagrid('deleteRow',index);
-				var rowLi = g_gridPanelDict[dataSetId].dt.datagrid("getData");
+				var rowLi = g_gridPanelDict[dataSetId].dt.datagrid("getRows");// getData返回{total: xxx, rows: []},因此用getRows,直接返回[]
 				for (var j = 0; j < rowLi.length; j++) {
 					if (rowLi[j].id == selectRecordLi[i].id) {
 						g_gridPanelDict[dataSetId].dt.datagrid("deleteRow", j);

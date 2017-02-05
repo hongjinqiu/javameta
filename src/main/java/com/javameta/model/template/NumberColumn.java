@@ -148,6 +148,17 @@ public class NumberColumn extends Column implements Serializable {
     @XmlTransient
     private String xmlName = "number-column";
     
+    public String getEditorRendererTemplate() {
+    	if (editor != null) {
+    		for (EditorAttribute editorAttribute: editor.getEditorAttribute()) {
+    			if (editorAttribute.getName().equals("rendererTemplate")) {
+    				return editorAttribute.getValue();
+    			}
+    		}
+    	}
+    	return "";
+    }
+    
     public String getEditorFieldCls() {
     	if (editor != null) {
     		for (EditorAttribute editorAttribute: editor.getEditorAttribute()) {

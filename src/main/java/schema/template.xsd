@@ -719,8 +719,10 @@
 									<enumeration value="observe" />
 									<enumeration value="fieldCls" />
 									<enumeration value="style" />
+									<enumeration value="colSpan" />
 									<enumeration value="labelWidth" />
 									<enumeration value="columnWidth" />
+									<enumeration value="rendererTemplate" />
 								</restriction>
 							</simpleType>
 						</attribute>
