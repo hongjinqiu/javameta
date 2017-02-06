@@ -12,47 +12,47 @@ function main(Y) {
 		if (g_id) {
 			if (g_copyFlag == "true") {// 复制
 				ajaxRequest({
-					url: "/" + g_dataSourceJson.Id + "/CopyData?format=json"
+					url: "/" + firstLower(g_datasourceJson.id) + "/copyData.do?format=json"
 					,params: {
-						"dataSourceModelId": g_dataSourceJson.Id,
+						"datasourceModelId": firstLower(g_datasourceJson.id),
 						"formTemplateId": g_formTemplateJsonData.Id,
 						"id": g_id
 					},
 					callback: function(o) {
 						var formManager = new FormManager();
-						formManager.setDetailIncId(g_dataSourceJson, o.bo);
+						formManager.setDetailIncId(g_datasourceJson, o.bo);
 						formManager.applyGlobalParamFromAjaxData(o);
-						formManager.loadData2Form(g_dataSourceJson, o.bo);
+						formManager.loadData2Form(g_datasourceJson, o.bo);
 						formManager.setFormStatus("edit");
 					}
 				});
 			} else {
 				ajaxRequest({
-					url: "/" + g_dataSourceJson.Id + "/GetData?format=json"
+					url: "/" + firstLower(g_datasourceJson.id) + "/getData.do?format=json"
 					,params: {
-						"dataSourceModelId": g_dataSourceJson.Id,
+						"datasourceModelId": firstLower(g_datasourceJson.id),
 						"formTemplateId": g_formTemplateJsonData.Id,
 						"id": g_id
 					},
 					callback: function(o) {
 						var formManager = new FormManager();
 						formManager.applyGlobalParamFromAjaxData(o);
-						formManager.loadData2Form(g_dataSourceJson, o.bo);
+						formManager.loadData2Form(g_datasourceJson, o.bo);
 						formManager.setFormStatus(g_formStatus);
 					}
 				});
 			}
 		} else {
 			ajaxRequest({
-				url: "/" + g_dataSourceJson.Id + "/NewData?format=json"
+				url: "/" + firstLower(g_datasourceJson.id) + "/newData.do?format=json"
 				,params: {
-					"dataSourceModelId": g_dataSourceJson.Id,
+					"datasourceModelId": firstLower(g_datasourceJson.id),
 					"formTemplateId": g_formTemplateJsonData.Id
 				},
 				callback: function(o) {
 					var formManager = new FormManager();
 					formManager.applyGlobalParamFromAjaxData(o);
-					formManager.loadData2Form(g_dataSourceJson, o.bo);
+					formManager.loadData2Form(g_datasourceJson, o.bo);
 					formManager.setFormStatus(g_formStatus);
 				}
 			});

@@ -722,10 +722,12 @@ public class SchemaController extends ControllerSupport {
 		
 		FormTemplateFactory formTemplateFactory = new FormTemplateFactory();
 		List<Map<String, Object>> relationLi = New.arrayList();
-		Map<String, Object> relation = New.hashMap();
-		relation.put("selectorId", selectorId);
-		relation.put("relationId", id);
-		relationLi.add(relation);
+		for (String idItem: id.split(",")) {
+			Map<String, Object> relation = New.hashMap();
+			relation.put("selectorId", selectorId);
+			relation.put("relationId", idItem);
+			relationLi.add(relation);
+		}
 		
 		Map<String, Object> relationBo = formTemplateFactory.getRelationBo(relationLi);
 		JSONObject result = new JSONObject();

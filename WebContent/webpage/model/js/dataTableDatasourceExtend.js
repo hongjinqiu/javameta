@@ -91,15 +91,29 @@ DataTableManager.prototype.doPopupConfirm = function() {
 		data[key] = g_popupFormField[key].get("value");
 	}
 	var dataSetId = self.param.columnModel.dataSetId;
-	// getRowIndex	row	Return the specified row index, the row parameter can be a row record or an id field value.
-	var rowIndex = g_gridPanelDict[dataSetId].dt.datagrid("getRowIndex", data.id);// 文档上说可以用record或id field value,实际上用record会返回-1,只能用id field value 
-	if (rowIndex > -1) {// update
-		g_gridPanelDict[dataSetId].dt.datagrid("updateRow", {
-			index: rowIndex,
-			row: data
-		});
-	} else {// append
-		g_gridPanelDict[dataSetId].dt.datagrid("appendRow", data);
+	
+	// 数据校验
+	var formManager = new FormManager();
+	var detailDataLi = [data];
+	var validateResult = formManager.dsDetailValidator(g_datasourceJson, dataSetId, detailDataLi);
+
+	if (!validateResult.result) {
+		var message = validateResult.message;
+		message = message.replace(/序号为\d*的分录，/g, "");
+		showError(message);
+		return false;
+	} else {
+		// getRowIndex	row	Return the specified row index, the row parameter can be a row record or an id field value.
+		var rowIndex = g_gridPanelDict[dataSetId].dt.datagrid("getRowIndex", data.id);// 文档上说可以用record或id field value,实际上用record会返回-1,只能用id field value 
+		if (rowIndex > -1) {// update
+			g_gridPanelDict[dataSetId].dt.datagrid("updateRow", {
+				index: rowIndex,
+				row: data
+			});
+		} else {// append
+			g_gridPanelDict[dataSetId].dt.datagrid("appendRow", data);
+		}
+		return true;
 	}
 }
 
@@ -120,8 +134,10 @@ DataTableManager.prototype.createAddRowGrid = function(inputDataLi) {
 	    buttons:[{
 			text:'确定',
 			handler:function(){
-				self.doPopupConfirm();
-				g_popupGridEditDialog.dialog("destroy");
+				var result = self.doPopupConfirm();
+				if (result) {
+					g_popupGridEditDialog.dialog("destroy");
+				}
 			}
 		},{
 			text:'取消',
@@ -258,30 +274,32 @@ function g_removeRow(dataSetId, btnName) {
 	if (selectRecordLi.length == 0) {
 		showAlert("请先选择");
 	} else {
-		var hasUsed = false;
-		for (var i = 0; i < selectRecordLi.length; i++) {
-			var isUsed;
-			if (selectRecordLi[i]["javameta_used"] !== undefined) {// 列表页,easyui用的是懒加载,g_usedCheck没值,值放到row.javameta_used中,
-				isUsed = selectRecordLi[i]["javameta_used"];
-			} else {
-				isUsed = g_usedCheck && g_usedCheck[dataSetId] && g_usedCheck[dataSetId][selectRecordLi[i].id];
-			}
-			if (isUsed) {
-				hasUsed = true;
-			} else {
-				// g_gridPanelDict[dataSetId].dt.removeRow(selectRecordLi[i]);
-				// $('#tt').datagrid('deleteRow',index);
-				var rowLi = g_gridPanelDict[dataSetId].dt.datagrid("getRows");// getData返回{total: xxx, rows: []},因此用getRows,直接返回[]
-				for (var j = 0; j < rowLi.length; j++) {
-					if (rowLi[j].id == selectRecordLi[i].id) {
-						g_gridPanelDict[dataSetId].dt.datagrid("deleteRow", j);
+		showConfirm("您确定要删除吗？", function(){
+			var hasUsed = false;
+			for (var i = 0; i < selectRecordLi.length; i++) {
+				var isUsed;
+				if (selectRecordLi[i]["javameta_used"] !== undefined) {// 列表页,easyui用的是懒加载,g_usedCheck没值,值放到row.javameta_used中,
+					isUsed = selectRecordLi[i]["javameta_used"];
+				} else {
+					isUsed = g_usedCheck && g_usedCheck[dataSetId] && g_usedCheck[dataSetId][selectRecordLi[i].id];
+				}
+				if (isUsed) {
+					hasUsed = true;
+				} else {
+					// g_gridPanelDict[dataSetId].dt.removeRow(selectRecordLi[i]);
+					// $('#tt').datagrid('deleteRow',index);
+					var rowLi = g_gridPanelDict[dataSetId].dt.datagrid("getRows");// getData返回{total: xxx, rows: []},因此用getRows,直接返回[]
+					for (var j = 0; j < rowLi.length; j++) {
+						if (rowLi[j].id == selectRecordLi[i].id) {
+							g_gridPanelDict[dataSetId].dt.datagrid("deleteRow", j);
+						}
 					}
 				}
 			}
-		}
-		if (hasUsed) {
-			showAlert("部份数据已被用，不可删除！");
-		}
+			if (hasUsed) {
+				showAlert("部份数据已被用，不可删除！");
+			}
+		});
 	}
 }
 
@@ -289,8 +307,10 @@ function g_removeRow(dataSetId, btnName) {
  * 点击删除,删除一行
  */
 function g_removeSingleRow(o, dataSetId) {
-	var index = g_gridPanelDict[dataSetId].dt.datagrid("getRowIndex", o);
-	g_gridPanelDict[dataSetId].dt.datagrid("deleteRow", index);
+	showConfirm("您确定要删除吗？", function(){
+		var index = g_gridPanelDict[dataSetId].dt.datagrid("getRowIndex", o);
+		g_gridPanelDict[dataSetId].dt.datagrid("deleteRow", index);
+	});
 }
 
 /**
