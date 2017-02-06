@@ -124,12 +124,12 @@ public class DatasourceIterator {
 			List<Map<String, Value>> srcDataLi = srcValueBo.getDetailData().get(detailData.getId());
 			
 			String idFieldName = detailData.getFixField().getPrimaryKey().getId();
-			Map<Integer, Map<String, Value>> destDataIdDict = getDataIdDict(idFieldName, destDataLi);
-			Map<Integer, Map<String, Value>> srcDataIdDict = getDataIdDict(idFieldName, srcDataLi);
+			Map<String, Map<String, Value>> destDataIdDict = getDataIdDict(idFieldName, destDataLi);
+			Map<String, Map<String, Value>> srcDataIdDict = getDataIdDict(idFieldName, srcDataLi);
 			
 			// delete, destData == null, srcData != null
 			for (Map<String, Value> srcData: srcDataLi) {
-				if (destDataIdDict.get(srcData.get(idFieldName).getInt()) == null) {
+				if (destDataIdDict.get(srcData.get(idFieldName).getString()) == null) {
 					Map<String, Value> destData = null;
 					iterate.iterate(detailFieldLi, destData, srcData);
 				}
@@ -138,7 +138,7 @@ public class DatasourceIterator {
 			// insert, destData != null, srcData == null, (destData.id == ValueNull || destData.id == 0)
 			for (Map<String, Value> destData: destDataLi) {
 				Value id = destData.get(idFieldName);
-				if (id.equals(ValueNull.INSTANCE) || id.getInt() == 0) {
+				if (id.equals(ValueNull.INSTANCE) || id.getString().startsWith("gridId")) {
 					Map<String, Value> srcData = null;
 					iterate.iterate(detailFieldLi, destData, srcData);
 				}
@@ -147,8 +147,8 @@ public class DatasourceIterator {
 			// update, destData != null, srcData != null
 			for (Map<String, Value> destData: destDataLi) {
 				Value id = destData.get(idFieldName);
-				if (!(id.equals(ValueNull.INSTANCE) || id.getInt() == 0)) {
-					Map<String, Value> srcData = srcDataIdDict.get(id.getInt());
+				if (!(id.equals(ValueNull.INSTANCE) || id.getString().startsWith("gridId"))) {
+					Map<String, Value> srcData = srcDataIdDict.get(id.getString());
 					if (srcData != null) {
 						iterate.iterate(detailFieldLi, destData, srcData);
 					}
@@ -157,10 +157,16 @@ public class DatasourceIterator {
 		}
 	}
 	
-	private static Map<Integer, Map<String, Value>> getDataIdDict(String idFieldName, List<Map<String, Value>> dataLi) {
-		Map<Integer, Map<String, Value>> result = New.hashMap();
+	/**
+	 * 分录的id有可能为string,以gridId开头,因此,用getString
+	 * @param idFieldName
+	 * @param dataLi
+	 * @return
+	 */
+	private static Map<String, Map<String, Value>> getDataIdDict(String idFieldName, List<Map<String, Value>> dataLi) {
+		Map<String, Map<String, Value>> result = New.hashMap();
 		for (Map<String, Value> dataItem: dataLi) {
-			result.put(dataItem.get(idFieldName).getInt(), dataItem);
+			result.put(dataItem.get(idFieldName).getString(), dataItem);
 		}
 		return result;
 	}

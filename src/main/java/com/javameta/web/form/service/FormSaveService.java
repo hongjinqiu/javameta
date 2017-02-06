@@ -85,7 +85,7 @@ public class FormSaveService extends ServiceSupport {
 				// 新增,分录+id
 				if (destData != null && srcData == null) {
 					Value idValue = destData.get("id");
-					if (idValue == null || idValue.equals(ValueNull.INSTANCE) || idValue.getInt() == 0) {
+					if (idValue == null || idValue.equals(ValueNull.INSTANCE) || idValue.getString().startsWith("gridId")) {
 						formDao.insert(datasource, fieldLi, valueBo, destData);
 					}
 				}

@@ -714,18 +714,23 @@ FormManager.prototype._setDetailGridStatus = function(status) {
 	var datasource = g_datasourceJson;
 	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
 		if (dataSet.id != "A") {
-			var tbar = document.getElementById(dataSet.id + "_tbar");
+			/*var tbar = document.getElementById(dataSet.id + "_tbar");
 			if (tbar) {
 				if (status == "view") {
 					tbar.style.display = "none";
 				} else {
 					tbar.style.display = "";
 				}
+			}*/
 //				self.createColumnModelToolbar(columnModel)
-			}
 			var detailGrid = g_gridPanelDict[dataSet.id];
 			if (detailGrid) {
 				var formTemplateIterator = new FormTemplateIterator();
+				if (status == "view") {
+					detailGrid.dt.datagrid("getPanel").find(".datagrid-toolbar").hide();
+				} else {
+					detailGrid.dt.datagrid("getPanel").find(".datagrid-toolbar").show();
+				}
 				formTemplateIterator.iterateAnyTemplateColumn(dataSet.id, result, function(column, result){
 					if (column.xmlName == "virtual-column") {
 						if (status == "view") {
