@@ -152,11 +152,11 @@ FormManager.prototype.applyNumberDisplayPattern = function(formObj) {
 				self.set("groupSeparator", "");
 				self.set("suffix", "%");
 			} else {
-				self.set("prefix", column.prefix);
-				self.set("precision", column.decimalPlaces);
-				self.set("decimalSeparator", column.decimalSeparator);
-				self.set("groupSeparator", column.thousandsSeparator);
-				self.set("suffix", column.suffix);
+				self.set("prefix", column.prefix || "");
+				self.set("precision", column.decimalPlaces || "");
+				self.set("decimalSeparator", column.decimalSeparator || "");
+				self.set("groupSeparator", column.thousandsSeparator || "");
+				self.set("suffix", column.suffix || "");
 			}
 			return true;
 		}

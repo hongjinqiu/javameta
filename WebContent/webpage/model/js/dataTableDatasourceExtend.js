@@ -84,6 +84,25 @@ if (!validateResult.result) {
 dialog.callback = doPopupConfirm;
  */
 
+DataTableManager.prototype.doPopupConfirm = function() {
+	var self = this;
+	var data = {};
+	for (var key in g_popupFormField) {
+		data[key] = g_popupFormField[key].get("value");
+	}
+	var dataSetId = self.param.columnModel.dataSetId;
+	// getRowIndex	row	Return the specified row index, the row parameter can be a row record or an id field value.
+	var rowIndex = g_gridPanelDict[dataSetId].dt.datagrid("getRowIndex", data.id);// 文档上说可以用record或id field value,实际上用record会返回-1,只能用id field value 
+	if (rowIndex > -1) {// update
+		g_gridPanelDict[dataSetId].dt.datagrid("updateRow", {
+			index: rowIndex,
+			row: data
+		});
+	} else {// append
+		g_gridPanelDict[dataSetId].dt.datagrid("appendRow", data);
+	}
+}
+
 DataTableManager.prototype.createAddRowGrid = function(inputDataLi) {
 	var self = this;
 	var dataSetId = self.param.columnModel.dataSetId;
@@ -101,6 +120,7 @@ DataTableManager.prototype.createAddRowGrid = function(inputDataLi) {
 	    buttons:[{
 			text:'确定',
 			handler:function(){
+				self.doPopupConfirm();
 				g_popupGridEditDialog.dialog("destroy");
 			}
 		},{
@@ -111,8 +131,15 @@ DataTableManager.prototype.createAddRowGrid = function(inputDataLi) {
 		}],
 		onOpen: function() {
 			for (var i = 0; i < g_gridCommondDict[dataSetId].length; i++) {
-				var field = g_gridCommondDict[dataSetId][i](index);
+				var field = g_gridCommondDict[dataSetId][i](index);// 生成field,function定义在*_list_editor.jsp中
 				g_popupFormField[field.get("name")] = field;
+			}
+			// 赋初始化值
+			var data = inputDataLi[0];
+			for (var key in g_popupFormField) {
+				if (data[key]) {
+					g_popupFormField[key].set("value", data[key]);
+				}
 			}
 		},
 		onClose: function() {
@@ -278,10 +305,10 @@ function g_editSingleRow(o, dataSetId) {
 /**
  * 点击行项复制,复制一行
  */
-function g_copyRow(o, dataSetId) {
+function g_copySingleRow(o, dataSetId) {
 	var inputDataLi = [];
 	var formManager = new FormManager();
-	var data = formManager.getDataSetCopyData(dataSetId, o.toJSON());
+	var data = formManager.getDataSetCopyData(dataSetId, o);
 	inputDataLi.push(data);
 	g_gridPanelDict[dataSetId].createAddRowGrid(inputDataLi);
 }
@@ -298,7 +325,7 @@ function g_editRow(dataSetId) {
 	} else {
 		var inputDataLi = [];
 		for (var i = 0; i < selectRecordLi.length; i++) {
-			inputDataLi.push(selectRecordLi[i].toJSON());
+			inputDataLi.push(selectRecordLi[i]);
 		}
 		g_gridPanelDict[dataSetId].createAddRowGrid(inputDataLi);
 	}

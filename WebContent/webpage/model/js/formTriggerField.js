@@ -422,6 +422,7 @@ PTriggerField.prototype._syncDisplayValue = function() {
     	valueLi.push(value);
     }
     $("#" + self.get("id")).textbox("setValue", valueLi.join(";"));
+    $("#" + self.get("id")).textbox("validate");
 }
 
 

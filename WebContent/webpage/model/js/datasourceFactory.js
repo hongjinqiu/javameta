@@ -276,7 +276,7 @@ DatasourceFactory.prototype.applyDataSetCopyValue = function(datasource, dataSet
 	var result = "";
 	datasourceIterator.iterateAllField(datasource, result, function(fieldGroup, result){
 		if (fieldGroup.getDataSetId() == dataSetId) {
-			if (fieldGroup.allowCopy == undefined || fieldGroup.allowCopy == "" || fieldGroup.allowCopy) {
+			if (fieldGroup.allowCopy === undefined || fieldGroup.allowCopy === "" || fieldGroup.allowCopy) {// false == "",返回true,因此用===
 				if (srcData[fieldGroup.id]) {
 					destData[fieldGroup.id] = srcData[fieldGroup.id];
 				}

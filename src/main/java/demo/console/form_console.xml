@@ -18,7 +18,7 @@
 		</button>
 	</toolbar>
 
-	<column-model name="Component" rendererTemplate="" text="list模型列表">
+	<column-model name="Component" rownumber="true" rendererTemplate="" text="list模型列表">
 		<!-- 
 		<toolbar>
 			<button text="重构模型" mode="fn" handler="doRefretorComponent" iconCls="icon-edit">
@@ -51,7 +51,7 @@
 		</button>
 	</toolbar>
 
-	<column-model name="Selector" text="selector模型列表">
+	<column-model name="Selector" text="selector模型列表" rownumber="true">
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
 		<id-column name="id" width="100" text="编号" hideable="false" />
@@ -77,7 +77,7 @@
 		</button>
 	</toolbar>
 
-	<column-model name="Form" text="form模型列表">
+	<column-model name="Form" text="form模型列表" rownumber="true">
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
 		<id-column name="id" text="编号" hideable="false" width="100" />
@@ -110,7 +110,7 @@
 		</button>
 	</toolbar>
 
-	<column-model name="Datasource" text="datasource模型列表" selectionMode="radio">
+	<column-model name="Datasource" text="datasource模型列表" selectionMode="radio" rownumber="true">
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
 		<id-column name="id" text="编号" hideable="false" width="100" />

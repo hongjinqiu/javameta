@@ -274,6 +274,7 @@ PTextField.prototype.set = function(key, value) {
 
 	if (key == "value") {
 		$("#" + self.config.id).textbox("setValue", value);
+		$("#" + self.config.id).textbox("validate");
 		return;
 	}
 
@@ -403,6 +404,7 @@ PSelectField.prototype.set = function(key, value) {
 	}
 	if (key == "value") {
 		$("#" + self.config.id).combobox("setValue", value);
+		$("#" + self.config.id).combobox("validate");
 		return;
 	}
 	
@@ -499,6 +501,7 @@ PChoiceField.prototype.set = function(key, value) {
 	}
 	if (key == "value") {
 		$("#" + self.config.id).combobox("setValue", value);
+		$("#" + self.config.id).combobox("validate");
 		return;
 	}
 
@@ -610,6 +613,7 @@ PNumberField.prototype.set = function(key, value) {
 	}
 	if (key == "value") {
 		$("#" + self.config.id).numberbox("setValue", value);
+		$("#" + self.config.id).numberbox("validate");
 		return;
 	}
 
@@ -838,12 +842,15 @@ PDateField.prototype.set = function(key, value) {
 		var dbPattern = self.get("dbPattern");
 		if (dbPattern == "yyyyMMdd") {
 			$("#" + self.config.id).datebox("setValue", self.getFormatValue(value));
+			$("#" + self.config.id).datebox("validate");
 			return;
 		} else if (dbPattern == "yyyyMMddHHmmss") {
 			$("#" + self.config.id).datetimebox("setValue", self.getFormatValue(value));
+			$("#" + self.config.id).datetimebox("validate");
 			return;
 		} else if (dbPattern == "HHmmss") {
 			$("#" + self.config.id).timespinner("setValue", self.getFormatValue(value));
+			$("#" + self.config.id).timespinner("validate");
 			return;
 		}
 	}

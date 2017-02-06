@@ -63,7 +63,7 @@
 		<auto-column name="accountProperty" colSpan="2" />
 	</column-model>
 
-	<column-model name="B_1" dataSetId="B" colSpan="4" dataProvider="queryDataSetB">
+	<column-model name="B_1" dataSetId="B" rownumber="true" colSpan="4" dataProvider="queryDataSetB">
 		<toolbar name="B_1_toolbar">
 			<button name="selectRowBtn" text="选择" mode="fn" handler="g_selectRow" iconCls="but_box">
 				<relationDS>
@@ -86,24 +86,24 @@
 		 -->
 		<checkbox-column name="checkboxSelect" hideable="false" />
 		<id-column name="id" text="编号" hideable="true" />
-		<virtual-column name="FUN_C" text="操作" width="60">
+		<virtual-column name="FUN_C" text="操作" width="90">
 			<buttons>
 				<button text="编辑" mode="fn" handler="g_editSingleRow" iconCls="img_edit"></button>
-				<!-- <button text="复制" mode="fn" handler="g_copyRow" iconCls="img_add"></button> -->
+				<button text="复制" mode="fn" handler="g_copySingleRow" iconCls="img_add"></button>
 				<button name="btn_delete" text="删除" mode="fn" handler="g_removeSingleRow" iconCls="img_delete"></button>
 			</buttons>
 		</virtual-column>
 		<!-- <virtual-column name="FUN_EDITOR" text="操作" use-in="editor" width="60"> <buttons> <button text="复制" mode="fn" handler="g_pluginCopyRow" iconCls="img_add"></button> <button text="删除" 
 			mode="fn" handler="g_pluginRemoveSingleRow" iconCls="img_delete"></button> </buttons> </virtual-column> -->
-		<auto-column name="currencyTypeId">
+		<auto-column name="currencyTypeId" width="130">
 			<editor>
 				<editor_attribute name="colSpan" value="4"/>
 			</editor>
 		</auto-column>
-		<auto-column name="amtSecureBalance" />
-		<auto-column name="amtOriginalCurrencyBalance" />
-		<auto-column name="amtLimits" />
-		<auto-column name="limitsControl" />
+		<auto-column name="amtSecureBalance" width="140" />
+		<auto-column name="amtOriginalCurrencyBalance" width="140" />
+		<auto-column name="amtLimits" width="140" />
+		<auto-column name="limitsControl" width="140" />
 	</column-model>
 
 	<column-model name="A_3" dataSetId="A" colSpan="4" dataProvider="queryDataSetA">

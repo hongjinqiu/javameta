@@ -66,7 +66,7 @@
 		<bizField>
 			<field id="" extends="currencyTypeId">
 				<displayName>币别代码</displayName>
-				<allowCopy>true</allowCopy>
+				<allowCopy>false</allowCopy>
 				<allowDuplicate>false</allowDuplicate>
 				<zeroShowEmpty>true</zeroShowEmpty>
 			</field>

@@ -161,7 +161,7 @@
 		<virtual-column name="FUN_C" text="操作" width="90">
 			<buttons>
 				<button text="编辑" mode="fn" handler="g_editSingleRow" iconCls="img_edit"></button>
-				<button text="复制" mode="fn" handler="g_copyRow" iconCls="img_add"></button>
+				<button text="复制" mode="fn" handler="g_copySingleRow" iconCls="img_add"></button>
 				<button text="删除" mode="fn" handler="g_removeSingleRow" iconCls="img_delete"></button>
 			</buttons>
 		</virtual-column>
