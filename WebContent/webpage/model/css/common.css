@@ -251,3 +251,7 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input
 	float: left;
 	background-position: 0px -1px;
 }
+
+.textbox-readonly, .validatebox-readonly, .numberbox-readonly {
+	background-color: #cccccc;
+}

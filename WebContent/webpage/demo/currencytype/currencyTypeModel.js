@@ -14,8 +14,8 @@ function main(Y) {
 				ajaxRequest({
 					url: "/" + firstLower(g_datasourceJson.id) + "/copyData.do?format=json"
 					,params: {
-						"datasourceModelId": firstLower(g_datasourceJson.id),
-						"formTemplateId": g_formTemplateJsonData.Id,
+						"datasourceModelId": g_datasourceJson.id,
+						"formTemplateId": g_formTemplateJsonData.id,
 						"id": g_id
 					},
 					callback: function(o) {
@@ -30,8 +30,8 @@ function main(Y) {
 				ajaxRequest({
 					url: "/" + firstLower(g_datasourceJson.id) + "/getData.do?format=json"
 					,params: {
-						"datasourceModelId": firstLower(g_datasourceJson.id),
-						"formTemplateId": g_formTemplateJsonData.Id,
+						"datasourceModelId": g_datasourceJson.id,
+						"formTemplateId": g_formTemplateJsonData.id,
 						"id": g_id
 					},
 					callback: function(o) {
@@ -46,8 +46,8 @@ function main(Y) {
 			ajaxRequest({
 				url: "/" + firstLower(g_datasourceJson.id) + "/newData.do?format=json"
 				,params: {
-					"datasourceModelId": firstLower(g_datasourceJson.id),
-					"formTemplateId": g_formTemplateJsonData.Id
+					"datasourceModelId": g_datasourceJson.id,
+					"formTemplateId": g_formTemplateJsonData.id
 				},
 				callback: function(o) {
 					var formManager = new FormManager();

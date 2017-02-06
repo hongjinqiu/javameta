@@ -19,15 +19,16 @@
 			where 1=1
  		</sql>
  		<query-parameters dataSetId="A">
-		<query-parameter name="code" auto="true" text="">
-		</query-parameter>
-		<query-parameter name="name" auto="true" text=""></query-parameter>
-		<query-parameter name="currencyTypeSign" auto="true" text=""></query-parameter>
-		<query-parameter name="roundingWay" auto="true" text="">
-		</query-parameter>
-		<query-parameter name="amtDecimals" auto="true" text=""></query-parameter>
-		<query-parameter name="upDecimals" auto="true" text=""></query-parameter>
-	</query-parameters>
+ 			<query-parameter name="id" auto="true" text=""></query-parameter>
+			<query-parameter name="code" auto="true" text="">
+			</query-parameter>
+			<query-parameter name="name" auto="true" text=""></query-parameter>
+			<query-parameter name="currencyTypeSign" auto="true" text=""></query-parameter>
+			<query-parameter name="roundingWay" auto="true" text="">
+			</query-parameter>
+			<query-parameter name="amtDecimals" auto="true" text=""></query-parameter>
+			<query-parameter name="upDecimals" auto="true" text=""></query-parameter>
+		</query-parameters>
 	</data-provider>
 
 	<column-model name="A_1" text="币别列表" selectionMode="checkbox" rownumber="true" selectionTitle="已选币别" selectionTemplate="{code},{name}" sqlOrderBy="code" dataSetId="A" dataProvider="queryDataSetA">

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.javameta.JavametaException;
+import com.javameta.util.CommonUtil;
 import com.javameta.web.form.service.AFormService;
 import com.javameta.web.support.ControllerSupport;
 
@@ -153,7 +154,7 @@ public abstract class AFormController extends ControllerSupport {
 		try {
 			Map<String, Object> result = getService().logListCommon(request, response);
 			JSONObject obj = JSONObject.fromObject(result);
-			return obj;
+			return CommonUtil.filterNullInJSONObject(obj);
 		} catch (JavametaException e) {
 			logger.error(e.getMessage(), e);
 			JSONObject result = new JSONObject();
@@ -169,8 +170,7 @@ public abstract class AFormController extends ControllerSupport {
 		result.put("bo", modelRenderVO.getBo());
 		result.put("relationBo", modelRenderVO.getRelationBo());
 		result.put("usedCheckBo", modelRenderVO.getUsedCheckBo());
-
-		return result;
+		return CommonUtil.filterNullInJSONObject(result);
 	}
 
 	public abstract AFormService getService();

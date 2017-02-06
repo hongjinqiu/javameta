@@ -721,6 +721,7 @@ FormManager.prototype._setDetailGridStatus = function(status) {
 				} else {
 					tbar.style.display = "";
 				}
+//				self.createColumnModelToolbar(columnModel)
 			}
 			var detailGrid = g_gridPanelDict[dataSet.id];
 			if (detailGrid) {

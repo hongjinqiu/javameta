@@ -6,6 +6,7 @@ function LTriggerField(param) {
 	}
 	var easyUiConfig = {
 		required: getQueryParameterAttrRequired(param["name"]),
+		validateOnBlur: true,
 		readonly: true,
 		validType:"validateTriggerField['{name}']".replace(/{name}/g, param.name)
 	};

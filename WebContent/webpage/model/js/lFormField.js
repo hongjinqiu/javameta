@@ -196,6 +196,7 @@ function LTextField(param) {
 	}
 
 	var easyUiConfig = {
+		validateOnBlur: true,
 		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateTextField['{name}']".replace(/{name}/g, param.name)
 	};
@@ -312,6 +313,7 @@ function LSelectField(param) {
 	var easyUiConfig = {
 		valueField : 'value',
 		textField : 'label',
+		validateOnBlur: true,
 		limitToList: true,
 		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateSelectField['{name}']".replace(/{name}/g, param.name),
@@ -400,6 +402,7 @@ function LChoiceField(param) {
 	var easyUiConfig = {
 		valueField : 'value',
 		textField : 'label',
+		validateOnBlur: true,
 		limitToList: true,
 		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateChoiceField['{name}']".replace(/{name}/g, param.name),
@@ -493,6 +496,7 @@ function LNumberField(param) {
 	}
 	
 	var easyUiConfig = {
+		validateOnBlur: true,
 		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateNumberField['{name}']".replace(/{name}/g, param.name)
 	};
@@ -631,6 +635,7 @@ function LDateField(param) {
 	if (dbPattern == "yyyyMMdd") {
 		$("#" + self.config.id).datebox({
 			cls: fieldCls,
+			validateOnBlur: true,
 			required: getQueryParameterAttrRequired(param["name"]),
 			validType : "validateDateField['{name}']".replace(/{name}/g, param.name),
 			formatter: function(date) {
@@ -652,6 +657,7 @@ function LDateField(param) {
 	} else if (dbPattern == "yyyyMMddHHmmss") {
 		$("#" + self.config.id).datetimebox({
 			cls: fieldCls,
+			validateOnBlur: true,
 		    showSeconds: false,
 		    required: getQueryParameterAttrRequired(param["name"]),
 		    validType : "validateDateField['{name}']".replace(/{name}/g, param.name),
@@ -678,6 +684,7 @@ function LDateField(param) {
 	} else if (dbPattern == "HHmmss") {
 		$("#" + self.config.id).timespinner({
 			cls: fieldCls,
+			validateOnBlur: true,
 			required: getQueryParameterAttrRequired(param["name"]),
 			validType : "validateDateField['{name}']".replace(/{name}/g, param.name),
 		    showSeconds: false
@@ -878,6 +885,7 @@ function LTextareaField(param) {
 	}
 	
 	$("#" + self.config.id).validatebox({
+		validateOnBlur: true,
 		required: getQueryParameterAttrRequired(param["name"]),
 		validType : "validateTextareaField['{name}']".replace(/{name}/g, param.name)
 	});

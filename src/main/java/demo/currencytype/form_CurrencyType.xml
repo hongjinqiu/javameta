@@ -34,7 +34,7 @@
  		</query-parameters>
 	</data-provider>
 
-	<column-model name="A_1" dataSetId="A" colSpan="4">
+	<column-model name="A_1" dataSetId="A" colSpan="4" dataProvider="queryDataSetA">
 		<id-column name="id" text="编号" hideable="true" />
 
 		<auto-column name="code" colSpan="2" labelWidth="15%" columnWidth="35%" />
@@ -42,7 +42,7 @@
 		</auto-column>
 	</column-model>
 
-	<column-model name="A_2" dataSetId="A" colSpan="4">
+	<column-model name="A_2" dataSetId="A" colSpan="4" dataProvider="queryDataSetA">
 		<auto-column name="currencyTypeSign" colSpan="2" labelWidth="15%" columnWidth="35%" />
 		<auto-column name="roundingWay" colSpan="2" labelWidth="15%" columnWidth="35%">
 			<!-- <column-attribute name="editor" value="checkboxfield"/> -->
@@ -52,14 +52,14 @@
 		</auto-column>
 	</column-model>
 
-	<column-model name="A_3" dataSetId="A" colSpan="4">
+	<column-model name="A_3" dataSetId="A" colSpan="4" dataProvider="queryDataSetA">
 		<auto-column name="createBy" colSpan="2" labelWidth="15%" columnWidth="35%" />
 		<auto-column name="createTime" colSpan="2" labelWidth="15%" />
 		<auto-column name="modifyBy" colSpan="2" />
 		<auto-column name="modifyTime" colSpan="2" />
 	</column-model>
 
-	<column-model name="A_4" dataSetId="A" colSpan="2">
+	<column-model name="A_4" dataSetId="A" colSpan="2" dataProvider="queryDataSetA">
 		<auto-column name="remark" colSpan="2" labelWidth="15%">
 			<editor name="textareafield"></editor>
 		</auto-column>

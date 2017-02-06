@@ -39,8 +39,9 @@
 			select * from pub_bankaccount_b
 			where 1=1 
  		</sql>
- 		<query-parameters dataSetId="A">
- 			<query-parameter name="id" columnName="bankaccount_id" auto="true" text=""></query-parameter>
+ 		<query-parameters dataSetId="B">
+ 			<query-parameter name="id" auto="true" text=""></query-parameter>
+ 			<query-parameter name="bankaccount_id" auto="true" text=""></query-parameter>
  		</query-parameters>
 	</data-provider>
 
@@ -57,7 +58,7 @@
 		<!-- <auto-column name="bankAccount" colSpan="2" labelWidth="13%" columnWidth="20%" /> -->
 		<auto-column name="linkBy" colSpan="2" labelWidth="13%" columnWidth="20%" />
 		<auto-column name="bankPhone" colSpan="2" labelWidth="13%" />
-		<auto-column name="bankAddress" colSpan="4" fieldWidth="75%" />
+		<auto-column name="bankAddress" readOnly="true" colSpan="4" fieldWidth="75%" />
 		<auto-column name="cyberBankUrl" colSpan="2" />
 		<auto-column name="dutyBy" colSpan="2" />
 		<auto-column name="accountProperty" colSpan="2" />

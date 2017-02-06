@@ -451,7 +451,7 @@ public abstract class AFormService extends ServiceSupport {
 		sql = sql.replace("{idField}", sysUserIdField);
 		final Map<String, Object> sysUserMaster = this.formDao.getJdbcTemplate().queryForMap(sql, userId);
 
-		DatasourceIterator.iterateLineValueBo(sysUserDatasource, valueBo, new IDatasourceLineDataIterate() {
+		DatasourceIterator.iterateLineValueBo(datasource, valueBo, new IDatasourceLineDataIterate() {
 			@Override
 			public void iterate(List<Field> fieldLi, Map<String, Value> data, int rowIndex) {
 				data.put("createBy", ValueInt.get(userId));

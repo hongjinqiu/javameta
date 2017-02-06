@@ -332,22 +332,26 @@ public class FormSaveService extends ServiceSupport {
 		isDataTypeNumber = isDataTypeNumber || field.getFieldType().equals("LONG");
 		boolean isUnLimit = StringUtils.isNotEmpty(field.getLimitOption()) && !field.getLimitOption().equals("unLimit");
 		if (isDataTypeNumber && isUnLimit) {
-			BigDecimal fieldValueBigDecimal = new BigDecimal(fieldValue);
-			if (field.getLimitOption().equals("limitMax")) {
-				BigDecimal maxValue = new BigDecimal(field.getLimitMax());
-				if (maxValue.compareTo(fieldValueBigDecimal) < 0) {
-					messageLi.add(field.getDisplayName() + "超出最大值" + field.getLimitMax());
-				}
-			} else if (field.getLimitOption().equals("limitMin")) {
-				BigDecimal minValue = new BigDecimal(field.getLimitMin());
-				if (fieldValueBigDecimal.compareTo(minValue) < 0) {
-					messageLi.add(field.getDisplayName() + "小于最小值" + field.getLimitMin());
-				}
-			} else if (field.getLimitOption().equals("limitRange")) {
-				BigDecimal minValue = new BigDecimal(field.getLimitMin());
-				BigDecimal maxValue = new BigDecimal(field.getLimitMax());
-				if (fieldValueBigDecimal.compareTo(minValue) < 0 || maxValue.compareTo(fieldValueBigDecimal) < 0) {
-					messageLi.add(field.getDisplayName() + "超出范围(" + field.getLimitMin() + "~" + field.getLimitMax() + ")");
+			// 分录表格id,新增时，会传string,以gridId开头,因此,id字段有可能是string,
+			boolean isDetailGridIdString = field.getId().equals("id") && fieldValue.startsWith("gridId");
+			if (!isDetailGridIdString && StringUtils.isNotEmpty(fieldValue)) {
+				BigDecimal fieldValueBigDecimal = new BigDecimal(fieldValue);
+				if (field.getLimitOption().equals("limitMax")) {
+					BigDecimal maxValue = new BigDecimal(field.getLimitMax());
+					if (maxValue.compareTo(fieldValueBigDecimal) < 0) {
+						messageLi.add(field.getDisplayName() + "超出最大值" + field.getLimitMax());
+					}
+				} else if (field.getLimitOption().equals("limitMin")) {
+					BigDecimal minValue = new BigDecimal(field.getLimitMin());
+					if (fieldValueBigDecimal.compareTo(minValue) < 0) {
+						messageLi.add(field.getDisplayName() + "小于最小值" + field.getLimitMin());
+					}
+				} else if (field.getLimitOption().equals("limitRange")) {
+					BigDecimal minValue = new BigDecimal(field.getLimitMin());
+					BigDecimal maxValue = new BigDecimal(field.getLimitMax());
+					if (fieldValueBigDecimal.compareTo(minValue) < 0 || maxValue.compareTo(fieldValueBigDecimal) < 0) {
+						messageLi.add(field.getDisplayName() + "超出范围(" + field.getLimitMin() + "~" + field.getLimitMax() + ")");
+					}
 				}
 			}
 		} else {

@@ -7,6 +7,7 @@ function PTriggerField(param) {
 	var easyUiConfig = {
 		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		readonly: true,
+		validateOnBlur: true,
 		validType:"validateTriggerField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name)
 	};
 	var fieldCls = getEditorAttrFieldCls(param["dataSetId"], param["name"]);

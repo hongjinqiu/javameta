@@ -309,7 +309,7 @@ public class SchemaController extends ControllerSupport {
 			}
 			JSONObject json = new JSONObject();
 			json.put("data", items);
-			return json;
+			return CommonUtil.filterNullInJSONObject(json);
 		} else if (type.equals("Selector")) {
 			List<FormTemplateInfo> listTemplateInfoLi = formTemplateFactory.refretorFormTemplateInfo(FormTemplateEnum.SELECTOR);
 			List<Map<String, Object>> items = getSummarySelectorTemplateInfoLi(listTemplateInfoLi);
@@ -326,7 +326,7 @@ public class SchemaController extends ControllerSupport {
 			}
 			JSONObject json = new JSONObject();
 			json.put("data", items);
-			return json;
+			return CommonUtil.filterNullInJSONObject(json);
 		} else if (type.equals("Form")) {
 			List<FormTemplateInfo> listTemplateInfoLi = formTemplateFactory.refretorFormTemplateInfo(FormTemplateEnum.FORM);
 			List<Map<String, Object>> items = getSummaryFormTemplateInfoLi(listTemplateInfoLi);
@@ -343,7 +343,7 @@ public class SchemaController extends ControllerSupport {
 			}
 			JSONObject json = new JSONObject();
 			json.put("data", items);
-			return json;
+			return CommonUtil.filterNullInJSONObject(json);
 		} else if (type.equals("Datasource")) {
 			DatasourceFactory datasourceFactory = new DatasourceFactory();
 			List<DatasourceInfo> listTemplateInfoLi = datasourceFactory.refretorDatasourceInfo();
@@ -361,7 +361,7 @@ public class SchemaController extends ControllerSupport {
 			}
 			JSONObject json = new JSONObject();
 			json.put("data", items);
-			return json;
+			return CommonUtil.filterNullInJSONObject(json);
 		}
 		JSONObject json = new JSONObject();
 		json.put("message", "可能传入了错误的refretorType:" + type);
@@ -465,7 +465,7 @@ public class SchemaController extends ControllerSupport {
 		}
 		return new ModelAndView(view);
 	}
-
+	
 	private void setSelectionMode(HttpServletRequest request, FormTemplate formTemplate) {
 		String multi = request.getParameter("@multi");
 		if (StringUtils.isNotEmpty(multi)) {
@@ -739,7 +739,7 @@ public class SchemaController extends ControllerSupport {
 			}
 		}
 		
-		return result;
+		return CommonUtil.filterNullInJSONObject(result);
 	}
 	
 	@RequestMapping("/formschema")
@@ -1197,7 +1197,7 @@ public class SchemaController extends ControllerSupport {
 		Map<String, Object> obj = schemaService.testObject();
 		JSONObject json = new JSONObject();
 		json.put("name", obj);
-		return json;
+		return CommonUtil.filterNullInJSONObject(json);
 	}
 
 	@RequestMapping("/testInsert1")

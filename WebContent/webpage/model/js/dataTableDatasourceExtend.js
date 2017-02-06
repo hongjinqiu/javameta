@@ -266,11 +266,22 @@ function g_addRow(dataSetId, btnName) {
 	g_gridPanelDict[dataSetId].createAddRowGrid(inputDataLi);
 }
 
+function getCopyArray(li) {
+	var li2 = [];
+	for (var i = 0; i < li.length; i++) {
+		li2.push(li[i]);
+	}
+	return li2;
+}
+
 /**
  * 点击删除,删除多行
  */
 function g_removeRow(dataSetId, btnName) {
 	var selectRecordLi = g_gridPanelDict[dataSetId].getSelectRecordLi();
+	// easyui delete rows时,selectRecordLi的长度会跟着变化，因此需要复制一个引用出来,
+	selectRecordLi = getCopyArray(selectRecordLi);
+	
 	if (selectRecordLi.length == 0) {
 		showAlert("请先选择");
 	} else {
@@ -286,14 +297,8 @@ function g_removeRow(dataSetId, btnName) {
 				if (isUsed) {
 					hasUsed = true;
 				} else {
-					// g_gridPanelDict[dataSetId].dt.removeRow(selectRecordLi[i]);
-					// $('#tt').datagrid('deleteRow',index);
-					var rowLi = g_gridPanelDict[dataSetId].dt.datagrid("getRows");// getData返回{total: xxx, rows: []},因此用getRows,直接返回[]
-					for (var j = 0; j < rowLi.length; j++) {
-						if (rowLi[j].id == selectRecordLi[i].id) {
-							g_gridPanelDict[dataSetId].dt.datagrid("deleteRow", j);
-						}
-					}
+					var index = g_gridPanelDict[dataSetId].dt.datagrid("getRowIndex", selectRecordLi[i]);
+					g_gridPanelDict[dataSetId].dt.datagrid("deleteRow", index);
 				}
 			}
 			if (hasUsed) {

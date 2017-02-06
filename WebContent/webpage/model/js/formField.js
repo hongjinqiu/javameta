@@ -25,14 +25,22 @@ function commonValidate(fieldElem, value, param) {
 		var formObj = g_masterFormFieldDict[name];
 		// 传进来的value是控件显示出来的value,数据源模型验证,需要用formObj.get("value"),例如PTriggerField,显示[测试_9,测试_9],get("value")=10,
 		value = formObj.get("value");
-		return formManager.dsFormFieldValidator(value, formObj, param);
+		if (formObj.get("required") && !value) {// 必填交给控件自己搞定,有时候控件上有值，但是get("value")却取不到值,会出现"不能为空的提示"
+			return true;
+		} else {
+			return formManager.dsFormFieldValidator(value, formObj, param);
+		}
 	} else {
 		if (formManager.isMatchDetailEditor(dataSetId)) {
 			var name = param[1];
 			var formObj = g_popupFormField[name];
 			// 传进来的value是控件显示出来的value,数据源模型验证,需要用formObj.get("value"),例如PTriggerField,显示[测试_9,测试_9],get("value")=10,
 			value = formObj.get("value");
-			return formManager.dsFormFieldValidator(value, formObj, param);
+			if (formObj.get("required") && !value) {// 必填交给控件自己搞定,有时候控件上有值，但是get("value")却取不到值,会出现"不能为空的提示"
+				return true;
+			} else {
+				return formManager.dsFormFieldValidator(value, formObj, param);
+			}
 		}
 	}
 	return true;
@@ -210,6 +218,7 @@ function PTextField(param) {
 	}
 	
 	var easyUiConfig = {
+		validateOnBlur: true,
 		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		validType : "validateTextField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name)
 	};
@@ -334,6 +343,7 @@ function PSelectField(param) {
 		validType : "validateSelectField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name),
 		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		limitToList: true,
+		validateOnBlur: true,
 		multiple : param["multiple"] || false
 	};
 	var fieldCls = getEditorAttrFieldCls(param["dataSetId"], param["name"]);
@@ -424,6 +434,7 @@ function PChoiceField(param) {
 		validType : "validateChoiceField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name),
 		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		limitToList: true,
+		validateOnBlur: true,
 		multiple : param["multiple"] || false
 	};
 	var fieldCls = getEditorAttrFieldCls(param["dataSetId"], param["name"]);
@@ -516,6 +527,7 @@ function PNumberField(param) {
 	}
 	
 	var easyUiConfig = {
+		validateOnBlur: true,
 		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		validType : "validateNumberField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name)
 	};
@@ -654,6 +666,7 @@ function PDateField(param) {
 	if (dbPattern == "yyyyMMdd") {
 		$("#" + self.config.id).datebox({
 			cls: fieldCls,
+			validateOnBlur: true,
 			required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 			validType : "validateDateField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name),
 			formatter: function(date) {
@@ -678,6 +691,7 @@ function PDateField(param) {
 			required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 			validType : "validateDateField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name),
 		    showSeconds: false,
+		    validateOnBlur: true,
 		    formatter: function(date) {
 				var y = date.getFullYear();
 				var m = date.getMonth()+1;
@@ -699,6 +713,7 @@ function PDateField(param) {
 		});
 	} else if (dbPattern == "HHmmss") {
 		$("#" + self.config.id).timespinner({
+			validateOnBlur: true,
 			required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 			validType : "validateDateField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name),
 			cls: fieldCls,
@@ -908,6 +923,7 @@ function PTextareaField(param) {
 	}
 	
 	$("#" + self.config.id).validatebox({
+		validateOnBlur: true,
 		required: !getFieldAttrAllowEmpty(param["dataSetId"], param["name"]),
 		validType : "validateTextareaField['{dataSetId}', '{name}']".replace(/{dataSetId}/g, param.dataSetId).replace(/{name}/g, param.name)
 	});

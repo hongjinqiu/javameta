@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -125,6 +127,15 @@ public class BusinessDataType {
 	public static Value convertObjectToValue(Field field, Object value) {
 		if (value == null || StringUtils.isEmpty(value.toString())) {
 			return ValueNull.INSTANCE;
+		}
+		// 分录表格id,新增时，会传string,以gridId开头,因此,id字段有可能是string,
+		if (field.getId().equals("id")) {
+			String valueString = ObjectUtils.toString(value, "");
+			Pattern pattern = Pattern.compile("^\\d*$");
+			Matcher matcher = pattern.matcher(valueString);
+			if (!matcher.matches()) {
+				return ValueString.get((String)value);
+			}
 		}
 		if (field.getFieldType().equalsIgnoreCase("FLOAT")) {
 			if (value instanceof Float) {
