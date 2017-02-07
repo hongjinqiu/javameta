@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/main/java/schema/template.xsd">
  -->
 <form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<id>CurrencyTypeSelector</id>
@@ -30,6 +30,10 @@
 			<query-parameter name="upDecimals" auto="true" text=""></query-parameter>
 		</query-parameters>
 	</data-provider>
+	
+	<toolbar name="toolbar" export="true">
+		<button text="新增" mode="url" handler="/schema/formschema.do?@name=CurrencyType" iconCls="but_box" />
+	</toolbar>
 
 	<column-model name="A_1" text="币别列表" selectionMode="checkbox" rownumber="true" selectionTitle="已选币别" selectionTemplate="{code},{name}" sqlOrderBy="code" dataSetId="A" dataProvider="queryDataSetA">
 		<checkbox-column name="checkboxSelect" hideable="false">

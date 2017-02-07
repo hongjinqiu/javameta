@@ -2,22 +2,11 @@ var modelExtraInfo = {
 	"A" : {
 		"property" : {
 			listeners : {
-				change : function(newValue, oldValue) {
+				change : function(newValue, oldValue, formObj) {
 					if (formObj.get("value") == "" || formObj.get("value") == "3") {// 空(请选择),4:其他
 						g_masterFormFieldDict["accountId"].set("readonly", true);
 					} else {
 						g_masterFormFieldDict["accountId"].set("readonly", false);
-					}
-				}
-			}
-		},
-		"chamberlainType" : {
-			listeners : {
-				change : function(newValue, oldValue) {
-					if (formObj.get("value") == "" || formObj.get("value") == "4") {// 空(请选择),4:其他
-						g_masterFormFieldDict["chamberlainId"].set("readonly", true);
-					} else {
-						g_masterFormFieldDict["chamberlainId"].set("readonly", false);
 					}
 				}
 			}
@@ -26,7 +15,7 @@ var modelExtraInfo = {
 	"B" : {
 		"accountType" : {
 			listeners : {
-				change : function(newValue, oldValue) {
+				change : function(newValue, oldValue, formObj) {
 					var formManager = new FormManager();
 					var fieldDict = formManager.getFieldDict(formObj);
 					if (fieldDict["accountId"]) {
@@ -50,18 +39,10 @@ var modelExtraInfo = {
 				g_masterFormFieldDict["accountId"].set("error", "不允许为空");
 			}
 		}
-		// 收款对象类型
-		if (bo.A.chamberlainType == "1" || bo.A.chamberlainType == "2" || bo.A.chamberlainType == "3") {
-			var chamberlainIdValue = g_masterFormFieldDict["chamberlainId"].get("value");
-			if (!chamberlainIdValue || chamberlainIdValue == "0") {
-				masterMessageLi.push("收款对象不允许为空");
-				g_masterFormFieldDict["chamberlainId"].set("error", "不允许为空");
-			}
-		}
 	}
 };
 
-function main(Y) {
+function main() {
 	if (g_id) {
 		if (g_copyFlag == "true") {// 复制
 			ajaxRequest({
@@ -111,7 +92,6 @@ function main(Y) {
 		});
 	}
 	if (g_formStatus != "view") {
-		modelExtraInfo.A.property.listeners.change(null, g_masterFormFieldDict["property"]);
-		modelExtraInfo.A.chamberlainType.listeners.change(null, g_masterFormFieldDict["chamberlainType"]);
+		modelExtraInfo.A.property.listeners.change(null, null, g_masterFormFieldDict["property"]);
 	}
 }

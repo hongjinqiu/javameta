@@ -129,6 +129,9 @@ LFormManager.prototype.qpFieldValidator = function(value, queryParameter) {
 				return messageLi;
 			}
 		} else if (dbPattern == "HHmmss") {
+			if (value && value.length == 4) {
+				value = value + "00";
+			}
 			if (!/^\d{2}\d{2}\d{2}$/.test(value)) {
 				messageLi.push("格式错误，正确格式类似于：03:04:05");
 				return messageLi;

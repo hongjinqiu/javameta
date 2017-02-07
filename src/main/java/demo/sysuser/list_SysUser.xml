@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- <list-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template 
-	https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd"> -->
+	https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/main/java/schema/template.xsd"> -->
 <form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<id>SysUser</id>
 	<cookie name="SysUser" />

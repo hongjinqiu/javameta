@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/main/java/schema/template.xsd">
  -->
 <form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<id>Console</id>
@@ -54,7 +54,7 @@
 	<column-model name="Selector" text="selector模型列表" rownumber="true">
 		<checkbox-column name="checkboxSelect" hideable="false">
 		</checkbox-column>
-		<id-column name="id" width="100" text="编号" hideable="false" />
+		<id-column name="id" width="200" text="编号" hideable="false" />
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
 				<button text="访问" iconCls="img_look" mode="url^" handler="/schema/selectorschema.do?@name={id}">

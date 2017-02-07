@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/main/java/schema/template.xsd">
  -->
 <form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<id>BankAccount</id>
@@ -79,12 +79,6 @@
 			<button text="编辑" mode="fn" handler="g_editRow" iconCls="but_box"></button>
 			<button text="删除" mode="fn" handler="g_removeRow" iconCls="but_box"></button>
 		</toolbar>
-		<!-- 
-		<editor-toolbar name="B_1_editor-toolbar">
-			<button text="新增" mode="fn" handler="g_pluginAddRow" iconCls="but_box"></button>
-			<button text="删除" mode="fn" handler="g_pluginRemoveRow" iconCls="but_box"></button>
-		</editor-toolbar>
-		 -->
 		<checkbox-column name="checkboxSelect" hideable="false" />
 		<id-column name="id" text="编号" hideable="true" />
 		<virtual-column name="FUN_C" text="操作" width="90">
@@ -94,8 +88,6 @@
 				<button name="btn_delete" text="删除" mode="fn" handler="g_removeSingleRow" iconCls="img_delete"></button>
 			</buttons>
 		</virtual-column>
-		<!-- <virtual-column name="FUN_EDITOR" text="操作" use-in="editor" width="60"> <buttons> <button text="复制" mode="fn" handler="g_pluginCopyRow" iconCls="img_add"></button> <button text="删除" 
-			mode="fn" handler="g_pluginRemoveSingleRow" iconCls="img_delete"></button> </buttons> </virtual-column> -->
 		<auto-column name="currencyTypeId" width="130">
 			<editor>
 				<editor_attribute name="colSpan" value="4"/>

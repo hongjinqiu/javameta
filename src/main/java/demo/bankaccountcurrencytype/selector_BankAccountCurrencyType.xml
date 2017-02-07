@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/main/java/schema/template.xsd">
+ -->
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>BankAccountCurrencyTypeSelector</id>
+	<!-- <cookie name="BankAccountCurrencyTypeSelector"/> -->
+	<data-source-model-id>Null</data-source-model-id>
+
+	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
+	<description>银行账户列表</description>
+	<scripts></scripts>
+	<view-template view="model/selectorSchema.jsp" />
+
+	<!-- <security byUnit="true"/> -->
+	
+	<data-provider name="queryDataSetA" size="10">
+		<sql>
+			select 
+			a.code,
+			a.name,
+			a.bankId,
+			a.accountProperty as accountProperty,
+			b.id as bankAccountBId,
+			b.bankaccount_id as bankAccountId,
+			b.* from pub_bankaccount_b b
+			left join pub_bankaccount a on b.bankaccount_id=a.id
+			where 1=1
+		</sql>
+		<query-parameters dataSetId="A">
+			<query-parameter name="id" auto="true" text="" dsFieldMap="BankAccount.B.id" editor="hiddenfield"></query-parameter>
+			<query-parameter name="code" auto="true" text="" dsFieldMap="BankAccount.A.code"></query-parameter>
+			<query-parameter name="name" auto="true" text="" dsFieldMap="BankAccount.A.name"></query-parameter>
+			<query-parameter name="bankId" auto="true" text="" dsFieldMap="BankAccount.A.bankId">
+				<relationDS>
+					<relationItem name="Bank">
+						<relationConfig selectionMode="multi"/>
+					</relationItem>
+				</relationDS>
+			</query-parameter>
+			<query-parameter name="accountProperty" auto="true" text="" dsFieldMap="BankAccount.A.accountProperty"></query-parameter>
+			<query-parameter name="currencyTypeId" auto="true" text="" dsFieldMap="BankAccount.B.currencyTypeId">
+				<relationDS>
+					<relationItem name="CurrencyType">
+						<relationConfig selectionMode="multi"/>
+					</relationItem>
+				</relationDS>
+			</query-parameter>
+		</query-parameters>
+	</data-provider>
+
+	<toolbar name="toolbar" export="true">
+		<button text="新增" mode="url!" handler="/schema/formschema.do?@name=BankAccount" iconCls="but_box" />
+	</toolbar>
+
+	<column-model name="A_1" text="银行币别" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行账户币别" selectionTemplate="{code},{name}" sqlOrderBy="id desc" dataSetId="A">
+		<checkbox-column name="checkboxSelect" hideable="false">
+			<expression></expression>
+		</checkbox-column>
+		<id-column name="id" text="编号" hideable="true" />
+		<auto-column name="bankAccountId" dsFieldMap="BankAccount.B.bankaccount_id" hideable="true"></auto-column>
+
+		<virtual-column name="FUN_C" text="操作" width="120">
+			<buttons>
+				<button name="btn_view" text="查看" iconCls="img_look" mode="url" handler="/schema/formschema.do?@name=BankAccount&amp;id={bankAccountId}&amp;formStatus=view">
+				</button>
+			</buttons>
+		</virtual-column>
+
+		<auto-column name="code" dsFieldMap="BankAccount.A.code" />
+		<auto-column name="name" dsFieldMap="BankAccount.A.name" />
+		<auto-column name="bankId" dsFieldMap="BankAccount.A.bankId" />
+		<auto-column name="accountProperty" dsFieldMap="BankAccount.A.accountProperty" />
+		<auto-column name="currencyTypeId" dsFieldMap="BankAccount.B.currencyTypeId" />
+		<auto-column name="bankAccountBId" dsFieldMap="BankAccount.B.id" />
+		<auto-column name="amtSecureBalance" dsFieldMap="BankAccount.B.amtSecureBalance" />
+		<auto-column name="amtLimits" dsFieldMap="BankAccount.B.amtLimits" />
+	</column-model>
+
+</form-template>

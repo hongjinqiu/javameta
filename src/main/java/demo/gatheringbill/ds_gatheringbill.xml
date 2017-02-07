@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/datasource https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/datasource.xsd">
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/datasource https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/main/java/schema/datasource.xsd">
  -->
 <datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<id>GatheringBill</id>
 	<displayName>收款单</displayName>
 	<inUsedDenyEdit>false</inUsedDenyEdit>
-	<tableName></tableName>
+	<tableName>PUB_GATHERINGBILL</tableName>
 	<masterData>
 		<id>A</id>
 		<displayName>主数据集</displayName>
@@ -26,34 +26,20 @@
 				<defaultValueExpr mode="js">new Date().getFullYear() + "" + (new Date().getMonth() + 1 &lt; 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)) + (new Date().getDate() &lt; 10 ? "0" + new Date().getDate() : new Date().getDate())</defaultValueExpr>
 			</field>
 			<field id="" extends="billNo">
-				<defaultValueExpr></defaultValueExpr>
 			</field>
 			<field id="" extends="property">
-			</field>
-			<field id="" extends="billTypeId">
 			</field>
 			<field id="accountId" extends="gatheringAccountId">
 			</field>
 			<field id="" extends="balanceDate">
 				<defaultValueExpr></defaultValueExpr>
 			</field>
-			<field id="" extends="balanceTypeId">
-				<defaultValueExpr></defaultValueExpr>
-			</field>
 			<field id="" extends="balanceNo">
-			</field>
-			<field id="" extends="chamberlainType">
-			</field>
-			<field id="" extends="chamberlainId">
-				<defaultValueExpr></defaultValueExpr>
 			</field>
 			<field id="" extends="chamberlainDesc">
 			</field>
 			<field id="" extends="sysUserId">
 				<displayName>采购/业务员</displayName>
-				<defaultValueExpr></defaultValueExpr>
-			</field>
-			<field id="" extends="articleId">
 				<defaultValueExpr></defaultValueExpr>
 			</field>
 			<field id="" extends="currencyTypeId">
@@ -84,7 +70,6 @@
 			</field>
 			<field id="" extends="linkPhone">
 			</field>
-			<!-- <field id="" extends="isEffective"> </field> -->
 		</bizField>
 	</masterData>
 	<detailData>
@@ -112,8 +97,6 @@
 			<field id="" extends="accountId">
 				<displayName>费用账户</displayName>
 			</field>
-			<field id="" extends="incomeItemId">
-			</field>
 			<field id="" extends="amtFee">
 			</field>
 			<field id="gatheringbill_id" extends="PRIMARY_KEY">
@@ -139,7 +122,7 @@
 			<remark id="remark" extends="REMARK" />
 		</fixField>
 		<bizField>
-			<field id="" extends="NAME_FIELD">
+			<field id="name" extends="NAME_FIELD">
 				<displayName>姓名测试</displayName>
 			</field>
 			<field id="gatheringbill_id" extends="PRIMARY_KEY">

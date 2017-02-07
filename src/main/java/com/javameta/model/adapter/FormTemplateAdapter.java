@@ -77,26 +77,26 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 									}
 								}
 							});
-						} else {// 实现dsFieldMap
-							if (StringUtils.isNotEmpty(queryParameter.getDsFieldMap())) {
-								String[] textLi = queryParameter.getDsFieldMap().split("\\.");
-								if (textLi.length != 3) {
-									throw new JavametaException("dataProvider:" + dataProvider.getName() + ", dataSet:" + tmpQueryParameterDataSetId + ", queryParameter.Name:" + queryParameter.getName() + ", dsFieldMap:" + queryParameter.getDsFieldMap() + " apply failed, dsFieldMap.len != 3");
-								} else {
-									String datasourceId = textLi[0];
-									final String dataSetId = textLi[1];
-									final String fieldId = textLi[2];
-									DatasourceFactory datasourceFactory = new DatasourceFactory();
-									Datasource outSideDatasource = datasourceFactory.getDatasource(datasourceId);
-									DatasourceIterator.iterateField(outSideDatasource, new IDatasourceFieldIterate() {
-										@Override
-										public void iterate(Field field) {
-											if (field.getDataSetId().equals(dataSetId) && field.getId().equals(fieldId)) {
-												applyQueryParameterCommon(queryParameter, field);
-											}
+						} 
+						// 实现dsFieldMap
+						if (StringUtils.isNotEmpty(queryParameter.getDsFieldMap())) {
+							String[] textLi = queryParameter.getDsFieldMap().split("\\.");
+							if (textLi.length != 3) {
+								throw new JavametaException("dataProvider:" + dataProvider.getName() + ", dataSet:" + tmpQueryParameterDataSetId + ", queryParameter.Name:" + queryParameter.getName() + ", dsFieldMap:" + queryParameter.getDsFieldMap() + " apply failed, dsFieldMap.len != 3");
+							} else {
+								String datasourceId = textLi[0];
+								final String dataSetId = textLi[1];
+								final String fieldId = textLi[2];
+								DatasourceFactory datasourceFactory = new DatasourceFactory();
+								Datasource outSideDatasource = datasourceFactory.getDatasource(datasourceId);
+								DatasourceIterator.iterateField(outSideDatasource, new IDatasourceFieldIterate() {
+									@Override
+									public void iterate(Field field) {
+										if (field.getDataSetId().equals(dataSetId) && field.getId().equals(fieldId)) {
+											applyQueryParameterCommon(queryParameter, field);
 										}
-									});
-								}
+									}
+								});
 							}
 						}
 					}
@@ -207,11 +207,11 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 				if (!hasInFormat) {
 					QueryParameter.ParameterAttribute parameterAttribute = new QueryParameter.ParameterAttribute();
 					parameterAttribute.setName("displayPattern");
-					if (field.getFieldType().equals("date")) {
+					if (field.getFieldType().equalsIgnoreCase("DATE")) {
 						parameterAttribute.setValue("yyyy-MM-dd");
-					} else if (field.getFieldType().equals("time")) {
+					} else if (field.getFieldType().equalsIgnoreCase("TIME")) {
 						parameterAttribute.setValue("HH:mm:ss");
-					} else if (field.getFieldType().equals("timestamp")) {
+					} else if (field.getFieldType().equalsIgnoreCase("TIMESTAMP")) {
 						parameterAttribute.setValue("yyyy-MM-dd HH:mm:ss");
 					}
 					queryParameter.getParameterAttribute().add(parameterAttribute);
@@ -219,11 +219,11 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 				if (!hasQueryFormat) {
 					QueryParameter.ParameterAttribute parameterAttribute = new QueryParameter.ParameterAttribute();
 					parameterAttribute.setName("dbPattern");
-					if (field.getFieldType().equals("date")) {
+					if (field.getFieldType().equalsIgnoreCase("DATE")) {
 						parameterAttribute.setValue("yyyyMMdd");
-					} else if (field.getFieldType().equals("time")) {
+					} else if (field.getFieldType().equalsIgnoreCase("TIME")) {
 						parameterAttribute.setValue("HHmmss");
-					} else if (field.getFieldType().equals("timestamp")) {
+					} else if (field.getFieldType().equalsIgnoreCase("TIMESTAMP")) {
 						parameterAttribute.setValue("yyyyMMddHHmmss");
 					}
 					queryParameter.getParameterAttribute().add(parameterAttribute);
@@ -250,9 +250,17 @@ public class FormTemplateAdapter implements IFormTemplateAdapter {
 		FormTemplateIterator.iterateFormTemplateColumnModel(formTemplate, new IFormTemplateColumnModelIterate() {
 			@Override
 			public void iterate(ColumnModel columnModel) {
-				for (DetailData detailData: datasource.getDetailData()) {
-					if (columnModel.getDataSetId().equals(detailData.getId())) {
-						columnModel.setText(detailData.getDisplayName());
+				if (columnModel.getDataSetId().equals(datasource.getMasterData().getId())) {
+					if (StringUtils.isEmpty(columnModel.getText())) {
+						columnModel.setText(datasource.getMasterData().getDisplayName());
+					}
+				} else {
+					for (DetailData detailData: datasource.getDetailData()) {
+						if (columnModel.getDataSetId().equals(detailData.getId())) {
+							if (StringUtils.isEmpty(columnModel.getText())) {
+								columnModel.setText(detailData.getDisplayName());
+							}
+						}
 					}
 				}
 				recursionApplyColumnModel(datasource, columnModel);

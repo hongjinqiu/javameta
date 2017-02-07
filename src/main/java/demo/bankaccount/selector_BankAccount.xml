@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-<list-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/main/java/schema/template.xsd">
  -->
 <form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<id>BankAccountSelector</id>
@@ -14,17 +14,9 @@
 
 	<!-- <security byUnit="true" /> -->
 
-	<toolbar name="toolbar" export="true">
-		<button text="新增" mode="url" handler="/schema/formschema.do?@name=BankAccount" iconCls="but_box" />
-
-		<button text="删除" mode="fn" handler="g_deleteRecords" iconCls="but_box">
-		</button>
-		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent.do?@name=BankAccount&amp;type=Component" iconCls="but_box">
-		</button>	</toolbar>
-
 	<data-provider name="queryDataSetA" size="10">
 		<sql>
-			select * from bank_account
+			select * from pub_bankaccount
 			where 1=1
 		</sql>
 		<query-parameters dataSetId="A">
@@ -52,6 +44,12 @@
 			<query-parameter name="accountProperty" auto="true" text=""></query-parameter>
 		</query-parameters>
 	</data-provider>
+
+	<toolbar name="toolbar" export="true">
+		<button text="新增" mode="url" handler="/schema/formschema.do?@name=BankAccount" iconCls="but_box" />
+
+		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent.do?@name=BankAccount&amp;type=Component" iconCls="but_box">
+		</button>	</toolbar>
 
 	<column-model name="A_1" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行账户" selectionTemplate="{code},{name}" sqlOrderBy="code">
 		<checkbox-column name="checkboxSelect" hideable="false">

@@ -360,7 +360,11 @@ function PSelectField(param) {
 	var formManager = new FormManager();
 	formManager.initializeAttr(self);
 	formManager.setChoices(self);
-	formManager.applyEventBehavior(self);
+//	formManager.applyEventBehavior(self);
+	// easyui 的 combobox 的事件监听有bug,初始化配置中,用onChange,或者直接combobox({"onChange": xxxx})都没用,需要在document.ready里面执行,
+	$(document).ready(function(){
+		formManager.applyEventBehavior(self);
+	});
 }
 
 PSelectField.prototype.get = function(key) {
@@ -451,7 +455,11 @@ function PChoiceField(param) {
 	var formManager = new FormManager();
 	formManager.initializeAttr(self);
 	formManager.setChoices(self);
-	formManager.applyEventBehavior(self);
+//	formManager.applyEventBehavior(self);
+	// easyui 的 combobox 的事件监听有bug,初始化配置中,用onChange,或者直接combobox({"onChange": xxxx})都没用,需要在document.ready里面执行,
+	$(document).ready(function(){
+		formManager.applyEventBehavior(self);
+	});
 }
 
 PChoiceField.prototype.get = function(key) {

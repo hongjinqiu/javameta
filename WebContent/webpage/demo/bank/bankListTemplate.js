@@ -21,6 +21,20 @@ var listTemplateExtraInfo = {
 					console.log(formObj);
 				}
 			}
+		},
+		numberfield7: {
+			listeners : {
+				change : function(newValue, oldValue, formObj) {
+					console.log("numer7");
+				}
+			}
+		},
+		datefield10: {
+			listeners : {
+				change : function(newValue, oldValue, formObj) {
+					console.log("dateField10");
+				}
+			}
 		}
 	}
 };

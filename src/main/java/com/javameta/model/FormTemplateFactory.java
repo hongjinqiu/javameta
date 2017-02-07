@@ -3,6 +3,7 @@ package com.javameta.model;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -337,7 +338,7 @@ public class FormTemplateFactory {
 
 			CheckboxColumn checkboxColumn = columnModel.getCheckboxColumn();
 			if (checkboxColumn != null) {// form页面的column-model有可能没有checkbox,
-				JSONObject recordJson = JSONObject.fromObject(record);
+				JSONObject recordJson = convertMapToJSONObject(record);
 				loopItem.put(checkboxColumn.getName(), parseExpressionBoolean(recordJson, checkboxColumn.getExpression()));
 			}
 			if (columnModel.getIdColumn() != null) {// form页面的column-model有可能没有id-column,
@@ -353,6 +354,30 @@ public class FormTemplateFactory {
 		result.put("items", columnModelItems);
 		result.put("relationBo", relationBo);
 		return result;
+	}
+	
+	private JSONObject convertMapToJSONObject(Map<String, Object> object) {
+		Map<String, Object> result = New.hashMap();
+		for (String key: object.keySet()) {
+			Object value = object.get(key);
+			result.put(key, convertDateObjectToString(value));
+		}
+		return JSONObject.fromObject(result);
+	}
+	
+	private Object convertDateObjectToString(Object value) {
+		if (value != null && value instanceof java.sql.Date) {
+			SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+			return format.format((java.sql.Date)value);
+		} else if (value != null && value instanceof java.sql.Timestamp) {
+			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+			return format.format((java.sql.Timestamp)value);
+		} else if (value != null && value instanceof java.sql.Time) {
+			SimpleDateFormat format = new SimpleDateFormat("HHmmss");
+			return format.format((java.sql.Timestamp)value);
+		} else {
+			return value;
+		}
 	}
 	
 //	func (o TemplateManager) GetColumnModelDataForFormTemplate(sessionId int, formTemplate FormTemplate, bo map[string]interface{}) map[string]interface{} {
@@ -717,6 +742,7 @@ public class FormTemplateFactory {
 	}
 
 	/**
+	 * 日期字段会被转为无格式string
 	 * @param column
 	 * @param bo 没用到主数据集字段时,放空Map,
 	 * @param record
@@ -739,7 +765,7 @@ public class FormTemplateFactory {
 	 * 				buttons: [{isShow: true}, {isShow: false}, {}, ....]
 	 * 			}
 	 */
-	public void getColumnModelDataForColumnItem(Column column, Map<String, Object> bo, Map<String, Object> record, Map<String, Object> relationBo, Map<String, Object> loopItem) {
+	private void getColumnModelDataForColumnItem(Column column, Map<String, Object> bo, Map<String, Object> record, Map<String, Object> relationBo, Map<String, Object> loopItem) {
 		if (column instanceof VirtualColumn) {
 			String key = ((VirtualColumn) column).getButtons().getXmlName();
 			if (loopItem.get(column.getName()) == null) {
@@ -754,7 +780,8 @@ public class FormTemplateFactory {
 			if (virtualColumn.getButtons() != null) {
 				for (Button button : virtualColumn.getButtons().getButton()) {
 					Map<String, Object> buttonMap = New.hashMap();
-					JSONObject recordJson = JSONObject.fromObject(record);
+//					JSONObject recordJson = JSONObject.fromObject(record);
+					JSONObject recordJson = convertMapToJSONObject(record);
 					buttonMap.put("isShow", parseExpressionBoolean(recordJson, button.getExpression()));
 					buttons.add(buttonMap);
 				}
@@ -770,7 +797,8 @@ public class FormTemplateFactory {
 				}
 			}
 		} else {
-			loopItem.put(column.getName(), record.get(column.getName()));
+			Object convertObject = convertDateObjectToString(record.get(column.getName()));
+			loopItem.put(column.getName(), convertObject);
 		}
 	}
 
@@ -797,7 +825,8 @@ public class FormTemplateFactory {
 	 */
 	private void applyRelationBoByTriggerField(TriggerColumn column, String value, Map<String, Object> bo, Map<String, Object> record, Map<String, Object> relationBo) {
 		JSONObject boJson = JSONObject.fromObject(bo);
-		JSONObject recordJson = JSONObject.fromObject(record);
+//		JSONObject recordJson = JSONObject.fromObject(record);
+		JSONObject recordJson = convertMapToJSONObject(record);
 		if (column.getRelationDS() != null && column.getRelationDS().getRelationItem().size() > 0) {
 			for (RelationDS.RelationItem relationItem : column.getRelationDS().getRelationItem()) {
 				boolean relationExpr = parseRelationExprBoolean(boJson, recordJson, relationItem.getRelationExpr());
@@ -861,7 +890,8 @@ public class FormTemplateFactory {
 			List<Map<String, Object>> items = (List<Map<String, Object>>) queryDataResult.get("items");
 			if (items.size() > 0) {
 				Map<String, Object> bo = New.hashMap();
-				getColumnModelDataForColumnModel(columnModel, bo, items);
+				Map<String, Object> columnModelData = getColumnModelDataForColumnModel(columnModel, bo, items);
+				items = (List<Map<String, Object>>)columnModelData.get("items");
 				if (StringUtils.isNotEmpty(selectorTemplate.getAfterQueryData())) {
 					try {
 						IAfterQueryData afterQueryData = (IAfterQueryData) Class.forName(selectorTemplate.getAfterQueryData()).newInstance();

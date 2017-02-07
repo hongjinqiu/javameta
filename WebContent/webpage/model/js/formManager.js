@@ -417,11 +417,17 @@ FormManager.prototype.dsFieldGroupValidator = function(value, dateSeperator, fie
 				return messageLi;
 			}
 		} else if (fieldGroup.fieldType == "TIME") {
+			if (value && value.length == 4) {
+				value = value + "00";
+			}
 			if (!/^\d{2}\d{2}\d{2}$/.test(value) && !isAllowEmptyAndZero) {
 				messageLi.push("格式错误，正确格式类似于：03:04:05");
 				return messageLi;
 			}
 		} else if (fieldGroup.fieldType == "TIMESTAMP") {
+			if (value && value.length == 12) {
+				value = value + "00";
+			}
 			var message = "";
 			if (dateSeperator == "-") {
 				message = "格式错误，正确格式类似于：1970-01-02 03:04:05";
@@ -645,10 +651,10 @@ FormManager.prototype.dsDetailValidator = function(datasource, dataSetId, detail
 	var datasourceIterator = new DatasourceIterator();
 	var result = "";
 	datasourceIterator.iterateAllDataSet(datasource, result, function(dataSet, result){
-		if (dataSet == "A") {
+		if (dataSet.id == "A") {
 			bo["A"] = {};
-		} else if (!bo[dataSet]) {
-			bo[dataSet] = [];
+		} else if (!bo[dataSet.id]) {
+			bo[dataSet.id] = [];
 		}
 	});
 	

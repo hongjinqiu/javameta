@@ -3,36 +3,32 @@
 <form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/main/java/schema/template.xsd">
  -->
 <form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<id>BankSelector</id>
-	<data-source-model-id>Bank</data-source-model-id>
+	<id>NullSelector</id>
+	<data-source-model-id>Null</data-source-model-id>
 
 	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
-	<description>银行资料列表</description>
+	<description>Null列表</description>
 	<scripts></scripts>
 	<view-template view="model/selectorSchema.jsp" />
-
 	<!-- <security byUnit="true" /> -->
 
 	<data-provider name="queryDataSetA" size="10">
 		<sql>   
-			select * from pub_bank
+			select 1 as id, 1 as code, 1 as name from dual
 			where 1=1
  		</sql>
  		<query-parameters dataSetId="A">
  			<query-parameter name="id" auto="true" text="" editor="hiddenfield"></query-parameter>
-			<query-parameter name="code" auto="true" text=""></query-parameter>
+ 			<query-parameter name="code" auto="true" text=""></query-parameter>
 			<query-parameter name="name" auto="true" text=""></query-parameter>
-			<query-parameter name="bankShort" auto="true" text=""></query-parameter>
-			<query-parameter name="linkman" auto="true" text=""></query-parameter>
-			<query-parameter name="linkPhone" auto="true" text=""></query-parameter>
 		</query-parameters>
 	</data-provider>
-	
+
 	<toolbar name="toolbar" export="true">
-		<button text="新增" mode="url!" handler="/schema/formschema.do?@name=Bank" iconCls="but_box" />
+		<button text="新增" mode="url" handler="/schema/formschema.do?@name=Null" iconCls="but_box" />
 	</toolbar>
-	
-	<column-model name="A_1" text="银行资料列表" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行资料" selectionTemplate="{code},{name}" sqlOrderBy="code">
+
+	<column-model name="A_1" text="Null" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行资料" selectionTemplate="{code},{name}" sqlOrderBy="code">
 		<checkbox-column name="checkboxSelect" hideable="false">
 			<expression></expression>
 		</checkbox-column>
@@ -40,16 +36,13 @@
 
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
-				<button name="btn_view" text="查看" iconCls="img_look" mode="url" handler="/schema/formschema.do?@name=Bank&amp;id={id}&amp;formStatus=view">
+				<button name="btn_view" text="查看" iconCls="img_look" mode="url" handler="/schema/formschema.do?@name=Null&amp;id={id}&amp;formStatus=view">
 				</button>
 			</buttons>
 		</virtual-column>
 
 		<auto-column name="code" />
 		<auto-column name="name" />
-		<auto-column name="bankShort" />
-		<auto-column name="linkman" />
-		<auto-column name="linkPhone" />
 	</column-model>
-	
+
 </form-template>

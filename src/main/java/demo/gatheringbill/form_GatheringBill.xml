@@ -1,94 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/schema.xsd">
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/main/java/schema/template.xsd">
  -->
 <form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<id>GatheringBillForm</id>
+	<id>GatheringBill</id>
 	<data-source-model-id>GatheringBill</data-source-model-id>
 	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
 	<description>收款单表单</description>
-	<scripts>gatheringbill/gatheringBillModel.js</scripts>
-	<view-template view="Console/FormSchema.html" />
+	<scripts>demo/gatheringbill/gatheringBillModel.js</scripts>
+	<view-template view="model/formSchema.jsp"/>
 	<!-- <security byUnit="true" /> -->
-
-	<after-query-data></after-query-data>
 
 	<toolbar name="toolbar" rendererTemplate="">
 		<button name="listBtn" text="列表页" mode="url" handler="/schema/listschema.do?@name=GatheringBill" iconCls="but_box" rendererTemplate=""></button>
 		<button name="newBtn" text="新增" mode="fn" handler="newData" iconCls="but_box"></button>
 		<button name="copyBtn" text="复制" mode="fn" handler="copyData" iconCls="but_box"></button>
 		<button name="editBtn" text="修改" mode="fn" handler="editData" iconCls="but_box"></button>
-		<button name="saveBtn" text="保存" mode="fn" handler="limitControlSaveData" iconCls="but_box"></button>
+		<button name="saveBtn" text="保存" mode="fn" handler="saveData" iconCls="but_box"></button>
 		<button name="giveUpBtn" text="放弃" mode="fn" handler="giveUpData" iconCls="but_box"></button>
-		<button name="delBtn" text="删除" mode="fn" handler="limitControlDeleteData" iconCls="but_box"></button>
-		<button name="cancelBtn" text="作废" mode="fn" handler="limitControlCancelData" iconCls="but_box"></button>
-		<button name="unCancelBtn" text="反作废" mode="fn" handler="limitControlUnCancelData" iconCls="but_box"></button>
+		<button name="delBtn" text="删除" mode="fn" handler="deleteData" iconCls="but_box"></button>
 		<button name="refreshBtn" text="刷新" mode="fn" handler="refreshData" iconCls="but_box"></button>
 		<button name="usedQueryBtn" text="被用查询" mode="fn" handler="logList" iconCls="but_box"></button>
 		<button text="查看配置" mode="url^" handler="/schema/rawxmlcontent.do?@name=GatheringBill&amp;type=Form" iconCls="but_box"></button>
 	</toolbar>
 	
-	<data-provider name="queryDataSetA" size="10" sqlIntercept="com.geeboo.cm.pub.query.CmMbQuerySqlIntercept">
-		<sql>   
-			SELECT *
-				 	FROM CM_MB_BUYPACKAGE T1
-				 	LEFT JOIN CM_MB_MEMBER T2 ON T2.MB_MEMBER_ID = T1.MEMBER_ID
-				 	LEFT JOIN CM_MB_MEMCARD T3 ON T3.MB_MEMCARD_ID=T2.MB_MEMCARD_ID
-				 	LEFT JOIN cm_customers T5 ON T5.CUSTOMERS_ID=T2.CUSTOMERS_ID
-				 	LEFT JOIN CM_CAR T6 ON T6.CAR_ID=T2.CAR_ID
-				 	LEFT JOIN CM_MB_ACTIVITY_PACKAGE T11 ON T11.MB_ACTIVITY_PACKAGE_ID=T1.ACTIVITY_PACKAGE_ID
-				 	LEFT JOIN HR_EMPLOYEE T12 ON T12.EMPLOYEE_ID=T1.HANDLE_BY
-				 	LEFT JOIN PUB_UNIT T13 ON T13.UNIT_ID=T1.HANDLE_UNIT
-				 	LEFT JOIN CM_MB_MEMCARD_GRADE G ON G.MB_MEMCARD_GRADE_ID = T3.MEMCARD_LEVEL
- 		</sql>
- 		<query-parameters dataSetId="A">
- 			<query-parameter name="id" auto="true" dsFieldMap="" text=""></query-parameter>
- 		</query-parameters>
-	</data-provider>
-	
-	<data-provider name="queryDataSetB" size="10" sqlIntercept="com.geeboo.cm.pub.query.CmMbQuerySqlIntercept">
+	<data-provider name="queryDataSetA" size="10">
 		<sql>
-			SELECT *
-				 	FROM CM_MB_BUYPACKAGE T1
-				 	LEFT JOIN CM_MB_MEMBER T2 ON T2.MB_MEMBER_ID = T1.MEMBER_ID
-				 	LEFT JOIN CM_MB_MEMCARD T3 ON T3.MB_MEMCARD_ID=T2.MB_MEMCARD_ID
-				 	LEFT JOIN cm_customers T5 ON T5.CUSTOMERS_ID=T2.CUSTOMERS_ID
-				 	LEFT JOIN CM_CAR T6 ON T6.CAR_ID=T2.CAR_ID
-				 	LEFT JOIN CM_MB_ACTIVITY_PACKAGE T11 ON T11.MB_ACTIVITY_PACKAGE_ID=T1.ACTIVITY_PACKAGE_ID
-				 	LEFT JOIN HR_EMPLOYEE T12 ON T12.EMPLOYEE_ID=T1.HANDLE_BY
-				 	LEFT JOIN PUB_UNIT T13 ON T13.UNIT_ID=T1.HANDLE_UNIT
-				 	LEFT JOIN CM_MB_MEMCARD_GRADE G ON G.MB_MEMCARD_GRADE_ID = T3.MEMCARD_LEVEL
+		  select 
+			(case when g.property=1 then (select bankId from pub_bankaccount where id=g.accountId)
+			else "" end) as receiveBankId,
+			(case when g.property=1 then (select accountProperty from pub_bankaccount where id=g.accountId)
+			else "" end) as accountProperty,
+			b.bankShort,
+			g.* from PUB_GATHERINGBILL g
+			left join pub_bank b on g.bankId=b.id
+			where 1=1
  		</sql>
  		<query-parameters dataSetId="A">
  			<query-parameter name="id" auto="true" text=""></query-parameter>
  		</query-parameters>
 	</data-provider>
+	
+	<data-provider name="queryDataSetB" size="10">
+		<sql>
+			select 
+			(case when b.accountType=2 then (select bankId from pub_bankaccount where id=b.accountId)
+			else "" end) as bankId,
+			b.* from pub_GATHERINGBILL_B b
+			where 1=1
+ 		</sql>
+ 		<query-parameters dataSetId="B">
+ 			<query-parameter name="id" auto="true" text=""></query-parameter>
+ 			<query-parameter name="gatheringbill_id" auto="true" text=""></query-parameter>
+ 		</query-parameters>
+	</data-provider>
+	
+	<data-provider name="queryDataSetC" size="10">
+		<sql>
+			select * from pub_GATHERINGBILL_C
+			where 1=1
+ 		</sql>
+ 		<query-parameters dataSetId="C">
+ 			<query-parameter name="id" auto="true" text=""></query-parameter>
+ 			<query-parameter name="gatheringbill_id" auto="true" text=""></query-parameter>
+ 		</query-parameters>
+	</data-provider>
 
-	<column-model name="A_1" dataSetId="A" colSpan="6" dataProvider="queryDataSetA" displayMode="form" rendererTemplate="">
+	<column-model name="A_1" dataSetId="A" colSpan="6" dataProvider="queryDataSetA" displayMode="form">
 		<id-column name="id" text="编号" hideable="true" rendererTemplate=""/>
 
 		<auto-column name="billDate" colSpan="2" labelWidth="13%" columnWidth="20%" rendererTemplate=""/>
 		<auto-column name="billNo" colSpan="2" labelWidth="13%" columnWidth="20%">
-			<editor name="textfield">
-			</editor>
-			<column-model name="A_1_property">
-				<auto-column name="propertyTest"></auto-column>
-			</column-model>
 		</auto-column>
-		<auto-column name="billTypeId" colSpan="2" labelWidth="13%" />
 		<auto-column name="property" colSpan="2">
 			<editor>
 				<editor_attribute name="observe" value="accountId,receiveBankId,accountProperty" />
 			</editor>
 		</auto-column>
-		<auto-column name="billStatus" colSpan="2" />
 	</column-model>
 
 	<column-model name="A_2" dataSetId="A" colSpan="6" dataProvider="queryDataSetA" displayMode="form">
 		<auto-column name="accountId" colSpan="2" labelWidth="13%" columnWidth="20%">
 			<relationDS>
 				<relationItem name="BankAccount">
-					<relationExpr mode="text">true</relationExpr>
+					<!-- <relationExpr mode="text">true</relationExpr> -->
 					<relationConfig displayField="" selectionMode="single" selectorName="BankAccountSelector" selectorTitle="" valueField="" />
 					<copyConfig copyDestField="receiveBankId" copySrcField="bankId" />
 					<copyConfig copyDestField="accountProperty" copySrcField="accountProperty" />
@@ -98,20 +93,12 @@
 		<auto-column name="receiveBankId" dsFieldMap="BankAccount.A.bankId" readOnly="true" fixReadOnly="true" colSpan="2" labelWidth="13%" columnWidth="20%" />
 		<auto-column name="accountProperty" dsFieldMap="BankAccount.A.accountProperty" readOnly="true" fixReadOnly="true" colSpan="2" labelWidth="13%" />
 		<auto-column name="balanceDate" colSpan="2" />
-		<auto-column name="balanceTypeId" colSpan="2" />
 		<auto-column name="balanceNo" colSpan="2" />
 	</column-model>
 
 	<column-model name="A_3" dataSetId="A" colSpan="6" dataProvider="queryDataSetA" displayMode="form">
-		<auto-column name="chamberlainType" colSpan="2" labelWidth="13%" columnWidth="20%">
-			<editor>
-				<editor_attribute name="observe" value="chamberlainId,chamberlainDesc" />
-			</editor>
-		</auto-column>
-		<auto-column name="chamberlainId" colSpan="2" labelWidth="13%" columnWidth="20%" />
 		<auto-column name="chamberlainDesc" colSpan="2" labelWidth="13%" />
 		<auto-column name="sysUserId" colSpan="2" />
-		<auto-column name="articleId" colSpan="2" />
 		<auto-column name="currencyTypeId" colSpan="2" />
 		<auto-column name="exchangeRateShow" colSpan="2" />
 		<auto-column name="exchangeRate" colSpan="2" />
@@ -152,10 +139,6 @@
 			<button text="编辑" mode="fn" handler="g_editRow" iconCls="but_box"></button>
 			<button text="删除" mode="fn" handler="g_removeRow" iconCls="but_box"></button>
 		</toolbar>
-		<editor-toolbar name="B_1_editor-toolbar">
-			<button text="新增" mode="fn" handler="g_pluginAddRow" iconCls="but_box"></button>
-			<button text="删除" mode="fn" handler="g_pluginRemoveRow" iconCls="but_box"></button>
-		</editor-toolbar>
 		<checkbox-column name="checkboxSelect" hideable="false" />
 		<id-column name="id" text="编号" hideable="true" />
 		<virtual-column name="FUN_C" text="操作" width="90">
@@ -178,8 +161,25 @@
 			</relationDS>
 		</auto-column>
 		<auto-column name="bankId" text="费用银行" dsFieldMap="BankAccount.A.bankId" fixReadOnly="true" />
-		<auto-column name="incomeItemId" />
 		<auto-column name="amtFee" />
+	</column-model>
+	
+	<column-model name="C_1" dataSetId="C" rownumber="false" dataProvider="queryDataSetC">
+		<toolbar name="C_1_toolbar">
+			<button text="新增" mode="fn" handler="g_addRow" iconCls="but_box"></button>
+			<button text="编辑" mode="fn" handler="g_editRow" iconCls="but_box"></button>
+			<button text="删除" mode="fn" handler="g_removeRow" iconCls="but_box"></button>
+		</toolbar>
+		<checkbox-column name="checkboxSelect" hideable="false" />
+		<id-column name="id" text="编号" hideable="true" />
+		<virtual-column name="FUN_C" text="操作" width="90">
+			<buttons>
+				<button text="编辑" mode="fn" handler="g_editSingleRow" iconCls="img_edit"></button>
+				<button text="复制" mode="fn" handler="g_copySingleRow" iconCls="img_add"></button>
+				<button text="删除" mode="fn" handler="g_removeSingleRow" iconCls="img_delete"></button>
+			</buttons>
+		</virtual-column>
+		<auto-column name="name" />
 	</column-model>
 
 	<column-model name="A_5" dataSetId="A" colSpan="4" dataProvider="queryDataSetA">

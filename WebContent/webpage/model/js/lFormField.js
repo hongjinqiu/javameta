@@ -336,7 +336,11 @@ function LSelectField(param) {
 	var choiceFieldManager = new ChoiceFieldManager();
 	self.set("choices", choiceFieldManager.getChoices(self.get("name")));
 	
-	lFormManager.applyEventBehavior(self);
+//	lFormManager.applyEventBehavior(self);
+	// easyui 的 combobox 的事件监听有bug,初始化配置中,用onChange,或者直接combobox({"onChange": xxxx})都没用,需要在document.ready里面执行,
+	$(document).ready(function(){
+		lFormManager.applyEventBehavior(self);
+	});
 }
 
 LSelectField.prototype.get = function(key) {
@@ -425,7 +429,11 @@ function LChoiceField(param) {
 	var choiceFieldManager = new ChoiceFieldManager();
 	self.set("choices", choiceFieldManager.getChoices(self.get("name")));
 	
-	lFormManager.applyEventBehavior(self);
+//	lFormManager.applyEventBehavior(self);
+	// easyui 的 combobox 的事件监听有bug,初始化配置中,用onChange,或者直接combobox({"onChange": xxxx})都没用,需要在document.ready里面执行,
+	$(document).ready(function(){
+		lFormManager.applyEventBehavior(self);
+	});
 }
 
 LChoiceField.prototype.get = function(key) {

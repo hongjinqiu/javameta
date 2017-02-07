@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/datasource https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/schema/datasource.xsd">
+<datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/datasource https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/main/java/schema/datasource.xsd">
  -->
 <datasource xmlns="https://github.com/hongjinqiu/javameta/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<id>BankAccount</id>
