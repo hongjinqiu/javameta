@@ -1590,4 +1590,19 @@
 				</relationItem> -->
 		</relationDS>
 	</field>
+	<field id="s1_id" extends="INT_FIELD">
+		<displayName>S1</displayName>
+		<allowEmpty>false</allowEmpty>
+		<defaultValueExpr></defaultValueExpr>
+		<relationDS>
+			<relationItem name="S1">
+				<id>S1Selector</id>
+				<relationExpr mode="text">true</relationExpr>
+				<relationModelId>S1</relationModelId>
+				<relationDataSetId>A</relationDataSetId>
+				<displayField>id,name</displayField>
+				<valueField>id</valueField>
+			</relationItem>
+		</relationDS>
+	</field>
 </fields>

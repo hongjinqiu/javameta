@@ -546,23 +546,21 @@ FormManager.prototype.dsFormValidator = function(datasource, bo) {
 	datasourceIterator.iterateAllFieldBo(datasource, bo, result, function(fieldGroup, data, rowIndex, result){
 		if (fieldGroup.isMasterField()) {
 			var formFieldObj = g_masterFormFieldDict[fieldGroup.id];
-			var value = data[fieldGroup.id];
-			if (value !== undefined && formFieldObj) {
+			var value = data[fieldGroup.id] || "";
+			if (formFieldObj) {
 				if(!formManager.dsFormFieldValidator(value, formFieldObj)) {
 					masterMessageLi.push(fieldGroup.displayName + formFieldObj.get("error"));
 				}
 			}
 		} else {
-			var value = data[fieldGroup.id];
-			if (value !== undefined) {
-				var dateSeperator = formManager._getDateSeperator(fieldGroup.getDataSetId(), fieldGroup.id);
-				var lineMessageLi = formManager.dsFieldGroupValidator(value, dateSeperator, fieldGroup);
-				if (lineMessageLi.length > 0) {
-					if (!detailMessageDict[fieldGroup.getDataSetId()]) {
-						detailMessageDict[fieldGroup.getDataSetId()] = [];
-					}
-					detailMessageDict[fieldGroup.getDataSetId()].push("序号为" + (rowIndex + 1) + "的分录，" + fieldGroup.displayName + lineMessageLi.join("，"));
+			var value = data[fieldGroup.id] || "";
+			var dateSeperator = formManager._getDateSeperator(fieldGroup.getDataSetId(), fieldGroup.id);
+			var lineMessageLi = formManager.dsFieldGroupValidator(value, dateSeperator, fieldGroup);
+			if (lineMessageLi.length > 0) {
+				if (!detailMessageDict[fieldGroup.getDataSetId()]) {
+					detailMessageDict[fieldGroup.getDataSetId()] = [];
 				}
+				detailMessageDict[fieldGroup.getDataSetId()].push("序号为" + (rowIndex + 1) + "的分录，" + fieldGroup.displayName + lineMessageLi.join("，"));
 			}
 		}
 	});
@@ -664,8 +662,8 @@ FormManager.prototype.dsDetailValidator = function(datasource, dataSetId, detail
 		if (!fieldGroup.isMasterField() && fieldGroup.getDataSetId() == dataSetId) {
 			if (formManager.isMatchDetailEditor(dataSetId)) {
 				var formFieldObj = g_popupFormField[fieldGroup.id];
-				var value = data[fieldGroup.id];
-				if (value !== undefined && formFieldObj) {
+				var value = data[fieldGroup.id] || "";
+				if (formFieldObj) {
 					if(!formManager.dsFormFieldValidator(value, formFieldObj)) {
 						messageLi.push("序号为" + (rowIndex + 1) + "的分录，" + fieldGroup.displayName + formFieldObj.get("error"));
 					}

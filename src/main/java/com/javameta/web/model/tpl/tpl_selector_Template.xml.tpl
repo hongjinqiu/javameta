@@ -8,7 +8,7 @@
 	<data-source-model-id>{template}</data-source-model-id>
 
 	<adapter name="com.javameta.model.adapter.FormTemplateAdapter" />
-	<description>银行账户列表</description>
+	<description>{description}列表</description>
 	<scripts></scripts>
 	<view-template view="model/selectorSchema.jsp" />
 

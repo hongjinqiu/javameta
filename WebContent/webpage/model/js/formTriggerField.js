@@ -245,7 +245,7 @@ PTriggerField.prototype._applySelectBtnEventBehavior = function() {
             	showAlert("无法打开选择器");
             } else {
             	url = url.replace("{NAME_VALUE}", selectorName);
-            	url = url.replace("{ID_VALUE}", self.get('value'));
+            	url = url.replace("{ID_VALUE}", self.get('value') || "");
             	var multi = self._getBooleanOrFunctionResult(self.get("multi"));
             	url = url.replace("{MULTI_VALUE}", multi);
             	var displayField = self._getStringOrFunctionResult(self.get("displayField"));

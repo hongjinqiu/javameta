@@ -15,6 +15,7 @@ import com.javameta.model.datasource.Datasource;
 import com.javameta.model.datasource.DetailData;
 import com.javameta.model.datasource.Field;
 import com.javameta.model.iterate.DatasourceIterator;
+import com.javameta.model.iterate.IDatasourceFieldIterate;
 import com.javameta.model.iterate.IDatasourceLineDataIterate;
 import com.javameta.util.New;
 import com.javameta.value.Value;
@@ -275,17 +276,37 @@ public class FormDao extends DaoSupport {
 		String sql = "select * from {tableName} where 1=1 and {idField}=?";
 		sql = sql.replace("{tableName}", datasource.getCalcTableName());
 		sql = sql.replace("{idField}", idField);
-		Map<String, Object> mainData = this.getJdbcTemplate().queryForMap(sql, param.get("id"));
+		final Map<String, Object> mainData = this.getJdbcTemplate().queryForMap(sql, param.get("id"));
+		DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+			@Override
+			public void iterate(Field field) {
+				if (field.isMasterField()) {
+					if (!field.getId().equals(field.getCalcFieldName())) {
+						mainData.put(field.getId(), mainData.get(field.getCalcFieldName()));
+					}
+				}
+			}
+		});
 		mainData.put("id", mainData.get(idField));
 		result.put(datasource.getMasterData().getId(), mainData);
 
-		for (DetailData detailData : datasource.getDetailData()) {
+		for (final DetailData detailData : datasource.getDetailData()) {
 			String detailSql = "select * from {tableName} where 1=1 and {parentFieldId}=?";
 			detailSql = detailSql.replace("{tableName}", datasource.getCalcDetailTableName(detailData.getId()));
 			detailSql = detailSql.replace("{parentFieldId}", detailData.getParentFieldId());
 			String detailIdField = detailData.getFixField().getPrimaryKey().getCalcFieldName();
 			List<Map<String, Object>> items = this.getJdbcTemplate().queryForList(detailSql, param.get("id"));
-			for (Map<String, Object> item: items) {
+			for (final Map<String, Object> item: items) {
+				DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+					@Override
+					public void iterate(Field field) {
+						if (field.getDataSetId().equals(detailData.getId())) {
+							if (!field.getId().equals(field.getCalcFieldName())) {
+								item.put(field.getId(), item.get(field.getCalcFieldName()));
+							}
+						}
+					}
+				});
 				item.put("id", item.get(detailIdField));
 			}
 			result.put(detailData.getId(), items);

@@ -28,6 +28,7 @@ import com.javameta.model.handler.DiffDataRow;
 import com.javameta.model.handler.UsedCheck;
 import com.javameta.model.iterate.DatasourceIterator;
 import com.javameta.model.iterate.IDatasourceDiffLineDataIterate;
+import com.javameta.model.iterate.IDatasourceFieldIterate;
 import com.javameta.model.iterate.IDatasourceLineDataIterate;
 import com.javameta.model.template.ColumnModel;
 import com.javameta.model.template.FormTemplate;
@@ -272,7 +273,8 @@ public abstract class AFormService extends ServiceSupport {
 		// 从数据库里重新读取一遍
 		Map<String, Object> param = New.hashMap();
 		param.put("id", valueBo.getMasterData().get("id").getObject());
-		valueBo = formDao.getValueBoFromDb(datasource, param);
+//		valueBo = formDao.getValueBoFromDb(datasource, param);
+		valueBo = getValueBoFromDb(formTemplate, datasource, param);
 		
 		UsedCheck usedCheck = (UsedCheck) ApplicationContextUtil.getApplicationContext().getBean("usedCheck");
 		Map<String, Object> usedCheckBo = usedCheck.getFormUsedCheck(datasource, valueBo);
@@ -444,12 +446,7 @@ public abstract class AFormService extends ServiceSupport {
 
 		DatasourceFactory datasourceFactory = new DatasourceFactory();
 		Datasource sysUserDatasource = datasourceFactory.getDatasource("SysUser");
-		String sysUserTableName = sysUserDatasource.getCalcTableName();
-		String sysUserIdField = sysUserDatasource.getMasterData().getFixField().getPrimaryKey().getCalcFieldName();
-		String sql = "select * from {tableName} where 1=1 and {idField}=?";
-		sql = sql.replace("{tableName}", sysUserTableName);
-		sql = sql.replace("{idField}", sysUserIdField);
-		final Map<String, Object> sysUserMaster = this.formDao.getJdbcTemplate().queryForMap(sql, userId);
+		final Map<String, Object> sysUserMaster = getUserFromDb(sysUserDatasource, userId);
 
 		DatasourceIterator.iterateLineValueBo(datasource, valueBo, new IDatasourceLineDataIterate() {
 			@Override
@@ -468,12 +465,7 @@ public abstract class AFormService extends ServiceSupport {
 
 		final DatasourceFactory datasourceFactory = new DatasourceFactory();
 		Datasource sysUserDatasource = datasourceFactory.getDatasource("SysUser");
-		String sysUserTableName = sysUserDatasource.getCalcTableName();
-		String sysUserIdField = sysUserDatasource.getMasterData().getFixField().getPrimaryKey().getCalcFieldName();
-		String sql = "select * from {tableName} where 1=1 and {idField}=?";
-		sql = sql.replace("{tableName}", sysUserTableName);
-		sql = sql.replace("{idField}", sysUserIdField);
-		final Map<String, Object> sysUserMaster = this.formDao.getJdbcTemplate().queryForMap(sql, userId);
+		final Map<String, Object> sysUserMaster = getUserFromDb(sysUserDatasource, userId);
 
 		Map<String, Object> param = New.hashMap();
 		param.put("id", valueBo.getMasterData().get("id").getInt());
@@ -505,6 +497,26 @@ public abstract class AFormService extends ServiceSupport {
 				}
 			}
 		});
+	}
+	
+	private Map<String, Object> getUserFromDb(Datasource sysUserDatasource, int userId) {
+		String sysUserTableName = sysUserDatasource.getCalcTableName();
+		String sysUserIdField = sysUserDatasource.getMasterData().getFixField().getPrimaryKey().getCalcFieldName();
+		String sql = "select * from {tableName} where 1=1 and {idField}=?";
+		sql = sql.replace("{tableName}", sysUserTableName);
+		sql = sql.replace("{idField}", sysUserIdField);
+		final Map<String, Object> sysUserMaster = this.formDao.getJdbcTemplate().queryForMap(sql, userId);
+		DatasourceIterator.iterateField(sysUserDatasource, new IDatasourceFieldIterate() {
+			@Override
+			public void iterate(Field field) {
+				if (field.isMasterField()) {
+					if (!field.getId().equals(field.getCalcFieldName())) {
+						sysUserMaster.put(field.getId(), sysUserMaster.get(field.getCalcFieldName()));
+					}
+				}
+			}
+		});
+		return sysUserMaster;
 	}
 
 	private int getUserId(HttpServletRequest request) {

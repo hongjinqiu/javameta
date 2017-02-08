@@ -29,7 +29,7 @@ function ColumnManager() {
 }
 
 ColumnManager.prototype.isZeroShowEmpty = function(zeroShowEmpty, o) {
-	return zeroShowEmpty && (o == "0" || o == "00000000000000000000.0000000000");
+	return zeroShowEmpty && (o == "" || o == "0" || o == "00000000000000000000.0000000000");
 }
 
 ColumnManager.prototype.createIdColumn = function(columnModel) {
@@ -200,6 +200,7 @@ ColumnManager.prototype.createDateColumn = function(columnConfig) {
 				if (o !== undefined && o !== null) {
 					var date = new Date();
 					var value = o + "";
+					value = value.replace(/[ :\/-]/g, "");
 					if (dbPattern.indexOf("yyyy") > -1) {
 						var start = dbPattern.indexOf("yyyy");
 						var end = dbPattern.indexOf("yyyy") + "yyyy".length;
