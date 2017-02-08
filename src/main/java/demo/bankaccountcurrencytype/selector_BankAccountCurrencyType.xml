@@ -17,6 +17,7 @@
 	<data-provider name="queryDataSetA" size="10">
 		<sql>
 			select 
+			2 as accountType,
 			a.code,
 			a.name,
 			a.bankId,
@@ -59,6 +60,7 @@
 		</checkbox-column>
 		<id-column name="id" text="编号" hideable="true" />
 		<auto-column name="bankAccountId" dsFieldMap="BankAccount.B.bankaccount_id" hideable="true"></auto-column>
+		<string-column name="accountType" text="类别1:现金,2:银行" hideable="true"></string-column>
 
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>

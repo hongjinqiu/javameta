@@ -207,46 +207,55 @@ function g_selectRow(dataSetId, btnName) {
 	var result = "";
 	formTemplateIterator.iterateAnyTemplateButton(result, function(toolbarOrColumnModel, button, result) {
 		if (toolbarOrColumnModel.dataSetId == dataSetId && button.name == btnName) {
-			window.s_selectFunc = function(selectValueLi) {
-				if (button.jsConfig && button.jsConfig.selectFunc) {
-					button.jsConfig.selectFunc(selectValueLi);
-				} else {
-					selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, selectValueLi);
-				}
-        	};
-        	window.s_queryFunc = function() {
-        		var queryFunc = null;
-        		if (button.jsConfig && button.jsConfig.queryFunc) {
-        			queryFunc = button.jsConfig.queryFunc;
-        		}
-        		if (queryFunc) {
-        			return queryFunc();
-        		}
-        		return {};
-        	};
         	if (button.relationDS && button.relationDS.relationItem) {
-    			var relationItem = button.relationDS.relationItem[0];
-    			var url = webRoot + "/schema/selectorschema.do?@name={NAME_VALUE}&@multi={MULTI_VALUE}&@displayField={DISPLAY_FIELD_VALUE}&date=" + new Date();
-    			var selectorName = relationItem.relationConfig.selectorName;
-    			url = url.replace("{NAME_VALUE}", selectorName);
-    			var multi = relationItem.relationConfig.selectionMode == "multi";
-    			url = url.replace("{MULTI_VALUE}", multi);
-    			var displayField = relationItem.relationConfig.displayField;
-    			url = url.replace("{DISPLAY_FIELD_VALUE}", displayField);
-    			var selectorTitle = g_relationBo[selectorName].description;
-    			window.s_dialog = showModalDialog({
-    				"title": selectorTitle,
-    				"url": url
-    			});
-    			window.s_closeDialog = function() {
-    				if (window.s_dialog) {
-    					//window.s_dialog.hide();
-    					window.s_dialog.dialog("destroy");
-    				}
-    				window.s_dialog = null;
-    				window.s_selectFunc = null;
-    				window.s_queryFunc = null;
-    			}
+        		var formManager = new FormManager();
+        		var bo = formManager.getBo();
+        		var commonUtil = new CommonUtil();
+        		var data = {};
+        		var relationItem = commonUtil.getRelationItem(button.relationDS, bo, data);
+        		if (!relationItem) {
+        			showAlert("无法打开选择器");
+        		} else {
+        			window.s_selectFunc = function(selectValueLi) {
+        				if (button.jsConfig && button.jsConfig.selectFunc) {
+        					button.jsConfig.selectFunc(selectValueLi);
+        				} else {
+        					selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, relationItem, selectValueLi);
+        				}
+                	};
+                	window.s_queryFunc = function() {
+                		var queryFunc = null;
+                		if (button.jsConfig && button.jsConfig.queryFunc) {
+                			queryFunc = button.jsConfig.queryFunc;
+                		}
+                		if (queryFunc) {
+                			return queryFunc();
+                		}
+                		return {};
+                	};
+        			
+        			var url = webRoot + "/schema/selectorschema.do?@name={NAME_VALUE}&@multi={MULTI_VALUE}&@displayField={DISPLAY_FIELD_VALUE}&date=" + new Date();
+        			var selectorName = relationItem.relationConfig.selectorName;
+        			url = url.replace("{NAME_VALUE}", selectorName);
+        			var multi = relationItem.relationConfig.selectionMode == "multi";
+        			url = url.replace("{MULTI_VALUE}", multi);
+        			var displayField = relationItem.relationConfig.displayField;
+        			url = url.replace("{DISPLAY_FIELD_VALUE}", displayField);
+        			var selectorTitle = g_relationBo[selectorName].description;
+        			window.s_dialog = showModalDialog({
+        				"title": selectorTitle,
+        				"url": url
+        			});
+        			window.s_closeDialog = function() {
+        				if (window.s_dialog) {
+        					//window.s_dialog.hide();
+        					window.s_dialog.dialog("destroy");
+        				}
+        				window.s_dialog = null;
+        				window.s_selectFunc = null;
+        				window.s_queryFunc = null;
+        			}
+        		}
         	}
         	
 			return true;

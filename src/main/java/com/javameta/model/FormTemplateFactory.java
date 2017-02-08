@@ -279,8 +279,6 @@ public class FormTemplateFactory {
 		}
 
 		FormTemplateDao formTemplateDao = (FormTemplateDao) ApplicationContextUtil.getApplicationContext().getBean("formTemplateDao");
-		String countSql = "select count(*) from " + bodySql;
-		int totalResults = formTemplateDao.getNamedParameterJdbcTemplate().queryForInt(countSql, nameParameterMap);
 
 		List<String> columnNameLi = New.arrayList();
 		List<Column> columnLi = New.arrayList();
@@ -310,6 +308,18 @@ public class FormTemplateFactory {
 		}
 		String selectSql = "select " + StringUtils.join(columnNameLi.toArray(), ",") + " from " + bodySql + orderBy + " limit " + offset + "," + pageSize;
 		List<Map<String, Object>> items = formTemplateDao.getNamedParameterJdbcTemplate().queryForList(selectSql, nameParameterMap);
+
+		int totalResults = 0;
+		if (pageSize > 1) {// 只取一条时,不计算count(*)
+			if ((pageNo == 1) && (items.size() < pageSize)) {
+				totalResults = items.size();
+			} else {
+				String countSql = "select count(*) from " + bodySql;
+				totalResults = formTemplateDao.getNamedParameterJdbcTemplate().queryForInt(countSql, nameParameterMap);
+			}
+		} else if (pageSize == 1) {
+			totalResults = items.size();
+		}
 
 		result.put("totalResults", totalResults);
 		result.put("items", items);

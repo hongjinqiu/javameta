@@ -127,11 +127,18 @@
 			<button name="selectRowBtn" text="选择" mode="fn" handler="g_selectRow" iconCls="but_box">
 				<relationDS>
 					<relationItem name="BankAccountCurrencyType"><!-- 需要修改从 BankAccountCurrencyType 中查找 -->
-						<relationExpr>true</relationExpr>
+						<relationExpr mode="js">bo.A.property == "1"</relationExpr><!-- 银行 -->
 						<relationConfig selectorName="BankAccountCurrencyTypeSelector" displayField="code,name" valueField="id" selectionMode="multi" />
 						<copyConfig copyDestField="bankAccountBId" copySrcField="bankAccountBId" />
+						<copyConfig copyDestField="accountType" copySrcField="accountType" />
 						<copyConfig copyDestField="accountId" copySrcField="bankAccountId" />
 						<copyConfig copyDestField="currencyTypeId" copySrcField="currencyTypeId" />
+					</relationItem>
+					<relationItem name="CashAccountSelectorRelationItem">
+						<relationExpr mode="js">bo.A.property == "2"</relationExpr><!-- 现金 -->
+						<relationConfig selectorName="CashAccountSelector" displayField="code,name" valueField="id" selectionMode="multi" />
+						<copyConfig copyDestField="accountId" copySrcField="id" />
+						<copyConfig copyDestField="accountType" copySrcField="accountType" />
 					</relationItem>
 				</relationDS>
 			</button>

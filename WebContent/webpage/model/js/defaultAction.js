@@ -30,10 +30,9 @@ function _recurionApplyCopyField(data, columnLi, columnName, columnValue) {
 	}
 }
 
-function selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, inputValueLi) {
+function selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, relationItem, inputValueLi) {
 	var selectValueLi = [];
-	if (button.relationDS && button.relationDS.relationItem) {
-		var relationItem = button.relationDS.relationItem[0];
+	if (relationItem) {
 		var selectorName = relationItem.relationConfig.selectorName;
 		for (var i = 0; i < inputValueLi.length; i++) {
 			var selectorDict = g_relationManager.getRelationBo(selectorName, inputValueLi[i]);
@@ -54,8 +53,7 @@ function selectRowBtnDefaultAction(dataSetId, toolbarOrColumnModel, button, inpu
 	});
 	for (var i = 0; i < selectValueLi.length; i++) {
 		var data = formManager.getDataSetNewData(dataSetId);
-		if (button.relationDS && button.relationDS.relationItem) {
-			var relationItem = button.relationDS.relationItem[0];
+		if (relationItem) {
 			if (relationItem.copyConfig) {
 				for (var j = 0; j < relationItem.copyConfig.length; j++) {
 					var columnName = relationItem.copyConfig[j].copyDestField;

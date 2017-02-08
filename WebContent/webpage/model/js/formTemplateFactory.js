@@ -8,6 +8,7 @@ FormTemplateFactory.prototype.extendFormTemplate = function(modelExtraInfo) {
 	var formTemplateIterator = new FormTemplateIterator();
 	if (modelExtraInfo.buttonConfig) {
 		for (var key in modelExtraInfo.buttonConfig) {
+			var result = "";
 			formTemplateIterator.iterateAnyTemplateButton(result, function(toolbarOrColumnModel, button, result){
 				if (button.name == key) {
 					if (!button.jsConfig) {

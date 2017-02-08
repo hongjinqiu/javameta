@@ -48,7 +48,7 @@ PTriggerField.prototype.initializeAttr = function() {
 	var unSelectFunc = function(formObj){
 		
 	}
-	var queryFunc = function() {
+	var queryFunc = function(formObj) {
 		return {};
 	}
 	var multi = false;

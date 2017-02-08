@@ -15,7 +15,9 @@
 
 	<data-provider name="queryDataSetA" size="10">
 		<sql>
-			select * from pub_cashaccount
+			select 
+			1 as accountType,
+			a.* from pub_cashaccount a
 			where 1=1
 		</sql>
 		<query-parameters dataSetId="A">
@@ -49,6 +51,7 @@
 			<expression></expression>
 		</checkbox-column>
 		<id-column name="id" text="编号" hideable="true" />
+		<string-column name="accountType" text="类别1:现金,2:银行" hideable="true"></string-column>
 
 		<virtual-column name="FUN_C" text="操作" width="120">
 			<buttons>
