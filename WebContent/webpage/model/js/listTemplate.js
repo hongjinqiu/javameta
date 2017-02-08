@@ -28,7 +28,7 @@ function getQueryDict() {
 }
 
 function createListTemplateGrid() {
-	var url = webRoot + "/schema/listschema.do?@name=" + listTemplate.id + "&format=json";
+	var url = webRoot + "/schema/listschema.do?@name=" + listTemplate.id + "&format=json&cookie=true";
 	createGridWithUrl({
 		url: url
 	}, {

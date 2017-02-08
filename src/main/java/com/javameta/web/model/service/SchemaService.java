@@ -14,10 +14,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.javameta.model.DatasourceFactory;
 import com.javameta.model.datasource.Datasource;
 import com.javameta.model.datasource.DetailData;
 import com.javameta.model.datasource.Field;
+import com.javameta.model.datasource.Field.RelationDS.RelationItem;
 import com.javameta.model.iterate.DatasourceIterator;
+import com.javameta.model.iterate.IDatasourceFieldIterate;
 import com.javameta.model.iterate.IDatasourceLineFieldIterate;
 import com.javameta.util.New;
 import com.javameta.web.model.dao.SchemaDao;
@@ -256,6 +259,246 @@ public class SchemaService extends ServiceSupport {
 	public String getGenerateController(String datasourceName) throws IOException {
 		String path = "com/javameta/web/model/tpl/TemplateController.tpl";
 		return getGenerateCommon(path, datasourceName);
+	}
+	
+	public String getGenerateListJs(String datasourceName) throws IOException {
+		String path = "com/javameta/web/model/tpl/list.js";
+		String content = getGenerateCommon(path, datasourceName);
+		content = "推荐文件名:" + datasourceName.substring(0, 1).toLowerCase() + datasourceName.substring(1) + "ListTemplate.js\n\n" + content;
+		return content;
+	}
+	
+	public String getGenerateModelJs(String datasourceName) throws IOException {
+		String path = "com/javameta/web/model/tpl/model.js";
+		String content = getGenerateCommon(path, datasourceName);
+		content = "推荐文件名:" + datasourceName.substring(0, 1).toLowerCase() + datasourceName.substring(1) + "Model.js\n\n" + content;
+		return content;
+	}
+	
+	public String getGenerateListXml(String datasourceName) throws IOException {
+		String path = "com/javameta/web/model/tpl/tpl_list_Template.xml.tpl";
+		String content = getGenerateCommon(path, datasourceName);
+		content = "注意文件名要以list_开头,推荐文件名:list_" + datasourceName + ".xml\n\n" + content;
+		return getGenerateListSelectorCommonXml(content, datasourceName);
+	}
+	
+	public String getGenerateSelectorXml(String datasourceName) throws IOException {
+		String path = "com/javameta/web/model/tpl/tpl_selector_Template.xml.tpl";
+		String content = getGenerateCommon(path, datasourceName);
+		content = "注意文件名要以selector_开头,推荐文件名:selector_" + datasourceName + ".xml\n\n" + content;
+		return getGenerateListSelectorCommonXml(content, datasourceName);
+	}
+	
+	public String getGenerateFormXml(String datasourceName) throws IOException {
+		String path = "com/javameta/web/model/tpl/tpl_form_Template.xml.tpl";
+		String content = getGenerateCommon(path, datasourceName);
+		content = "注意文件名要以form_开头,推荐文件名:form_" + datasourceName + ".xml\n\n" + content;
+		
+		DatasourceFactory datasourceFactory = new DatasourceFactory();
+		Datasource datasource = datasourceFactory.getDatasource(datasourceName);
+		String tableName = datasource.getCalcTableName();
+		content = content.replace("{tableName}", tableName);
+		content = content.replace("{description}", datasource.getDisplayName());
+
+		final List<String> asNameLi = New.arrayList();
+		DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+			@Override
+			public void iterate(Field field) {
+				if (field.isMasterField()) {
+					if (!field.getId().equals(field.getCalcFieldName())) {
+						asNameLi.add("a.{fieldName} as {id},".replace("{fieldName}", field.getCalcFieldName()).replace("{id}", field.getId()));
+					}
+				}
+			}
+		});
+		content = content.replace("{asNameLi}", StringUtils.join(asNameLi.toArray(), "\n"));
+		
+		final List<String> autoColumnLi = New.arrayList();
+		DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+			@Override
+			public void iterate(Field field) {
+				if (field.isMasterField()) {
+					if (field.getId().equals("id")) {
+						return;
+					}
+					autoColumnLi.add("<auto-column name=\"{id}\" colSpan=\"2\" labelWidth=\"13%\" columnWidth=\"20%\" />".replace("{id}", field.getId()));
+				}
+			}
+		});
+		content = content.replace("{autoColumnLi}", StringUtils.join(autoColumnLi.toArray(), "\n"));
+		
+		final List<String> detailDataProviderLi = New.arrayList();
+		for (final DetailData detailData: datasource.getDetailData()) {
+			String detailDataProvider = "";
+			detailDataProvider += "<data-provider name=\"queryDataSet{dataSetId}\" size=\"10\">\n";
+			detailDataProvider += "	<sql>\n";
+			detailDataProvider += "		select \n";
+			detailDataProvider += "		{asNameLi}\n";
+			detailDataProvider += "		a.* from {tableName} a\n";
+			detailDataProvider += "		where 1=1\n";
+			detailDataProvider += "	</sql>\n";
+			detailDataProvider += "	<query-parameters dataSetId=\"{dataSetId}\">\n";
+			detailDataProvider += "		<query-parameter name=\"id\" auto=\"true\" text=\"\"></query-parameter>\n";
+			detailDataProvider += "		<query-parameter name=\"{parentFieldId}\" auto=\"true\" text=\"\"></query-parameter>\n";
+			detailDataProvider += "	</query-parameters>\n";
+			detailDataProvider += "</data-provider>\n";
+			
+			detailDataProvider = detailDataProvider.replace("{dataSetId}", detailData.getId());
+			detailDataProvider = detailDataProvider.replace("{tableName}", datasource.getCalcDetailTableName(detailData.getId()));
+			detailDataProvider = detailDataProvider.replace("{parentFieldId}", detailData.getParentFieldId());
+			
+			final List<String> dAsNameLi = New.arrayList();
+			DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+				@Override
+				public void iterate(Field field) {
+					if (field.getDataSetId().equals(detailData.getId())) {
+						if (!field.getId().equals(field.getCalcFieldName())) {
+							dAsNameLi.add("a.{fieldName} as {id},".replace("{fieldName}", field.getCalcFieldName()).replace("{id}", field.getId()));
+						}
+					}
+				}
+			});
+			detailDataProvider = detailDataProvider.replace("{asNameLi}", StringUtils.join(dAsNameLi.toArray(), "\n"));
+			detailDataProviderLi.add(detailDataProvider);
+		}
+		content = content.replace("{detailDataProviderLi}", StringUtils.join(detailDataProviderLi.toArray(), "\n"));
+		
+		
+		final List<String> detailColumnModelLi = New.arrayList();
+		for (int i =0; i < datasource.getDetailData().size(); i++) {
+			final DetailData detailData = datasource.getDetailData().get(i);
+			String detailColumnModel = "";
+			detailColumnModel += "<column-model name=\"{dataSetId}_{index}\" dataSetId=\"{dataSetId}\" rownumber=\"true\" colSpan=\"4\" dataProvider=\"queryDataSet{dataSetId}\">\n";
+			detailColumnModel += "	<toolbar name=\"{dataSetId}_{index}_toolbar\">\n";
+			detailColumnModel += "		<button name=\"selectRowBtn\" text=\"选择\" mode=\"fn\" handler=\"g_selectRow\" iconCls=\"but_box\">\n";
+			detailColumnModel += "			<relationDS>\n";
+			detailColumnModel += "				<relationItem name=\"NullSelectorItem\">\n";
+			detailColumnModel += "					<relationExpr>true</relationExpr>\n";
+			detailColumnModel += "					<relationConfig selectorName=\"NullSelector\" displayField=\"code,name\" valueField=\"id\" selectionMode=\"multi\" />\n";
+			detailColumnModel += "					<copyConfig copyDestField=\"id\" copySrcField=\"id\" />\n";
+			detailColumnModel += "				</relationItem>\n";
+			detailColumnModel += "			</relationDS>\n";
+			detailColumnModel += "		</button>\n";
+			detailColumnModel += "		<button text=\"新增\" mode=\"fn\" handler=\"g_addRow\" iconCls=\"but_box\"></button>\n";
+			detailColumnModel += "		<button text=\"编辑\" mode=\"fn\" handler=\"g_editRow\" iconCls=\"but_box\"></button>\n";
+			detailColumnModel += "		<button text=\"删除\" mode=\"fn\" handler=\"g_removeRow\" iconCls=\"but_box\"></button>\n";
+			detailColumnModel += "	</toolbar>\n";
+			detailColumnModel += "	<checkbox-column name=\"checkboxSelect\" hideable=\"false\" />\n";
+			detailColumnModel += "	<id-column name=\"id\" text=\"编号\" hideable=\"true\" />\n";
+			detailColumnModel += "	<virtual-column name=\"FUN_C\" text=\"操作\" width=\"90\">\n";
+			detailColumnModel += "		<buttons>\n";
+			detailColumnModel += "			<button text=\"编辑\" mode=\"fn\" handler=\"g_editSingleRow\" iconCls=\"img_edit\"></button>\n";
+			detailColumnModel += "			<button text=\"复制\" mode=\"fn\" handler=\"g_copySingleRow\" iconCls=\"img_add\"></button>\n";
+			detailColumnModel += "			<button name=\"btn_delete\" text=\"删除\" mode=\"fn\" handler=\"g_removeSingleRow\" iconCls=\"img_delete\"></button>\n";
+			detailColumnModel += "		</buttons>\n";
+			detailColumnModel += "	</virtual-column>\n";
+			detailColumnModel += "	{autoColumnLi}\n";
+			detailColumnModel += "</column-model>\n";
+			
+			detailColumnModel = detailColumnModel.replace("{dataSetId}", detailData.getId());
+			detailColumnModel = detailColumnModel.replace("{index}", String.valueOf(i + 1));
+			
+			final List<String> dAutoColumnLi = New.arrayList();
+			DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+				@Override
+				public void iterate(Field field) {
+					if (field.getDataSetId().equals(detailData.getId())) {
+						if (field.getId().equals("id")) {
+							return;
+						}
+						dAutoColumnLi.add("<auto-column name=\"{id}\" width=\"140\" />".replace("{id}", field.getId()));
+					}
+				}
+			});
+			detailColumnModel = detailColumnModel.replace("{autoColumnLi}", StringUtils.join(dAutoColumnLi.toArray(), "\n"));
+			
+			detailColumnModelLi.add(detailColumnModel);
+		}
+		content = content.replace("{detailColumnModelLi}", StringUtils.join(detailColumnModelLi.toArray(), "\n"));
+		
+		return content;
+	}
+	
+	private String getGenerateListSelectorCommonXml(String content, String datasourceName) throws IOException {
+		DatasourceFactory datasourceFactory = new DatasourceFactory();
+		Datasource datasource = datasourceFactory.getDatasource(datasourceName);
+		String tableName = datasource.getCalcTableName();
+		content = content.replace("{tableName}", tableName);
+		content = content.replace("{description}", datasource.getDisplayName());
+
+		final List<String> asNameLi = New.arrayList();
+		DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+			@Override
+			public void iterate(Field field) {
+				if (field.isMasterField()) {
+					if (!field.getId().equals(field.getCalcFieldName())) {
+						asNameLi.add("a.{fieldName} as {id},".replace("{fieldName}", field.getCalcFieldName()).replace("{id}", field.getId()));
+					}
+				}
+			}
+		});
+		content = content.replace("{asNameLi}", StringUtils.join(asNameLi.toArray(), "\n"));
+		
+		final List<String> queryParameterLi = New.arrayList();
+		DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+			@Override
+			public void iterate(Field field) {
+				if (field.isMasterField()) {
+					if (field.getId().equals("id")) {
+						return;
+					}
+					boolean isBeginEnd = false;
+					isBeginEnd = isBeginEnd || field.getFieldType().equals("DATE") || field.getFieldType().equals("TIME") || field.getFieldType().equals("TIMESTAMP");
+					isBeginEnd = isBeginEnd || field.getFieldType().equals("FLOAT");
+					isBeginEnd = isBeginEnd || field.getFieldType().equals("DOUBLE");
+					isBeginEnd = isBeginEnd || field.getFieldType().equals("DECIMAL");
+					isBeginEnd = isBeginEnd || field.getFieldType().equals("SHORT");
+					isBeginEnd = isBeginEnd || field.getFieldType().equals("INT");
+					isBeginEnd = isBeginEnd || field.getFieldType().equals("LONG");
+					isBeginEnd = isBeginEnd && StringUtils.isEmpty(field.getDictionary());
+					if (field.isRelationField()) {
+						queryParameterLi.add("<query-parameter name=\"{id}\" auto=\"true\" text=\"\">".replace("{id}", field.getId()));
+						queryParameterLi.add("<relationDS>");
+						for (RelationItem relationItem: field.getRelationDS().getRelationItem()) {
+							queryParameterLi.add("<relationItem name=\"{name}\">".replace("{name}", relationItem.getName()));
+							queryParameterLi.add("<relationConfig selectionMode=\"multi\" />");
+							queryParameterLi.add("</relationItem>");
+						}
+						queryParameterLi.add("</relationDS>");
+						queryParameterLi.add("</query-parameter>");
+					} else if (isBeginEnd) {
+						String begin = "<query-parameter name=\"{fieldName}Begin\" columnName=\"{fieldName}\" auto=\"true\" text=\"{displayName}从\" restriction=\"ge\" />";
+						begin = begin.replace("{fieldName}", field.getId());
+						begin = begin.replace("{displayName}", field.getDisplayName());
+						queryParameterLi.add(begin);
+						
+						String end = "<query-parameter name=\"{fieldName}End\" columnName=\"{fieldName}\" auto=\"true\" text=\"{displayName}到\" restriction=\"le\" />";
+						end = end.replace("{fieldName}", field.getId());
+						end = end.replace("{displayName}", field.getDisplayName());
+						queryParameterLi.add(end);
+					} else {
+						queryParameterLi.add("<query-parameter name=\"{id}\" auto=\"true\" text=\"\"></query-parameter>".replace("{id}", field.getId()));
+					}
+				}
+			}
+		});
+		content = content.replace("{queryParameterLi}", StringUtils.join(queryParameterLi.toArray(), "\n"));
+
+		final List<String> autoColumnLi = New.arrayList();
+		DatasourceIterator.iterateField(datasource, new IDatasourceFieldIterate() {
+			@Override
+			public void iterate(Field field) {
+				if (field.isMasterField()) {
+					if (field.getId().equals("id")) {
+						return;
+					}
+					autoColumnLi.add("<auto-column name=\"{id}\" />".replace("{id}", field.getId()));
+				}
+			}
+		});
+		content = content.replace("{autoColumnLi}", StringUtils.join(autoColumnLi.toArray(), "\n"));
+		
+		return content;
 	}
 	
 	public String getGenerateService(String datasourceName) throws IOException {

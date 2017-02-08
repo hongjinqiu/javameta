@@ -260,6 +260,56 @@ public class SchemaController extends ControllerSupport {
 		response.getOutputStream().write(content.getBytes());
 	}
 	
+	@RequestMapping("/getGenerateListJs")
+	@ResponseBody
+	public void getGenerateListJs(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.addHeader("Content-Type", "text/plain;charset=UTF-8");
+		String datasourceName = request.getParameter("@name");
+		String content = schemaService.getGenerateListJs(datasourceName);
+
+		response.getOutputStream().write(content.getBytes());
+	}
+	
+	@RequestMapping("/getGenerateModelJs")
+	@ResponseBody
+	public void getGenerateModelJs(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.addHeader("Content-Type", "text/plain;charset=UTF-8");
+		String datasourceName = request.getParameter("@name");
+		String content = schemaService.getGenerateModelJs(datasourceName);
+
+		response.getOutputStream().write(content.getBytes());
+	}
+	
+	@RequestMapping("/getGenerateListXml")
+	@ResponseBody
+	public void getGenerateListXml(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.addHeader("Content-Type", "text/plain;charset=UTF-8");
+		String datasourceName = request.getParameter("@name");
+		String content = schemaService.getGenerateListXml(datasourceName);
+
+		response.getOutputStream().write(content.getBytes());
+	}
+	
+	@RequestMapping("/getGenerateSelectorXml")
+	@ResponseBody
+	public void getGenerateSelectorXml(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.addHeader("Content-Type", "text/plain;charset=UTF-8");
+		String datasourceName = request.getParameter("@name");
+		String content = schemaService.getGenerateSelectorXml(datasourceName);
+
+		response.getOutputStream().write(content.getBytes());
+	}
+	
+	@RequestMapping("/getGenerateFormXml")
+	@ResponseBody
+	public void getGenerateFormXml(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.addHeader("Content-Type", "text/plain;charset=UTF-8");
+		String datasourceName = request.getParameter("@name");
+		String content = schemaService.getGenerateFormXml(datasourceName);
+
+		response.getOutputStream().write(content.getBytes());
+	}
+	
 	@RequestMapping("/getGenerateService")
 	@ResponseBody
 	public void getGenerateService(HttpServletRequest request, HttpServletResponse response) throws IOException {

@@ -85,6 +85,81 @@ function getGenerateDao() {
 	window.open(url);
 }
 
+function getGenerateListJs() {
+	var li = g_gridPanelDict["Datasource"].dt.datagrid("getSelections");
+	if (li.length == 0) {
+		showError("请选择一条记录");
+		return;
+	}
+	if (li.length > 1) {
+		showError("只能单选，不能多选");
+		return;
+	}
+	var data = li[0];
+	var url = webRoot + "/schema/getGenerateListJs.do?@name=" + data.id;
+	window.open(url);
+}
+
+function getGenerateModelJs() {
+	var li = g_gridPanelDict["Datasource"].dt.datagrid("getSelections");
+	if (li.length == 0) {
+		showError("请选择一条记录");
+		return;
+	}
+	if (li.length > 1) {
+		showError("只能单选，不能多选");
+		return;
+	}
+	var data = li[0];
+	var url = webRoot + "/schema/getGenerateModelJs.do?@name=" + data.id;
+	window.open(url);
+}
+
+function getGenerateListXml() {
+	var li = g_gridPanelDict["Datasource"].dt.datagrid("getSelections");
+	if (li.length == 0) {
+		showError("请选择一条记录");
+		return;
+	}
+	if (li.length > 1) {
+		showError("只能单选，不能多选");
+		return;
+	}
+	var data = li[0];
+	var url = webRoot + "/schema/getGenerateListXml.do?@name=" + data.id;
+	window.open(url);
+}
+
+function getGenerateSelectorXml() {
+	var li = g_gridPanelDict["Datasource"].dt.datagrid("getSelections");
+	if (li.length == 0) {
+		showError("请选择一条记录");
+		return;
+	}
+	if (li.length > 1) {
+		showError("只能单选，不能多选");
+		return;
+	}
+	var data = li[0];
+	var url = webRoot + "/schema/getGenerateSelectorXml.do?@name=" + data.id;
+	window.open(url);
+}
+
+function getGenerateFormXml() {
+	var li = g_gridPanelDict["Datasource"].dt.datagrid("getSelections");
+	if (li.length == 0) {
+		showError("请选择一条记录");
+		return;
+	}
+	if (li.length > 1) {
+		showError("只能单选，不能多选");
+		return;
+	}
+	var data = li[0];
+	var url = webRoot + "/schema/getGenerateFormXml.do?@name=" + data.id;
+	window.open(url);
+}
+
 function main() {
 	$('#tt').tabs({
 	    border:false

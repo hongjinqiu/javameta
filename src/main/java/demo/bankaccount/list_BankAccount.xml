@@ -54,7 +54,7 @@
 		</button>
 	</toolbar>
 
-	<column-model name="A_1" text="银行账户列表" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" selectionTitle="已选银行账户" selectionTemplate="{code},{name}" sqlOrderBy="code">
+	<column-model name="A_1" text="银行账户列表" dataSetId="A" dataProvider="queryDataSetA" selectionMode="checkbox" rownumber="true" sqlOrderBy="id desc">
 		<checkbox-column name="checkboxSelect" hideable="false">
 			<expression></expression>
 		</checkbox-column>

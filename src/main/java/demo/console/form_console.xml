@@ -108,6 +108,16 @@
 		</button>
 		<button text="生成Dao" mode="fn" handler="getGenerateDao" iconCls="but_box">
 		</button>
+		<button text="生成ListJs" mode="fn" handler="getGenerateListJs" iconCls="but_box">
+		</button>
+		<button text="生成ModelJs" mode="fn" handler="getGenerateModelJs" iconCls="but_box">
+		</button>
+		<button text="生成ListXml" mode="fn" handler="getGenerateListXml" iconCls="but_box">
+		</button>
+		<button text="生成SelectorXml" mode="fn" handler="getGenerateSelectorXml" iconCls="but_box">
+		</button>
+		<button text="生成FormXml" mode="fn" handler="getGenerateFormXml" iconCls="but_box">
+		</button>
 	</toolbar>
 
 	<column-model name="Datasource" text="datasource模型列表" selectionMode="radio" rownumber="true">
