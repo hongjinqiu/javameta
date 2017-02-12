@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://github.com/hongjinqiu/javameta/template https://raw.githubusercontent.com/hongjinqiu/javameta/master/src/main/java/schema/template.xsd">
+ -->
+<form-template xmlns="https://github.com/hongjinqiu/javameta/template" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>GatheringBill</id>
+	
+	<!-- 
+	<#if code?exists && code != ''>
+		and a.code like :code
+	</#if>
+	 -->
+	<data-provider name="queryDataSetA" size="10">
+		<sql><![CDATA[
+		  select 
+			(case when g.property=1 then (select bankId from pub_bankaccount where id=g.accountId)
+			else "" end) as receiveBankId,
+			(case when g.property=1 then (select accountProperty from pub_bankaccount where id=g.accountId)
+			else "" end) as accountProperty,
+			b.bankShort,
+			g.* 
+			from PUB_GATHERINGBILL g
+			left join pub_bank b on g.bankId=b.id
+			where 1=1
+			<#if id2?exists && id2 != 0>
+				and g.id = :id2
+			</#if>
+		]]></sql>
+ 		<query-parameters>
+ 			<query-parameter name="id" columnName="g.id" restriction="eq" text=""></query-parameter>
+ 			<query-parameter name="id2" columnName="g.id" restriction="eq" text=""></query-parameter>
+ 		</query-parameters>
+ 		<suffix><![CDATA[
+ 		<#if id2?exists && id2 != 0>
+				order by g.id
+			</#if>
+ 		]]></suffix>
+ 		<!-- suffix -->
+	</data-provider>
+	
+	<data-provider name="queryDataSetB" size="10">
+		<sql><![CDATA[
+			select 
+			(case when b.accountType=2 then (select bankId from pub_bankaccount where id=b.accountId)
+			else "" end) as bankId,
+			b.* from pub_GATHERINGBILL_B b
+			where 1=1
+ 		]]></sql>
+ 		<query-parameters>
+ 			<query-parameter name="id" columnName="b.id" restriction="eq" text=""></query-parameter>
+ 			<query-parameter name="gatheringbill_id" columnName="b.gatheringbill_id" restriction="gt" text=""></query-parameter>
+ 		</query-parameters>
+	</data-provider>
+	
+	<data-provider name="queryDataSetC" size="10">
+		<sql><![CDATA[
+			select c.* from pub_GATHERINGBILL_C c
+			where 1=1
+ 		]]></sql>
+ 		<query-parameters>
+ 			<query-parameter name="id" columnName="c.id" restriction="eq" text=""></query-parameter>
+ 			<query-parameter name="gatheringbill_id" columnName="gatheringbill_id" restriction="eq" text=""></query-parameter>
+ 		</query-parameters>
+	</data-provider>
+
+</form-template>

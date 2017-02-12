@@ -17,7 +17,12 @@ public abstract class DaoSupport {
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	public JdbcTemplate getJdbcTemplate() {
+//		jdbcTemplate.query
 		return jdbcTemplate;
+	}
+	
+	public <T> T test(T a) {
+		return a;
 	}
 
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
@@ -25,6 +30,12 @@ public abstract class DaoSupport {
 	}
 
 	public NamedParameterJdbcTemplate getNamedParameterJdbcTemplate() {
+//		namedParameterJdbcTemplate.queryForInt(sql, paramMap)
+//		namedParameterJdbcTemplate.queryForLong(sql, paramMap)
+//		namedParameterJdbcTemplate.queryForObject(sql, paramMap, requiredType)
+//		namedParameterJdbcTemplate.queryForMap(sql, paramMap)
+//		namedParameterJdbcTemplate.queryForList(sql, paramMap)
+//		namedParameterJdbcTemplate.queryForList(sql, paramMap, elementType)
 		return namedParameterJdbcTemplate;
 	}
 

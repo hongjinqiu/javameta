@@ -82,6 +82,10 @@ public class SchemaController extends ControllerSupport {
 			dataBo.put("Form", getSummaryFormTemplateInfoLi(formTemplateInfoLi));
 		}
 		{
+			List<FormTemplateInfo> formTemplateInfoLi = formTemplateFactory.getFormTemplateInfoLi(FormTemplateEnum.QUERY);
+			dataBo.put("Query", getSummaryFormTemplateInfoLi(formTemplateInfoLi));
+		}
+		{
 			DatasourceFactory datasourceFactory = new DatasourceFactory();
 			List<DatasourceInfo> datasourceInfoLi = datasourceFactory.getDatasourceInfoLi();
 			dataBo.put("Datasource", getSummaryDatasourceInfoLi(datasourceInfoLi));
@@ -385,6 +389,23 @@ public class SchemaController extends ControllerSupport {
 				if (object instanceof ColumnModel) {
 					ColumnModel columnModel = (ColumnModel) object;
 					if (columnModel.getName().equals("Form")) {
+						Map<String, Object> itemsDict = formTemplateFactory.getColumnModelDataForColumnModel(columnModel, bo, items);
+						items = (List<Map<String, Object>>) itemsDict.get("items");
+						break;
+					}
+				}
+			}
+			JSONObject json = new JSONObject();
+			json.put("data", items);
+			return CommonUtil.filterNullInJSONObject(json);
+		} else if (type.equals("Query")) {
+			List<FormTemplateInfo> listTemplateInfoLi = formTemplateFactory.refretorFormTemplateInfo(FormTemplateEnum.QUERY);
+			List<Map<String, Object>> items = getSummaryFormTemplateInfoLi(listTemplateInfoLi);
+			Map<String, Object> bo = New.hashMap();
+			for (Object object : formTemplate.getToolbarOrDataProviderOrColumnModel()) {
+				if (object instanceof ColumnModel) {
+					ColumnModel columnModel = (ColumnModel) object;
+					if (columnModel.getName().equals("Query")) {
 						Map<String, Object> itemsDict = formTemplateFactory.getColumnModelDataForColumnModel(columnModel, bo, items);
 						items = (List<Map<String, Object>>) itemsDict.get("items");
 						break;
@@ -1171,6 +1192,12 @@ public class SchemaController extends ControllerSupport {
 			response.setContentType("application/xml; charset=utf-8");
 			response.getWriter().write(content);
 			return;
+		} else if (refretorType.equals("Query")) {
+			FormTemplate formTemplate = formTemplateFactory.getFormTemplate(id, FormTemplateEnum.QUERY);
+			String content = formTemplateFactory.marshal(formTemplate);
+			response.setContentType("application/xml; charset=utf-8");
+			response.getWriter().write(content);
+			return;
 		} else if (refretorType.equals("Datasource")) {
 			DatasourceFactory datasourceFactory = new DatasourceFactory();
 			Datasource datasource = datasourceFactory.getDatasource(id);
@@ -1207,6 +1234,13 @@ public class SchemaController extends ControllerSupport {
 			return;
 		} else if (refretorType.equals("Form")) {
 			FormTemplateInfo formTemplateInfo = formTemplateFactory.getFormTemplateInfo(id, FormTemplateEnum.FORM);
+			FormTemplate formTemplate = formTemplateFactory.unmarshal(formTemplateInfo.getPath());
+			String content = formTemplateFactory.marshal(formTemplate);
+			response.setContentType("application/xml; charset=utf-8");
+			response.getWriter().write(content);
+			return;
+		} else if (refretorType.equals("Query")) {
+			FormTemplateInfo formTemplateInfo = formTemplateFactory.getFormTemplateInfo(id, FormTemplateEnum.QUERY);
 			FormTemplate formTemplate = formTemplateFactory.unmarshal(formTemplateInfo.getPath());
 			String content = formTemplateFactory.marshal(formTemplate);
 			response.setContentType("application/xml; charset=utf-8");

@@ -14,6 +14,10 @@ function doRefretorDatasource() {
 	doRefretor("Datasource");
 }
 
+function doRefretorQuery() {
+	doRefretor("Query");
+}
+
 function doRefretor(name) {
 	var dtManager = g_gridPanelDict[name];
 	var uri = webRoot + "/schema/refretor.do?type=" + name;

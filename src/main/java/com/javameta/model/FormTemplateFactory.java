@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.javameta.JavametaException;
 import com.javameta.expression.ExpressionParser;
+import com.javameta.freemarker.FreemarkerParser;
 import com.javameta.model.adapter.IFormTemplateAdapter;
 import com.javameta.model.iterate.FormTemplateIterator;
 import com.javameta.model.iterate.IFormTemplateButtonIterate;
@@ -68,6 +69,7 @@ public class FormTemplateFactory {
 	}
 	private static Map<String, FormTemplateInfo> gListTemplateInfoMap = new ConcurrentHashMap<String, FormTemplateInfo>();
 	private static Map<String, FormTemplateInfo> gFormTemplateInfoMap = new ConcurrentHashMap<String, FormTemplateInfo>();
+	private static Map<String, FormTemplateInfo> gQueryTemplateInfoMap = new ConcurrentHashMap<String, FormTemplateInfo>();
 	private static Map<String, FormTemplateInfo> gSelectorTemplateInfoMap = new ConcurrentHashMap<String, FormTemplateInfo>();
 	private static Object lock = new Object();
 
@@ -221,6 +223,9 @@ public class FormTemplateFactory {
 		case SELECTOR: {
 			return gSelectorTemplateInfoMap;
 		}
+		case QUERY: {
+			return gQueryTemplateInfoMap;
+		}
 		}
 		return null;
 	}
@@ -246,7 +251,13 @@ public class FormTemplateFactory {
 		}
 
 		String bodySql = dataProvider.getSql();
+		if (bodySql.indexOf("<#") > -1) {
+			Map<String, Object> parseMap = New.hashMap();
+			parseMap.putAll(paramMap);
+			bodySql = FreemarkerParser.parse(bodySql, parseMap);
+		}
 		Map<String, Object> nameParameterMap = New.hashMap();
+		nameParameterMap.putAll(paramMap);
 		if (StringUtils.isNotEmpty(dataProvider.getSqlIntercept())) {
 			try {
 				SqlIntercept sqlIntercept = (SqlIntercept) Class.forName(dataProvider.getSqlIntercept()).newInstance();
@@ -269,12 +280,22 @@ public class FormTemplateFactory {
 			for (QueryParameter queryParameter : dataProvider.getQueryParameters().getQueryParameter()) {
 				if (StringUtils.isNotEmpty(queryParameter.getEditor())) {
 					if (StringUtils.isNotEmpty(queryParameter.getRestriction())) {
+						String value = paramMap.get(queryParameter.getName());
+						String queryParameterSql = queryParameterBuilder.buildQuery(queryParameter, value, nameParameterMap);
 						if (StringUtils.isEmpty(queryParameter.getUseIn()) || !queryParameter.getUseIn().equals("none")) {
-							String value = paramMap.get(queryParameter.getName());
-							bodySql += queryParameterBuilder.buildQuery(queryParameter, value, nameParameterMap);
+							bodySql += queryParameterSql;
 						}
 					}
 				}
+			}
+		}
+		if (StringUtils.isNotEmpty(dataProvider.getSuffix())) {
+			if (dataProvider.getSuffix().indexOf("<#") > -1) {
+				Map<String, Object> parseMap = New.hashMap();
+				parseMap.putAll(paramMap);
+				bodySql += " " + FreemarkerParser.parse(dataProvider.getSuffix(), parseMap) + " ";
+			} else {
+				bodySql += " " + dataProvider.getSuffix() + " ";
 			}
 		}
 

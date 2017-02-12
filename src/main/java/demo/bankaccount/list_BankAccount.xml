@@ -15,10 +15,10 @@
 	<!-- <security byUnit="true" /> -->
 
 	<data-provider name="queryDataSetA" size="10">
-		<sql>
+		<sql><![CDATA[
 			select * from pub_bankaccount
 			where 1=1
-		</sql>
+		]]></sql>
 		<query-parameters dataSetId="A">
 			<query-parameter name="id" auto="true" editor="hiddenfield" text=""></query-parameter>
 			<query-parameter name="code" auto="true" text=""></query-parameter>

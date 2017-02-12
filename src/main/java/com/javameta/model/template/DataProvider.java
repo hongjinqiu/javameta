@@ -77,6 +77,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *           &lt;/complexType>
  *         &lt;/element>
  *         &lt;element ref="{https://github.com/hongjinqiu/javameta/template}query-parameters" minOccurs="0"/>
+ *         &lt;element name="suffix" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *       &lt;attribute name="size" type="{http://www.w3.org/2001/XMLSchema}int" />
@@ -111,7 +112,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "clazz",
     "templateSql",
     "summarySql",
-    "queryParameters"
+    "queryParameters",
+    "suffix"
 })
 @XmlRootElement(name = "data-provider")
 public class DataProvider implements Serializable {
@@ -128,6 +130,7 @@ public class DataProvider implements Serializable {
     protected List<DataProvider.SummarySql> summarySql;
     @XmlElement(name = "query-parameters")
     protected QueryParameters queryParameters;
+    protected String suffix;
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
@@ -330,6 +333,30 @@ public class DataProvider implements Serializable {
      */
     public void setQueryParameters(QueryParameters value) {
         this.queryParameters = value;
+    }
+    
+    /**
+     * Gets the value of the suffix property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getSuffix() {
+        return suffix;
+    }
+
+    /**
+     * Sets the value of the suffix property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSuffix(String value) {
+        this.suffix = value;
     }
 
     /**

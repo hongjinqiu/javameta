@@ -39,6 +39,7 @@
  		<query-parameters dataSetId="A">
  			<query-parameter name="id" auto="true" text=""></query-parameter>
  		</query-parameters>
+ 		<!-- suffix -->
 	</data-provider>
 	
 	<data-provider name="queryDataSetB" size="10">

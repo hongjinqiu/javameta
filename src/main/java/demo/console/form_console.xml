@@ -141,5 +141,30 @@
 	</column-model>
 	
 	<html-fragment rendererTemplate="/webpage/model/consoleRenderFragment5.jsp"></html-fragment>
+	
+	<toolbar name="QueryToolbar">
+		<button text="重构模型" mode="fn" handler="doRefretorQuery" iconCls="but_box">
+		</button>
+	</toolbar>
+	
+	<column-model name="Query" text="datasource模型列表" selectionMode="radio" rownumber="true">
+		<checkbox-column name="checkboxSelect" hideable="false">
+		</checkbox-column>
+		<id-column name="id" text="编号" hideable="false" width="100" />
+
+		<virtual-column name="FUN_C" text="操作" width="150">
+			<buttons>
+				<button text="raw xml" iconCls="img_look" mode="url^" handler="/schema/rawxml.do?@name={id}&amp;type=Query">
+				</button>
+				<button text="xml" iconCls="img_look" mode="url^" handler="/schema/xml.do?@name={id}&amp;type=Query">
+				</button>
+			</buttons>
+		</virtual-column>
+		<string-column name="name" width="100" text="名称"></string-column>
+		<string-column name="module" width="120" text="模块"></string-column>
+		<string-column name="path" width="600" text="路径"></string-column>
+	</column-model>
+	
+	<html-fragment rendererTemplate="/webpage/model/consoleRenderFragment6.jsp"></html-fragment>
 
 </form-template>
