@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -171,22 +172,6 @@ public class DataProviderSqlQuery {
 		}
 		if (dataProvider.getQueryParameters() != null) {
 			bodySql += getQuerySql(dataProvider.getQueryParameters(), paramMap, nameParameterMap);
-			
-			/*
-			QueryParameterBuilder queryParameterBuilder = new QueryParameterBuilder();
-			for (QueryParameter queryParameter : dataProvider.getQueryParameters().getQueryParameter()) {
-				if (StringUtils.isEmpty(queryParameter.getEditor())) {
-					queryParameter.setEditor("hiddenfield");
-				}
-				if (StringUtils.isNotEmpty(queryParameter.getRestriction())) {
-					String value = ObjectUtils.toString(paramMap.get(queryParameter.getName()));
-					String queryParameterSql = queryParameterBuilder.buildQuery(queryParameter, value, nameParameterMap);
-					if (StringUtils.isEmpty(queryParameter.getUseIn()) || !queryParameter.getUseIn().equals("none")) {
-						bodySql += queryParameterSql;
-					}
-				}
-			}
-			*/
 		}
 		if (StringUtils.isNotEmpty(dataProvider.getSuffix())) {
 			if (dataProvider.getSuffix().indexOf("<#") > -1) {
@@ -206,10 +191,10 @@ public class DataProviderSqlQuery {
 		return bodySql;
 	}
 	
-	private String getQuerySql(QueryParameters queryParameters, Map<String, Object> paramMap, Map<String, Object> nameParameterMap) {
+	public String getQuerySql(QueryParameters queryParameters, Map<String, Object> paramMap, Map<String, Object> nameParameterMap) {
 		String querySql = recursiveGetQuerySql(queryParameters, paramMap, nameParameterMap);
 		if (StringUtils.isNotEmpty(querySql)) {
-			return " and " + querySql;
+			return " and ( " + querySql + " ) ";
 		}
 		return "";
 	}
@@ -219,7 +204,10 @@ public class DataProviderSqlQuery {
 		QueryParameterBuilder queryParameterBuilder = new QueryParameterBuilder();
 		for (QueryParameter queryParameter : queryParameters.getQueryParameter()) {
 			if (StringUtils.isEmpty(queryParameter.getEditor())) {
-				queryParameter.setEditor("hiddenfield");
+				QueryParameter cloneQueryParameter = (QueryParameter)SerializationUtils.clone(queryParameter);
+				cloneQueryParameter.setEditor("hiddenfield");
+//				queryParameter.setEditor("hiddenfield");
+				queryParameter = cloneQueryParameter;
 			}
 			if (StringUtils.isNotEmpty(queryParameter.getRestriction())) {
 				String value = ObjectUtils.toString(paramMap.get(queryParameter.getName()));
@@ -234,7 +222,7 @@ public class DataProviderSqlQuery {
 		for (QueryParameters subQueryParameters: queryParameters.getSubQueryParameters()) {
 			String subQuerySql = recursiveGetQuerySql(subQueryParameters, paramMap, nameParameterMap);
 			if (StringUtils.isNotEmpty(subQuerySql)) {
-				sqlLi.add(subQuerySql);
+				sqlLi.add(" ( " + subQuerySql + " ) ");
 			}
 		}
 		if (sqlLi.size() > 0) {
@@ -242,7 +230,8 @@ public class DataProviderSqlQuery {
 				String result = StringUtils.join(sqlLi.toArray(), " and ");
 				return result;
 			} else {
-				String result = " (" + StringUtils.join(sqlLi.toArray(), " or ") + ") ";
+//				String result = " (" + StringUtils.join(sqlLi.toArray(), " or ") + ") ";
+				String result = StringUtils.join(sqlLi.toArray(), " or ");
 				return result;
 			}
 		}

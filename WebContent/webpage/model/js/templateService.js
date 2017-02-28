@@ -168,8 +168,8 @@ FormTemplateIterator.prototype._iterateTemplateQueryParameter = function(result,
 	for (var j = 0; j < g_formTemplateJsonData.toolbarOrDataProviderOrColumnModel.length; j++) {
 		var formElem = g_formTemplateJsonData.toolbarOrDataProviderOrColumnModel[j];
 		if (formElem.xmlName == "data-provider") {
-			for (var i = 0; i < formElem.queryParameters.fixedParameterOrQueryParameter.length; i++) {
-				var queryParameter = formElem.queryParameters.fixedParameterOrQueryParameter[i];
+			for (var i = 0; i < formElem.queryParameters.queryParameterIncludeSub.length; i++) {
+				var queryParameter = formElem.queryParameters.queryParameterIncludeSub[i];
 				var iterateResult = iterateFunc(queryParameter);
 				if (!isContinue && iterateResult) {
 					break;

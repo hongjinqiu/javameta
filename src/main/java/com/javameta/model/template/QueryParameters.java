@@ -170,6 +170,25 @@ public class QueryParameters implements Serializable {
     	return list;
     }
     
+    public List<QueryParameter> getQueryParameterIncludeSub() {
+    	List<QueryParameter> list = New.arrayList();
+    	
+    	recursiveGetQueryParameter(this, list);
+    	
+    	return list;
+    }
+    
+    private void recursiveGetQueryParameter(QueryParameters queryParameters, List<QueryParameter> list) {
+    	List<Object> parameters = queryParameters.getFixedParameterOrQueryParameter();
+    	for (Object item: parameters) {
+    		if (item instanceof QueryParameter) {
+    			list.add((QueryParameter)item);
+    		} else if (item instanceof QueryParameters) {
+    			recursiveGetQueryParameter((QueryParameters)item, list);
+    		}
+    	}
+    }
+    
     public List<QueryParameters> getSubQueryParameters() {
     	List<QueryParameters> list = New.arrayList();
     	

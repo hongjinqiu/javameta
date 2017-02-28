@@ -79,7 +79,7 @@
 				and g.id = :id2
 			</#if>
 		]]></sql>
- 		<query-parameters>
+ 		<query-parameters restriction="or">
  			<query-parameter name="id" columnName="g.id" restriction="eq" text=""></query-parameter>
  			<query-parameter name="id2" columnName="g.id" restriction="eq" text=""></query-parameter>
  			<query-parameters restriction="and">

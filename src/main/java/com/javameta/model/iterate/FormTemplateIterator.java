@@ -144,13 +144,9 @@ public class FormTemplateIterator {
 	public static void iterateFormTemplateQueryParameter(DataProvider dataProvider, IFormTemplateQueryParameterIterate iterate) {
 		QueryParameters queryParameters = dataProvider.getQueryParameters();
 		if (queryParameters != null) {
-			List<Object> list = queryParameters.getFixedParameterOrQueryParameter();
-			if (list != null && list.size() > 0) {
-				for (Object object: list) {
-					if (object instanceof QueryParameter) {
-						iterate.iterate(dataProvider, (QueryParameter)object);
-					}
-				}
+			List<QueryParameter> list = queryParameters.getQueryParameterIncludeSub();
+			for (QueryParameter object: list) {
+				iterate.iterate(dataProvider, object);
 			}
 		}
 	}

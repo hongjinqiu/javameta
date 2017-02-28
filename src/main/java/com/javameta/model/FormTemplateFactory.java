@@ -276,18 +276,10 @@ public class FormTemplateFactory {
 			}
 		}
 		if (dataProvider.getQueryParameters() != null) {
-			QueryParameterBuilder queryParameterBuilder = new QueryParameterBuilder();
-			for (QueryParameter queryParameter : dataProvider.getQueryParameters().getQueryParameter()) {
-				if (StringUtils.isNotEmpty(queryParameter.getEditor())) {
-					if (StringUtils.isNotEmpty(queryParameter.getRestriction())) {
-						String value = paramMap.get(queryParameter.getName());
-						String queryParameterSql = queryParameterBuilder.buildQuery(queryParameter, value, nameParameterMap);
-						if (StringUtils.isEmpty(queryParameter.getUseIn()) || !queryParameter.getUseIn().equals("none")) {
-							bodySql += queryParameterSql;
-						}
-					}
-				}
-			}
+			DataProviderSqlQuery dataProviderSqlQuery = new DataProviderSqlQuery();
+			Map<String, Object> paramMapObj = New.hashMap();
+			paramMapObj.putAll(paramMap);
+			bodySql += dataProviderSqlQuery.getQuerySql(dataProvider.getQueryParameters(), paramMapObj, nameParameterMap);
 		}
 		if (StringUtils.isNotEmpty(dataProvider.getSuffix())) {
 			if (dataProvider.getSuffix().indexOf("<#") > -1) {
@@ -637,7 +629,7 @@ public class FormTemplateFactory {
 		List<QueryParameter> queryParameterLi = New.arrayList();
 		QueryParameters queryParameters = formTemplate.getDataProvider().get(0).getQueryParameters();
 		if (queryParameters != null) {
-			for (QueryParameter queryParameter: queryParameters.getQueryParameter()) {
+			for (QueryParameter queryParameter: queryParameters.getQueryParameterIncludeSub()) {
 				if (!queryParameter.getEditor().equals("hiddenfield")) {
 					queryParameterLi.add(queryParameter);
 				}
@@ -655,7 +647,7 @@ public class FormTemplateFactory {
 		List<QueryParameter> queryParameterLi = New.arrayList();
 		QueryParameters queryParameters = formTemplate.getDataProvider().get(0).getQueryParameters();
 		if (queryParameters != null) {
-			for (QueryParameter queryParameter: queryParameters.getQueryParameter()) {
+			for (QueryParameter queryParameter: queryParameters.getQueryParameterIncludeSub()) {
 				if (queryParameter.getEditor().equals("hiddenfield")) {
 					queryParameterLi.add(queryParameter);
 				}
