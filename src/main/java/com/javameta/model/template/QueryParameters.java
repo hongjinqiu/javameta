@@ -108,11 +108,20 @@ import com.javameta.util.New;
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
+ *         &lt;element ref="{https://github.com/hongjinqiu/javameta/template}query-parameters"/>
  *       &lt;/choice>
  *       &lt;attribute name="formColumns" type="{http://www.w3.org/2001/XMLSchema}int" default="4" />
  *       &lt;attribute name="enableEnterParam" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *       &lt;attribute name="dataSetId" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="rendererTemplate" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="restriction">
+ *         &lt;simpleType>
+ *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *             &lt;enumeration value="and"/>
+ *             &lt;enumeration value="or"/>
+ *           &lt;/restriction>
+ *         &lt;/simpleType>
+ *       &lt;/attribute>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -130,7 +139,8 @@ public class QueryParameters implements Serializable {
 
     @XmlElements({
         @XmlElement(name = "fixed-parameter", type = QueryParameters.FixedParameter.class),
-        @XmlElement(name = "query-parameter", type = QueryParameters.QueryParameter.class)
+        @XmlElement(name = "query-parameter", type = QueryParameters.QueryParameter.class),
+        @XmlElement(name = "query-parameters", type = QueryParameters.class)
     })
     protected List<Object> fixedParameterOrQueryParameter;
     @XmlAttribute
@@ -144,6 +154,8 @@ public class QueryParameters implements Serializable {
     @XmlAttribute
     @XmlSchemaType(name = "anySimpleType")
     protected String rendererTemplate;
+    @XmlAttribute(name = "restriction")
+    protected String restriction;
     
     public List<QueryParameter> getQueryParameter() {
     	List<QueryParameter> list = New.arrayList();
@@ -152,6 +164,19 @@ public class QueryParameters implements Serializable {
     	for (Object item: parameters) {
     		if (item instanceof QueryParameter) {
     			list.add((QueryParameter)item);
+    		}
+    	}
+    	
+    	return list;
+    }
+    
+    public List<QueryParameters> getSubQueryParameters() {
+    	List<QueryParameters> list = New.arrayList();
+    	
+    	List<Object> parameters = getFixedParameterOrQueryParameter();
+    	for (Object item: parameters) {
+    		if (item instanceof QueryParameters) {
+    			list.add((QueryParameters)item);
     		}
     	}
     	
@@ -178,6 +203,7 @@ public class QueryParameters implements Serializable {
      * Objects of the following type(s) are allowed in the list
      * {@link QueryParameters.FixedParameter }
      * {@link QueryParameters.QueryParameter }
+     * {@link QueryParameters }
      * 
      * 
      */
@@ -287,6 +313,30 @@ public class QueryParameters implements Serializable {
     public void setRendererTemplate(String value) {
         this.rendererTemplate = value;
     }
+    
+    /**
+     * Gets the value of the restriction property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getRestriction() {
+        return restriction;
+    }
+
+    /**
+     * Sets the value of the restriction property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRestriction(String value) {
+        this.restriction = value;
+    }
 
 
     /**
@@ -351,6 +401,8 @@ public class QueryParameters implements Serializable {
         @XmlAttribute
         @XmlSchemaType(name = "anySimpleType")
         protected String rendererTemplate;
+        @XmlAttribute(name = "fieldType")
+        protected String fieldType;
 
         /**
          * Gets the value of the name property.
@@ -436,7 +488,7 @@ public class QueryParameters implements Serializable {
             return enterParam;
         }
 
-	public Boolean getEnterParam() {
+        public Boolean getEnterParam() {
             return enterParam;
         }
 
@@ -464,7 +516,7 @@ public class QueryParameters implements Serializable {
             return auto;
         }
 
-	public Boolean getAuto() {
+        public Boolean getAuto() {
             return auto;
         }
 
@@ -636,7 +688,7 @@ public class QueryParameters implements Serializable {
             return having;
         }
 
-	public Boolean getHaving() {
+        public Boolean getHaving() {
             return having;
         }
 
@@ -664,7 +716,7 @@ public class QueryParameters implements Serializable {
             return required;
         }
 
-	public Boolean getRequired() {
+        public Boolean getRequired() {
             return required;
         }
 
@@ -716,7 +768,7 @@ public class QueryParameters implements Serializable {
             return readOnly;
         }
 
-	public Boolean getReadOnly() {
+        public Boolean getReadOnly() {
             return readOnly;
         }
 
@@ -778,6 +830,30 @@ public class QueryParameters implements Serializable {
          */
         public void setRendererTemplate(String value) {
             this.rendererTemplate = value;
+        }
+        
+        /**
+         * Gets the value of the fieldType property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getFieldType() {
+            return fieldType;
+        }
+
+        /**
+         * Sets the value of the fieldType property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setFieldType(String value) {
+            this.fieldType = value;
         }
 
     }
@@ -905,6 +981,8 @@ public class QueryParameters implements Serializable {
         @XmlAttribute
         @XmlSchemaType(name = "anySimpleType")
         protected String rendererTemplate;
+        @XmlAttribute(name = "fieldType")
+        protected String fieldType;
         
         public String getFieldCls() {
         	if (parameterAttribute != null) {
@@ -1107,7 +1185,7 @@ public class QueryParameters implements Serializable {
             return enterParam;
         }
 
-	public Boolean getEnterParam() {
+        public Boolean getEnterParam() {
             return enterParam;
         }
 
@@ -1135,7 +1213,7 @@ public class QueryParameters implements Serializable {
             return auto;
         }
 
-	public Boolean getAuto() {
+        public Boolean getAuto() {
             return auto;
         }
 
@@ -1307,7 +1385,7 @@ public class QueryParameters implements Serializable {
             return having;
         }
 
-	public Boolean getHaving() {
+        public Boolean getHaving() {
             return having;
         }
 
@@ -1335,7 +1413,7 @@ public class QueryParameters implements Serializable {
             return required;
         }
 
-	public Boolean getRequired() {
+        public Boolean getRequired() {
             return required;
         }
 
@@ -1387,7 +1465,7 @@ public class QueryParameters implements Serializable {
             return readOnly;
         }
 
-	public Boolean getReadOnly() {
+        public Boolean getReadOnly() {
             return readOnly;
         }
 
@@ -1450,6 +1528,31 @@ public class QueryParameters implements Serializable {
         public void setRendererTemplate(String value) {
             this.rendererTemplate = value;
         }
+        
+        /**
+         * Gets the value of the fieldType property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getFieldType() {
+            return fieldType;
+        }
+
+        /**
+         * Sets the value of the fieldType property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setFieldType(String value) {
+            this.fieldType = value;
+        }
+        
 
         /**
          * <p>Java class for anonymous complex type.

@@ -62,5 +62,73 @@
  			<query-parameter name="gatheringbill_id" columnName="gatheringbill_id" restriction="eq" text=""></query-parameter>
  		</query-parameters>
 	</data-provider>
+	
+	<data-provider name="subTest1" size="10">
+		<sql><![CDATA[
+		  select 
+			(case when g.property=1 then (select bankId from pub_bankaccount where id=g.accountId)
+			else "" end) as receiveBankId,
+			(case when g.property=1 then (select accountProperty from pub_bankaccount where id=g.accountId)
+			else "" end) as accountProperty,
+			b.bankShort,
+			g.* 
+			from PUB_GATHERINGBILL g
+			left join pub_bank b on g.bankId=b.id
+			where 1=1
+			<#if id2?exists && id2 != "0">
+				and g.id = :id2
+			</#if>
+		]]></sql>
+ 		<query-parameters>
+ 			<query-parameter name="id" columnName="g.id" restriction="eq" text=""></query-parameter>
+ 			<query-parameter name="id2" columnName="g.id" restriction="eq" text=""></query-parameter>
+ 			<query-parameters restriction="and">
+ 				<query-parameter name="id3" columnName="g.billNo" restriction="like" text=""></query-parameter>
+ 				<query-parameter name="id4" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
+ 			</query-parameters>
+ 			<!-- 
+ 			<query-parameters restriction="or">
+ 				<query-parameter name="id5" columnName="g.billNo" restriction="like" text=""></query-parameter>
+ 				<query-parameter name="id6" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
+ 			</query-parameters>
+ 			<query-parameters restriction="and">
+ 				<query-parameters restriction="and">
+	 				<query-parameter name="id7" columnName="g.billNo" restriction="like" text=""></query-parameter>
+	 				<query-parameter name="id8" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
+	 			</query-parameters>
+	 			<query-parameters restriction="or">
+	 				<query-parameter name="id9" columnName="g.billNo" restriction="like" text=""></query-parameter>
+	 				<query-parameter name="id10" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
+	 			</query-parameters>
+ 			</query-parameters>
+ 			<query-parameters restriction="or">
+ 				<query-parameters restriction="and">
+	 				<query-parameter name="id11" columnName="g.billNo" restriction="like" text=""></query-parameter>
+	 				<query-parameter name="id12" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
+	 			</query-parameters>
+	 			<query-parameters restriction="or">
+	 				<query-parameter name="id13" columnName="g.billNo" restriction="like" text=""></query-parameter>
+	 				<query-parameter name="id14" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
+	 			</query-parameters>
+ 			</query-parameters>
+ 			<query-parameters restriction="or">
+ 				<query-parameters restriction="or">
+	 				<query-parameter name="id15" columnName="g.billNo" restriction="like" text=""></query-parameter>
+	 				<query-parameter name="id16" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
+	 			</query-parameters>
+	 			<query-parameters restriction="or">
+	 				<query-parameter name="id17" columnName="g.billNo" restriction="like" text=""></query-parameter>
+	 				<query-parameter name="id18" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
+	 			</query-parameters>
+ 			</query-parameters>
+ 			 -->
+ 		</query-parameters>
+ 		<suffix><![CDATA[
+ 		<#if id2?exists && id2 != "0">
+				order by g.id
+			</#if>
+ 		]]></suffix>
+ 		<!-- suffix -->
+	</data-provider>
 
 </form-template>

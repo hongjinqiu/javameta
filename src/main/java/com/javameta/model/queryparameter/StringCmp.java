@@ -19,7 +19,7 @@ public class StringCmp implements IRestriction {
 		if (StringUtils.isEmpty(value)) {
 			return "";
 		}
-		String sql = " and %s %s %s ";// and age >= :beginAge
+		String sql = " %s %s %s ";// age >= :beginAge
 		nameParameterMap.put(queryParameter.getName(), value);
 		return String.format(sql, queryParameter.getDbQueryName(), operator, ":" + queryParameter.getName());
 	}

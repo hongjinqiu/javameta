@@ -17,11 +17,12 @@ import com.javameta.model.queryparameter.QueryParameterBuilder;
 import com.javameta.model.template.ColumnModel;
 import com.javameta.model.template.DataProvider;
 import com.javameta.model.template.FormTemplate;
+import com.javameta.model.template.QueryParameters;
 import com.javameta.model.template.QueryParameters.QueryParameter;
 import com.javameta.util.ApplicationContextUtil;
 import com.javameta.util.New;
 
-public class DataProviderQuery {
+public class DataProviderSqlQuery {
 
 	public int queryForInt(String formTemplateId, String dataProviderName, Map<String, Object> paramMap) {
 		int pageNo = -1;
@@ -169,6 +170,9 @@ public class DataProviderQuery {
 			}
 		}
 		if (dataProvider.getQueryParameters() != null) {
+			bodySql += getQuerySql(dataProvider.getQueryParameters(), paramMap, nameParameterMap);
+			
+			/*
 			QueryParameterBuilder queryParameterBuilder = new QueryParameterBuilder();
 			for (QueryParameter queryParameter : dataProvider.getQueryParameters().getQueryParameter()) {
 				if (StringUtils.isEmpty(queryParameter.getEditor())) {
@@ -182,6 +186,7 @@ public class DataProviderQuery {
 					}
 				}
 			}
+			*/
 		}
 		if (StringUtils.isNotEmpty(dataProvider.getSuffix())) {
 			if (dataProvider.getSuffix().indexOf("<#") > -1) {
@@ -200,10 +205,64 @@ public class DataProviderQuery {
 
 		return bodySql;
 	}
+	
+	private String getQuerySql(QueryParameters queryParameters, Map<String, Object> paramMap, Map<String, Object> nameParameterMap) {
+		String querySql = recursiveGetQuerySql(queryParameters, paramMap, nameParameterMap);
+		if (StringUtils.isNotEmpty(querySql)) {
+			return " and " + querySql;
+		}
+		return "";
+	}
+	
+	private String recursiveGetQuerySql(QueryParameters queryParameters, Map<String, Object> paramMap, Map<String, Object> nameParameterMap) {
+		List<String> sqlLi = New.arrayList();
+		QueryParameterBuilder queryParameterBuilder = new QueryParameterBuilder();
+		for (QueryParameter queryParameter : queryParameters.getQueryParameter()) {
+			if (StringUtils.isEmpty(queryParameter.getEditor())) {
+				queryParameter.setEditor("hiddenfield");
+			}
+			if (StringUtils.isNotEmpty(queryParameter.getRestriction())) {
+				String value = ObjectUtils.toString(paramMap.get(queryParameter.getName()));
+				String queryParameterSql = queryParameterBuilder.buildQuery(queryParameter, value, nameParameterMap);
+				if (StringUtils.isEmpty(queryParameter.getUseIn()) || !queryParameter.getUseIn().equals("none")) {
+					if (StringUtils.isNotEmpty(queryParameterSql)) {
+						sqlLi.add(queryParameterSql);
+					}
+				}
+			}
+		}
+		for (QueryParameters subQueryParameters: queryParameters.getSubQueryParameters()) {
+			String subQuerySql = recursiveGetQuerySql(subQueryParameters, paramMap, nameParameterMap);
+			if (StringUtils.isNotEmpty(subQuerySql)) {
+				sqlLi.add(subQuerySql);
+			}
+		}
+		if (sqlLi.size() > 0) {
+			if (StringUtils.isEmpty(queryParameters.getRestriction()) || queryParameters.getRestriction().equals("and")) {
+				String result = StringUtils.join(sqlLi.toArray(), " and ");
+				return result;
+			} else {
+				String result = " (" + StringUtils.join(sqlLi.toArray(), " or ") + ") ";
+				return result;
+			}
+		}
+		return "";
+	}
 
 	public static void main(String[] args) throws Exception {
 		ApplicationContext context = new ClassPathXmlApplicationContext(new String[] { "spring-mvc.xml" });
-		DataProviderQuery dataProviderQuery = new DataProviderQuery();
+		DataProviderSqlQuery dataProviderQuery = new DataProviderSqlQuery();
+		{
+			Map<String, Object> paramMap = New.hashMap();
+			paramMap.put("id", 1);
+			for (int i = 2; i < 20; i++) {
+				paramMap.put("id" + i, "1");
+			}
+			List<Map<String, Object>> result = dataProviderQuery.queryForList("GatheringBill", "subTest1", paramMap);
+			System.out.println(result.size());
+			System.out.println(result);
+		}
+		/*
 		{
 			Map<String, Object> paramMap = New.hashMap();
 			paramMap.put("id", 1);
@@ -245,5 +304,6 @@ public class DataProviderQuery {
 			List<Map<String, Object>> list = dataProviderQuery.queryForList("Bank2", "queryDataSetB", paramMap, pageNo, pageSize);
 			System.out.println(list);
 		}
+		*/
 	}
 }

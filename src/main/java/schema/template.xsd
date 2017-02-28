@@ -342,6 +342,8 @@
 					<restriction base="string">
 						<enumeration value="oracle" />
 						<enumeration value="mysql" />
+						<enumeration value="mongodb" />
+						<enumeration value="hbase" />
 						<enumeration value="hsql" />
 						<enumeration value="sqlserver" />
 						<enumeration value="sqlite" />
@@ -1045,11 +1047,20 @@
 						<attributeGroup ref="tns:query-param-attributes"></attributeGroup>
 					</complexType>
 				</element>
+				<element ref="tns:query-parameters"></element>
 			</choice>
 			<attribute name="formColumns" type="int" default="4"></attribute>
 			<attribute name="enableEnterParam" type="boolean"></attribute>
 			<attribute name="dataSetId"></attribute>
 			<attribute name="rendererTemplate"></attribute>
+			<attribute name="restriction">
+				<simpleType>
+					<restriction base="string">
+						<enumeration value="and"></enumeration>
+						<enumeration value="or"></enumeration>
+					</restriction>
+				</simpleType>
+			</attribute>
 		</complexType>
 	</element>
 
@@ -1126,5 +1137,18 @@
 			</annotation>
 		</attribute>
 		<attribute name="rendererTemplate"></attribute>
+		<attribute name="fieldType">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="STRING" />
+					<enumeration value="SHORT" />
+					<enumeration value="INT" />
+					<enumeration value="LONG" />
+					<enumeration value="FLOAT" />
+					<enumeration value="DOUBLE" />
+					<enumeration value="DECIMAL" />
+				</restriction>
+			</simpleType>
+		</attribute>
 	</attributeGroup>
 </schema>

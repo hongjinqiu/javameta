@@ -20,7 +20,7 @@ public class StringInCmp implements IRestriction {
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.append(" and %s %s ( ");
+		sb.append(" %s %s ( ");
 		String[] valueLi = value.split(",");
 		for (int i = 0; i < valueLi.length; i++) {
 			if (StringUtils.isNotEmpty(valueLi[i])) {

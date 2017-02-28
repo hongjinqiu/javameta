@@ -19,7 +19,7 @@ public class RegexpCmp implements IRestriction {
 		if (StringUtils.isEmpty(value)) {
 			return "";
 		}
-		String sql = " and %s %s %s ";// and age >= :beginAge
+		String sql = " %s %s %s ";// age >= :beginAge
 		String tmpOperator = "";
 		if (operator.equals("like")) {
 			tmpOperator = "like";

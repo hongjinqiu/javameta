@@ -14,7 +14,7 @@ public class NullCmp implements IRestriction {
 
 	@Override
 	public String operate(QueryParameter queryParameter, String value, Map<String, Object> nameParameterMap) {
-		String sql = " and %s %s ";// and age is null| and age is not null
+		String sql = " %s %s ";// age is null| age is not null
 		return String.format(sql, queryParameter.getDbQueryName(), operator);
 	}
 

@@ -86,6 +86,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *             &lt;enumeration value="oracle"/>
  *             &lt;enumeration value="mysql"/>
+ *             &lt;enumeration value="mongodb"/>
+ *             &lt;enumeration value="hbase"/>
  *             &lt;enumeration value="hsql"/>
  *             &lt;enumeration value="sqlserver"/>
  *             &lt;enumeration value="sqlite"/>

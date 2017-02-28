@@ -511,7 +511,7 @@ public class DatasourceFactory {
 				recursiveLoadDatasource(subFile);
 			}
 		} else {
-			if (file.getName().startsWith("ds_") && file.getName().endsWith(".xml")) {
+			if (file.getName().startsWith("jm_ds_") && file.getName().endsWith(".xml")) {
 				loadSingleDatasource(file);
 			}
 		}
@@ -665,7 +665,7 @@ public class DatasourceFactory {
 		 */
 		/*
 		{
-			InputStream in = ModelTemplateFactory.class.getClassLoader().getResourceAsStream("demo/gatheringbill/ds_gatheringbill.xml");// 从classpath目录读取,以/开头反而读取不到,
+			InputStream in = ModelTemplateFactory.class.getClassLoader().getResourceAsStream("demo/gatheringbill/jm_ds_gatheringbill.xml");// 从classpath目录读取,以/开头反而读取不到,
 			Datasource fields = (Datasource)u.unmarshal(in);
 			Datasource datasource2 = SerializationUtils.clone(fields);
 			
