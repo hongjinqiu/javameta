@@ -1,4 +1,4 @@
-package com.javameta.model.queryparameter;
+package com.javameta.model.queryparameter.sql;
 
 import java.util.Map;
 

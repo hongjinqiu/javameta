@@ -1,0 +1,368 @@
+package com.geeboo.app.shop.mongodb.operate;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bson.Document;
+import org.bson.conversions.Bson;
+
+import com.geeboo.app.shop.mongodb.analyzer.IKAnalyzerProcessor;
+import com.geeboo.app.shop.mongodb.handler.AbstractIndexHandler;
+import com.geeboo.app.shop.mongodb.handler.AuthorIndexHandler;
+import com.geeboo.app.shop.mongodb.handler.BookBillIndexHandler;
+import com.geeboo.app.shop.mongodb.handler.BookIndexHandler;
+import com.geeboo.app.shop.mongodb.handler.PublishHouseIndexHandler;
+import com.geeboo.app.shop.mongodb.handler.SpecialIndexHandler;
+import com.geeboo.app.shop.mongodb.utils.RemoveDuplicateUtils;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
+
+/**
+ * 搜索查询类(MongoDB)
+ */
+public class SearchOperator {
+	protected static final Log loger = LogFactory.getLog(SearchOperator.class);
+	protected int onePage = 10;
+	protected int nowPage = -1;
+	protected int total;
+	protected int allPage;
+
+	public int getOnePage() {
+		return onePage;
+	}
+
+	public void setOnePage(int onePage) {
+		this.onePage = onePage;
+	}
+
+	public int getNowPage() {
+		return nowPage;
+	}
+
+	public void setNowPage(int nowPage) {
+		this.nowPage = nowPage;
+	}
+
+	public int getTotal() {
+		return total;
+	}
+
+	public void setTotal(int total) {
+		this.total = total;
+	}
+
+	public int getAllPage() {
+		return allPage;
+	}
+
+	public void setAllPage(int allPage) {
+		this.allPage = allPage;
+	}
+	/**
+	 * 拆分关键字查询
+	 * @param condition
+	 * @param word
+	 * @return
+	 */
+	public List<Map<String,Object>> doSearch(String[] condition,String word){
+		if(condition.length == 0 || StringUtils.isBlank(word)){
+			return new ArrayList<Map<String,Object>>();
+		}
+		List<Bson> filters = new ArrayList<Bson>();
+		List<String> words = new ArrayList<String>();
+		words.addAll(removeSameWords(IKAnalyzerProcessor.IKAnalysis(word)));
+		if(words.size()>10){//超过10个搜索关键词时只取前十个
+			words = words.subList(0, 10);
+		}
+		for(int i=0;i<condition.length;i++){
+			for(int j=0;j<words.size();j++){
+				filters.add(Filters.eq(condition[i], words.get(j)));
+			}
+		}
+		Bson _filter = Filters.and(filters);//关键词全匹配
+		Bson _sort = Sorts.ascending("_id");
+		List<Map<String, Object>> resultList = searchTable(_filter,_sort,null);
+		if(resultList.size() == 0){//关键词全匹配查询没结果则模糊匹配
+			Bson _filter2 = Filters.or(filters);
+			resultList = searchTable(_filter2,_sort,null);
+		}
+		return resultList;
+	}
+	/**
+	 * like查询
+	 * @param condition
+	 * @param params
+	 * @param result 查询list集
+	 * @param searchType 查询规则 ()
+	 * @return
+	 */
+	public List<Map<String,Object>> doSearchLike(String word,List<Map<String,Object>> resultList,int searchType){
+		if(StringUtils.isBlank(word)){
+			return new ArrayList<Map<String,Object>>();
+		}
+		List<Bson> filters = new ArrayList<Bson>();
+		Bson _filter = null;
+		if(searchType == 0){
+			filters.add(Filters.eq("name",word));
+		}else if(searchType == 1){
+			filters.add(Filters.regex("name","(?msi)^.*?"+word+".*?$"));
+			filters.add(Filters.regex("brief","(?msi)^.*?"+word+".*?$"));
+		}else if(searchType == 2){
+			filters.add(Filters.regex("name","(?msi)^.*?"+word+".*?$"));
+		}else if(searchType == 3){
+			filters.add(Filters.regex("book_author","(?msi)^.*?"+word+".*?$"));
+			filters.add(Filters.regex("book_publish","(?msi)^.*?"+word+".*?$"));
+		}else if(searchType == 4){
+			filters.add(Filters.regex("brief","(?msi)^.*?"+word+".*?$"));
+		}else{
+			return new ArrayList<Map<String,Object>>();
+		}
+		_filter = Filters.and(filters);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int indexType = 1;indexType<=5;indexType++){
+			if(searchType == 3 && indexType == 1){
+				_filter = Filters.or(filters);
+			}
+			if((searchType == 0 && indexType == 2) || (searchType != 0 &&(searchType != 3 || indexType == 1))){
+				Bson _sort = Sorts.ascending("_id");
+				list.addAll(searchTable(_filter,_sort,indexType));
+			}
+		}
+		if(resultList.size()>0){
+			resultList.addAll(list);
+			resultList = removeDuplicate(resultList);
+		}else{
+			resultList = list;
+		}
+		if(searchType == 0){
+			resultList = doSearchLike(word,resultList, 1);
+		}else if(searchType == 1){
+			resultList = doSearchLike(word,resultList, 2);
+		}else if(searchType == 2){
+			resultList = doSearchLike(word,resultList, 3);
+		}else if(searchType == 3){
+			resultList = doSearchLike(word,resultList, 4);
+		}
+		return resultList;
+	}
+	/**
+	 * like查询(Condition)
+	 * @param condition
+	 * @param params
+	 * @param index_type 查询表的index_type
+	 * @param result 查询list集
+	 * @param likeType 查询like类型 (先进行前模糊查询，再全模糊查询)
+	 * @return
+	 */
+	public List<Map<String,Object>> doSearchLikeCondition(String[] condition,String[] params,Integer index_type,List<Map<String,Object>> resultList,int likeType){
+		if(condition.length == 0 || params.length == 0){
+			return new ArrayList<Map<String,Object>>();
+		}
+		List<Bson> filters = new ArrayList<Bson>();
+		String _startLike = "(?msi)^.*?";
+		String _endLike = ".*?$";
+		if(likeType == 1){
+			_startLike = "(?msi)^";
+		}
+		Bson isShare = null;
+		for(int i=0;i<condition.length;i++){
+			if("index_type".equals(condition[i])){
+				continue;
+			}
+			if(condition.length == params.length){
+				if("is_share".equals(condition[i])){
+					isShare = Filters.eq("is_share", Integer.valueOf(params[i]));
+				}else{
+					filters.add(Filters.regex(condition[i], _startLike+params[i]+_endLike));
+				}
+			}else{
+				for(int j=0;j<params.length;j++){
+					filters.add(Filters.regex(condition[i],  _startLike+params[j]+_endLike));
+				}
+			}
+		}
+		Bson _filter = null;
+		if(isShare != null && filters.size() > 0){
+			_filter = Filters.and(Filters.or(filters),isShare);
+		}else if(isShare != null){
+			_filter = isShare;
+		}else if(filters.size() > 0){
+			_filter = Filters.or(filters);
+		}else{
+			_filter = Filters.where("1==1");
+		}
+		Bson _sort = Sorts.ascending("_id");
+		List<Map<String,Object>> list = searchTable(_filter,_sort,index_type);
+		if(likeType == 1){
+			resultList = list;
+			resultList = doSearchLikeCondition(condition, params, index_type, resultList, 0);
+		}else{
+			if(resultList.size()>0){
+				resultList.addAll(list);
+				resultList = removeDuplicate(resultList);
+			}else{
+				resultList = list;
+			}
+		}
+		return resultList;
+	}
+	/**
+	 * 查询表
+	 * @param _filter
+	 * @param _sort
+	 * @return
+	 */
+	public List<Map<String,Object>> searchTable(Bson _filter,Bson _sort,Integer index_type){
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		if(index_type == null || index_type == 1){
+			list.addAll(searchIndexByType(_filter, _sort, "1"));
+		}
+		if(index_type == null || index_type == 2){
+			list.addAll(searchIndexByType(_filter, _sort, "2"));
+		}
+		if(index_type == null || index_type == 3){
+			list.addAll(searchIndexByType(_filter, _sort, "3"));	
+		}
+		if(index_type == null || index_type == 4){
+			list.addAll(searchIndexByType(_filter, _sort, "4"));
+		}
+		if(index_type == null || index_type == 5){
+	        list.addAll(searchIndexByType(_filter, _sort, "5"));
+		}
+        return list;
+	}
+	/**
+	 * 执行查询操作
+	 * @param _filter
+	 * @param _sort
+	 * @param index_type
+	 * @return
+	 */
+	public List<Map<String,Object>> searchIndexByType(Bson _filter,Bson _sort,String index_type){
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		AbstractIndexHandler indexHandler = null;
+		if("1".equals(index_type)){
+			indexHandler = new BookIndexHandler();
+		}else if("2".equals(index_type)){
+			indexHandler = new AuthorIndexHandler();
+		}else if("3".equals(index_type)){
+			indexHandler = new PublishHouseIndexHandler();
+		}else if("4".equals(index_type)){
+			indexHandler = new BookBillIndexHandler();
+		}else if("5".equals(index_type)){
+			indexHandler = new SpecialIndexHandler();
+		}else{
+			return list;
+		}
+		MongoCollection<Document> collBook = indexHandler.getCollection(indexHandler.getDBName(), indexHandler.getCollectionName());
+		MongoCursor<Document> cursorBook = collBook.find(_filter).sort(_sort).iterator();
+		while (cursorBook.hasNext()) {
+			Map<String,Object> _map = (Map<String,Object>) cursorBook.next();
+			list.add(_map);
+		}
+		return list;
+	}
+	/**
+	 * 查询(详细搜索)
+	 * @param condition
+	 * @param word
+	 * @return
+	 */
+	public Map<String,Object> doSearchPage(String word){
+		Map<String,Object> resultMap = new HashMap<String, Object>();
+		List<Map<String,Object>> list = null;
+		list = doSearchLike(word,new ArrayList<Map<String,Object>>(),0);
+		if(list.size() == 0){
+			list = doSearch(new String[]{"keyword"}, word);
+			resultMap.put("splitSearch", true);
+		}else{
+			resultMap.put("splitSearch", false);
+		}
+		resultMap.put("list", pageList(list));
+		return resultMap;
+	}
+	
+	/**
+	 * 查询(根据condition)
+	 * @param condition
+	 * @param params
+	 * @param index_type 表类型
+	 * @return
+	 */
+	public List<Map<String,Object>> doSearchPageCondition(String[] condition,String[] params,Integer index_type){
+		List<Map<String,Object>> list = doSearchLikeCondition(condition, params,index_type,new ArrayList<Map<String,Object>>(),1);
+		return pageList(list);
+	}
+	/**
+	 * list分页
+	 */
+	public List<Map<String,Object>> pageList(List<Map<String,Object>> list){
+		List<Map<String,Object>> resultList = new ArrayList<Map<String,Object>>();
+		this.total = list.size();
+	    int starti = 0;
+	    int endi = this.total;
+	    if ((this.nowPage > 0) && (this.total > 0)) {
+	        this.allPage = (this.total / this.onePage);
+	        if (this.total % this.onePage != 0) {
+	          this.allPage += 1;
+	        }
+	        if ((this.nowPage == 0) || (this.nowPage == 1)) {
+	          endi = this.onePage;
+	          if (this.total < this.onePage)
+	            endi = this.total;
+	        }
+	        else {
+	          starti = this.onePage * (this.nowPage - 1);
+	          endi = this.onePage * this.nowPage;
+	          if (endi > this.total) {
+	            endi = this.total;
+	          }
+	        }
+	    }
+	    for (int i = starti; i < endi; i++) {
+	        resultList.add(list.get(i));
+	    }
+	    return resultList;
+	}
+	/**
+	 * 删除重复词
+	 * @param words
+	 * @return
+	 */
+	private List<String> removeSameWords(List<String> words){
+		return RemoveDuplicateUtils.removeDuplicate((ArrayList<String>)words);
+	}
+	/**
+	 * 结果集去重
+	 * @param list
+	 * @param list1
+	 * @return
+	 */
+	private List<Map<String,Object>> removeDuplicate(List<Map<String,Object>> list){
+		for(int i=0;i<list.size()-1;i++){
+			for(int j=list.size()-1;j>i;j--){
+				if(list.get(i).equals(list.get(j))){
+					list.remove(j);
+				}
+			}
+		}
+		return list;
+	}
+	
+	public static void main(String[] args) {
+		SearchOperator searchOperator = new SearchOperator();
+		String[] condition = new String[]{"brief"};
+		String[] params = new String[]{"中华"};
+		List<Map<String, Object>> list = searchOperator.doSearchPageCondition(condition, params, null);
+		System.out.println(list);
+//		List<String> splitWords = searchOperator.removeSameWords(IKAnalyzerProcessor.IKAnalysis("我们一起来唱歌"));
+//		System.out.println(splitWords.toString());
+	}
+}

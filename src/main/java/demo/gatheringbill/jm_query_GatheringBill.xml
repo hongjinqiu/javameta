@@ -86,7 +86,6 @@
  				<query-parameter name="id3" columnName="g.billNo" restriction="like" text=""></query-parameter>
  				<query-parameter name="id4" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
  			</query-parameters>
- 			<!-- 
  			<query-parameters restriction="or">
  				<query-parameter name="id5" columnName="g.billNo" restriction="like" text=""></query-parameter>
  				<query-parameter name="id6" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
@@ -101,6 +100,7 @@
 	 				<query-parameter name="id10" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
 	 			</query-parameters>
  			</query-parameters>
+ 			<!-- 
  			<query-parameters restriction="or">
  				<query-parameters restriction="and">
 	 				<query-parameter name="id11" columnName="g.billNo" restriction="like" text=""></query-parameter>

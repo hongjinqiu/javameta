@@ -31,7 +31,7 @@ import com.javameta.model.iterate.IFormTemplateColumnIterate;
 import com.javameta.model.iterate.IFormTemplateColumnModelIterate;
 import com.javameta.model.iterate.IFormTemplateDataProviderIterate;
 import com.javameta.model.iterate.IFormTemplateQueryParameterIterate;
-import com.javameta.model.queryparameter.QueryParameterBuilder;
+import com.javameta.model.queryparameter.sql.QueryParameterBuilder;
 import com.javameta.model.template.AutoColumn;
 import com.javameta.model.template.Button;
 import com.javameta.model.template.CheckboxColumn;

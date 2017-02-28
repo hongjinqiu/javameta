@@ -1,13 +1,13 @@
-package com.javameta.model.queryparameter;
+package com.javameta.model.queryparameter.sql;
 
 import java.util.Map;
 
 import com.javameta.model.template.QueryParameters.QueryParameter;
 
-public class IntOrFloatCmp implements IRestriction {
+public class IntOrFloatOrStringCmp implements IRestriction {
 	private String operator;
 	
-	public IntOrFloatCmp(String operator) {
+	public IntOrFloatOrStringCmp(String operator) {
 		this.operator = operator;
 	}
 

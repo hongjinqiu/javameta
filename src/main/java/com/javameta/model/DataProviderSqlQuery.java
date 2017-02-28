@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import com.javameta.JavametaException;
 import com.javameta.freemarker.FreemarkerParser;
-import com.javameta.model.queryparameter.QueryParameterBuilder;
+import com.javameta.model.queryparameter.sql.QueryParameterBuilder;
 import com.javameta.model.template.ColumnModel;
 import com.javameta.model.template.DataProvider;
 import com.javameta.model.template.FormTemplate;

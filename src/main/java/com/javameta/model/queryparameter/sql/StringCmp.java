@@ -1,25 +1,31 @@
-package com.javameta.model.queryparameter;
+package com.javameta.model.queryparameter.sql;
 
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.javameta.model.template.QueryParameters.QueryParameter;
 import com.javameta.util.New;
 
-public class NullCmp implements IRestriction {
+public class StringCmp implements IRestriction {
 	private String operator;
-	
-	public NullCmp(String operator) {
+
+	public StringCmp(String operator) {
 		this.operator = operator;
 	}
 
 	@Override
 	public String operate(QueryParameter queryParameter, String value, Map<String, Object> nameParameterMap) {
-		String sql = " %s %s ";// age is null| age is not null
-		return String.format(sql, queryParameter.getDbQueryName(), operator);
+		if (StringUtils.isEmpty(value)) {
+			return "";
+		}
+		String sql = " %s %s %s ";// age >= :beginAge
+		nameParameterMap.put(queryParameter.getName(), value);
+		return String.format(sql, queryParameter.getDbQueryName(), operator, ":" + queryParameter.getName());
 	}
 
 	public static void main(String[] args) {
-		NullCmp cmp = new NullCmp("is not null");
+		StringCmp cmp = new StringCmp("=");
 		QueryParameter queryParameter = new QueryParameter();
 		queryParameter.setName("beginAge");
 		queryParameter.setColumnName("age");
