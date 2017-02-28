@@ -86,6 +86,7 @@
  				<query-parameter name="id3" columnName="g.billNo" restriction="like" text=""></query-parameter>
  				<query-parameter name="id4" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
  			</query-parameters>
+ 			<!-- 
  			<query-parameters restriction="or">
  				<query-parameter name="id5" columnName="g.billNo" restriction="like" text=""></query-parameter>
  				<query-parameter name="id6" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
@@ -100,7 +101,6 @@
 	 				<query-parameter name="id10" columnName="g.balanceNo" restriction="like" text=""></query-parameter>
 	 			</query-parameters>
  			</query-parameters>
- 			<!-- 
  			<query-parameters restriction="or">
  				<query-parameters restriction="and">
 	 				<query-parameter name="id11" columnName="g.billNo" restriction="like" text=""></query-parameter>
@@ -129,6 +129,54 @@
 			</#if>
  		]]></suffix>
  		<!-- suffix -->
+	</data-provider>
+	
+	<data-provider name="subTest2" size="10">
+		<sql>BankAccount</sql>
+ 		<query-parameters restriction="and">
+ 			<query-parameter name="id" columnName="A.id" restriction="in" fieldType="INT" text=""></query-parameter>
+ 			<query-parameter name="id2" columnName="A.id" restriction="eq" fieldType="INT" text=""></query-parameter>
+ 			<query-parameters restriction="and">
+ 				<query-parameter name="id3" columnName="A.name" restriction="in" fieldType="STRING" text=""></query-parameter>
+ 				<query-parameter name="id4" columnName="A.balanceNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+ 			</query-parameters>
+ 			<!-- 
+ 			<query-parameters restriction="or">
+ 				<query-parameter name="id5" columnName="A.billNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+ 				<query-parameter name="id6" columnName="A.balanceNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+ 			</query-parameters>
+ 			<query-parameters restriction="and">
+ 				<query-parameters restriction="and">
+	 				<query-parameter name="id7" columnName="A.billNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 				<query-parameter name="id8" columnName="A.balanceNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 			</query-parameters>
+	 			<query-parameters restriction="or">
+	 				<query-parameter name="id9" columnName="A.billNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 				<query-parameter name="id10" columnName="A.balanceNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 			</query-parameters>
+ 			</query-parameters>
+ 			<query-parameters restriction="or">
+ 				<query-parameters restriction="and">
+	 				<query-parameter name="id11" columnName="A.billNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 				<query-parameter name="id12" columnName="A.balanceNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 			</query-parameters>
+	 			<query-parameters restriction="or">
+	 				<query-parameter name="id13" columnName="A.billNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 				<query-parameter name="id14" columnName="A.balanceNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 			</query-parameters>
+ 			</query-parameters>
+ 			<query-parameters restriction="or">
+ 				<query-parameters restriction="or">
+	 				<query-parameter name="id15" columnName="A.billNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 				<query-parameter name="id16" columnName="A.balanceNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 			</query-parameters>
+	 			<query-parameters restriction="or">
+	 				<query-parameter name="id17" columnName="A.billNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 				<query-parameter name="id18" columnName="A.balanceNo" restriction="like" fieldType="STRING" text=""></query-parameter>
+	 			</query-parameters>
+ 			</query-parameters>
+ 			 -->
+ 		</query-parameters>
 	</data-provider>
 
 </form-template>
