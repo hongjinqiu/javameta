@@ -1,7 +1,7 @@
 package com.javameta.model;
 
 public enum FormTemplateEnum {
-	LIST("list_"), FORM("form_"), SELECTOR("selector_"), QUERY("query_");
+	LIST("jm_list_"), FORM("jm_form_"), SELECTOR("jm_selector_"), QUERY("jm_query_");
 
 	private String prefix;
 

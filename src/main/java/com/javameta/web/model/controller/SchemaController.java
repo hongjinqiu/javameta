@@ -1259,7 +1259,29 @@ public class SchemaController extends ControllerSupport {
 		response.getWriter().write("可能传入了错误的refretorType:" + refretorType);
 		return;
 	}
-
+	
+	@RequestMapping("/testMap")
+	@ResponseBody
+	public Map<String, Object> testMap(HttpServletRequest request) {
+		Map<String, Object> result = New.hashMap();
+		result.put("name", "testByName");
+		result.put("age", 10);
+		result.put("address", null);
+		{
+			Map<String, Object> object = New.hashMap();
+			object.put("field1", "field1_value");
+			object.put("field2", "field2_value");
+			result.put("object", object);
+		}
+		{
+			FormTemplate formTemplate = new FormTemplate();
+			formTemplate.setId("I am formTemplate");
+			result.put("formTemplate", formTemplate);
+		}
+		System.out.println(result);
+		return result;
+	}
+	
 	@RequestMapping("/testDB")
 	@ResponseBody
 	public String testDB(HttpServletRequest request) {
